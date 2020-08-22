@@ -1,0 +1,186 @@
+Last login: Mon Jul  8 11:32:17 on ttys000
+~ Mon Jul 08 chris$ ssh root@192.168.1.1
+root@192.168.1.1's password:
+
+
+BusyBox v1.28.4 () built-in shell (ash)
+
+  _______                     ________        __
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__| W I R E L E S S   F R E E D O M
+ -----------------------------------------------------
+ OpenWrt 18.06.2, r7676-cddd7b4c77
+ -----------------------------------------------------
+root@LEDE:~# opkg update
+Downloading http://downloads.openwrt.org/releases/18.06.2/targets/mvebu/cortexa9/packages/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_core
+Downloading http://downloads.openwrt.org/releases/18.06.2/targets/mvebu/cortexa9/packages/Packages.sig
+Signature check passed.
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/base/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_base
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/base/Packages.sig
+Signature check passed.
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/luci/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_luci
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/luci/Packages.sig
+Signature check passed.
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/packages/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_packages
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/packages/Packages.sig
+Signature check passed.
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/routing/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_routing
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/routing/Packages.sig
+Signature check passed.
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/telephony/Packages.gz
+Updated list of available packages in /var/opkg-lists/openwrt_telephony
+Downloading http://downloads.openwrt.org/releases/18.06.2/packages/arm_cortex-a9_vfpv3/telephony/Packages.sig
+Signature check passed.
+root@LEDE:~# ping google.com
+PING google.com (216.58.200.78): 56 data bytes
+64 bytes from 216.58.200.78: seq=0 ttl=55 time=2.479 ms
+64 bytes from 216.58.200.78: seq=1 ttl=55 time=2.412 ms
+64 bytes from 216.58.200.78: seq=2 ttl=55 time=2.501 ms
+64 bytes from 216.58.200.78: seq=3 ttl=55 time=2.488 ms
+64 bytes from 216.58.200.78: seq=4 ttl=55 time=2.464 ms
+64 bytes from 216.58.200.78: seq=5 ttl=55 time=2.398 ms
+64 bytes from 216.58.200.78: seq=6 ttl=55 time=3.262 ms
+64 bytes from 216.58.200.78: seq=7 ttl=55 time=3.218 ms
+64 bytes from 216.58.200.78: seq=8 ttl=55 time=3.178 ms
+64 bytes from 216.58.200.78: seq=9 ttl=55 time=3.151 ms
+64 bytes from 216.58.200.78: seq=10 ttl=55 time=3.104 ms
+64 bytes from 216.58.200.78: seq=11 ttl=55 time=3.075 ms
+64 bytes from 216.58.200.78: seq=12 ttl=55 time=3.028 ms
+64 bytes from 216.58.200.78: seq=13 ttl=55 time=3.002 ms
+64 bytes from 216.58.200.78: seq=14 ttl=55 time=2.960 ms
+64 bytes from 216.58.200.78: seq=15 ttl=55 time=2.909 ms
+64 bytes from 216.58.200.78: seq=16 ttl=55 time=2.883 ms
+64 bytes from 216.58.200.78: seq=17 ttl=55 time=2.833 ms
+64 bytes from 216.58.200.78: seq=18 ttl=55 time=2.791 ms
+^C
+--- google.com ping statistics ---
+19 packets transmitted, 19 packets received, 0% packet loss
+round-trip min/avg/max = 2.398/2.849/3.262 ms
+root@LEDE:~# cd /etc
+root@LEDE:/etc# cd init.d
+root@LEDE:/etc/init.d# ls
+boot              gpio_switch       openvpn           ucitrack
+cron              led               rpcd              uhttpd
+dnsmasq           linksys_recovery  sysctl            umount
+done              log               sysfixtime        urandom_seed
+dropbear          network           sysntpd
+firewall          odhcpd            system
+root@LEDE:/etc/init.d# /etc/init.d/openvpn enable
+root@LEDE:/etc/init.d# cd ..
+root@LEDE:/etc# cd openvpn/
+root@LEDE:/etc/openvpn# ls
+protonvpn
+root@LEDE:/etc/openvpn# cd protonvpn/
+root@LEDE:/etc/openvpn/protonvpn# ls
+auth.conf                        hk-01.protonvpn.com.udp.ovpn
+ca.crt                           hk-02.protonvpn.com.udp.ovpn
+ch-11.conf                       tlsauth.key
+ch-15.protonvpn.com.udp.ovpn     us-va-02.protonvpn.com.udp.ovpn
+root@LEDE:/etc/openvpn/protonvpn# cat auth.conf
+cameo
+chaiwan1Chaiwan@
+root@LEDE:/etc/openvpn/protonvpn# nano ch-11.conf
+root@LEDE:/etc/openvpn/protonvpn# cd /etc
+root@LEDE:/etc# ls
+TZ                    hotplug.d             ppp
+banner                hotplug.json          preinit
+banner.failsafe       init.d                profile
+board.d               inittab               protocols
+board.json            iproute2              rc.button
+config                localtime             rc.common
+crontabs              luci-uploads          rc.d
+device_info           modules-boot.d        rc.local
+diag.sh               modules.d             resolv.conf
+dnsmasq.conf          mtab                  services
+dropbear              openvpn               shadow
+ethers                openwrt_release       shadow-
+firewall.user         openwrt_version       shells
+fstab                 opkg                  sysctl.conf
+fw_env.config         opkg.conf             sysctl.d
+group                 os-release            sysupgrade.conf
+hosts                 passwd                uci-defaults
+hotplug-preinit.json  passwd-               urandom.seed
+root@LEDE:/etc# cd config
+root@LEDE:/etc/config# ls
+dhcp             network          system           wireless
+dropbear         openvpn          ubootenv
+firewall         openvpn_recipes  ucitrack
+luci             rpcd             uhttpd
+root@LEDE:/etc/config# cat openvpn
+
+config openvpn 'custom_config'
+	option config '/etc/openvpn/my-vpn.conf'
+
+config openvpn 'sample_server'
+	option port '1194'
+	option proto 'udp'
+	option dev 'tun'
+	option ca '/etc/openvpn/ca.crt'
+	option cert '/etc/openvpn/server.crt'
+	option key '/etc/openvpn/server.key'
+	option dh '/etc/openvpn/dh1024.pem'
+	option server '10.8.0.0 255.255.255.0'
+	option ifconfig_pool_persist '/tmp/ipp.txt'
+	option keepalive '10 120'
+	option compress 'lzo'
+	option persist_key '1'
+	option persist_tun '1'
+	option user 'nobody'
+	option status '/tmp/openvpn-status.log'
+	option verb '3'
+
+config openvpn 'sample_client'
+	option client '1'
+	option dev 'tun'
+	option proto 'udp'
+	list remote 'my_server_1 1194'
+	option resolv_retry 'infinite'
+	option nobind '1'
+	option persist_key '1'
+	option persist_tun '1'
+	option user 'nobody'
+	option ca '/etc/openvpn/ca.crt'
+	option cert '/etc/openvpn/client.crt'
+	option key '/etc/openvpn/client.key'
+	option compress 'lzo'
+	option verb '3'
+
+config openvpn 'protonvpn'
+	option config '/etc/openvpn/protonvpn/ch-11.conf'
+	option auth 'SHA512'
+	option ca '/etc/openvpn/protonvpn/ca.crt'
+	option cipher 'AES-256-CBC'
+	option key_direction '1'
+	option remote_cert_tls 'server'
+	option reneg_sec '0'
+	option tls_auth '/etc/openvpn/protonvpn/tlsauth.key'
+	option nobind '1'
+	option dev 'tun0'
+	option persist_tun '1'
+	option persist_key '1'
+	option ping '15'
+	option ping_timer_rem '1'
+	option port '1194'
+	option tun_mtu '1500'
+	option tun_mtu_extra '32'
+	option fast_io '1'
+	option script_security '2'
+	option verb '3'
+	option client '1'
+	option pull '1'
+	option proto 'udp'
+	list remote '185.159.157.20'
+	option remote_random '1'
+	option resolv_retry 'infinite'
+	option auth_user_pass '/etc/openvpn/protonvpn/auth.conf'
+	option ping_restart '10'
+	option enabled '1'
+
+

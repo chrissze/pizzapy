@@ -1,0 +1,14 @@
+beautifulsoup4
+certifi  # for urllib barchart web
+html5lib # for pandas 
+lxml     # 
+
+pandas
+psycopg2-binary  # mac needs psycopg2, need to have postgres install on the system
+PySide2
+requests
+selenium
+sqlalchemy
+wheel
+
+
