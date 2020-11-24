@@ -2,6 +2,7 @@
 import sys; sys.path.append('..')
 import json
 
+from itertools import dropwhile
 from typing import Any, List, Optional, Tuple, Union
 from timeit import default_timer
 from multiprocessing.managers import DictProxy
@@ -127,18 +128,20 @@ def guru_earn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]
 
         earn_soup_items: ResultSet = earn_soup.find_all('meta', attrs={'name': 'description'})
         content: str = '' if not earn_soup_items else earn_soup_items[0].get('content')
+
         earn_strlist: List[str] = content.split()
-        earn: Optional[float] = None if earn_strlist[7].__len__() < 2 else readf(earn_strlist[7])
-        # ^ string will be 0.00 even if the symbol is invalid
+        earn_strlist2: List[str] = list(filter(lambda x: '$' in x, earn_strlist))
+        earn: Optional[float] = readf(earn_strlist2[0][:-1]) if earn_strlist2 else None
+
+        # ^ string will be 0.00 even if the symbol is invalid, string have a suffix dot.
         if earn is not None:
             d['earn_per_share'] = earn
-        print('118 earn:', earn, d)
+        print('earn:', earn, d)
         earnpc: Optional[float] = None if ('px' not in d or earn is None) else round((earn / d['px'] * 100.0), 2)
         if earnpc is not None:
             d['earnpc'] = earnpc
 
-        print(earn_url)
-        print('earnpc 124:', earnpc)
+        print('earnpc:', earnpc)
         return earn, earnpc
     except requests.exceptions.RequestException as e:
         print('guru_earn RequestException: ', e)
@@ -500,12 +503,16 @@ def guru_upsert_1s(symbol: str) -> str:
 
         if 'px' in d and 'earn_per_share' in d:
             upsert_dict(table='usstock_g', dict=d, primarykeys=db_dict['usstock_g'].get('pk'), con=cnx)
-            print(f'GU upserted: {d}')
+            print(f"""
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+GU upserted: {d}
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+""")
         else:
-            print('no gu upsert: ', d)
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! no gu upsert: ', d)
         return symbol
     except Exception as e:
-        print(symbol, 'guruupsert1s error: ' , e)
+        print(symbol, 'guruupsert1s error: ', e)
         return symbol + ' guruupsert1s Exception e: ' + str(e)
     finally:  # To make sure processes are closed in the end, even if errors happen
         p1.close()
@@ -522,9 +529,8 @@ def guru_upsert_1s(symbol: str) -> str:
 
 
 if __name__ == '__main__':
-    #n100 = getnasdaq100()
-    #stocks = ['AAPL', 'AMZN', 'MSFT', 'GOOG', 'FB', 'LRCX', 'MA', 'ISRG', 'TTWO', 'V', ]
+
     stock = input ('which stock do you want to check? ')
-    guru_revgrowth(stock)
+    guru_earn(stock, {})
     print(default_timer())
 
