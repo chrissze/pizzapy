@@ -38,8 +38,8 @@ def get_con() -> connection:
     else: return cnx
 
 
-# used in pandas - read_sql()
-postgres_engine: Engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:5432/{pg_db}', echo=False)
+# used in pandas - read_sql() ; echo is for logging
+postgres_engine: Engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:5432/{pg_db}', echo='debug')
 
 #ino
 fut_option_command: str = """CREATE TABLE fut_option             

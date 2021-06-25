@@ -14,7 +14,7 @@ from dimsumpy.database.postgres import db_exec
 from futures_update.ino_model import ino_upsert_all, ino_upsert_1s
 from shared_model.fut_data_model import all_fut, fut_dict
 from shared_model.sql_model import cnx, create_db, create_table, db_dict, show_single_table, drop_table, show_databases, \
-    show_tables, get_con, cnx2, postgres_engine
+    show_tables, get_con, cnx, cnx2, postgres_engine
 from shared_model.st_data_model import all_stocks, stock_list_dict
 from stock_core_update.guru_model import guru_upsert_1s
 from stock_core_update.option_model import option_upsert_1s
@@ -110,7 +110,7 @@ def browse_st_table_1s(table: str) -> None:
             break
         elif s in all_stocks:
             sql: str = f"SELECT * FROM {table} WHERE symbol = '{s}' ORDER BY t DESC;"
-            df: DataFrame = pd.read_sql(sql, con=postgres_engine)
+            df: DataFrame = pd.read_sql(sql, con=cnx)
             print(df)
         else:
             print('you have entered an invalid symbol')
@@ -132,9 +132,9 @@ def browse_single_st_core_1d() -> None:
             sql_option: str = f"SELECT * FROM usstock_option WHERE symbol = '{s}' ORDER BY t DESC;"
             sql_g: str = f"SELECT * FROM usstock_g WHERE symbol = '{s}' ORDER BY t DESC;"
             sql_z: str = f"SELECT * FROM usstock_z WHERE symbol = '{s}' ORDER BY t DESC;"
-            df_option: DataFrame = pd.read_sql(sql_option, con=postgres_engine)
-            df_g: DataFrame = pd.read_sql(sql_g, con=postgres_engine)
-            df_z: DataFrame = pd.read_sql(sql_z, con=postgres_engine)
+            df_option: DataFrame = pd.read_sql(sql_option, con=cnx)
+            df_g: DataFrame = pd.read_sql(sql_g, con=cnx)
+            df_z: DataFrame = pd.read_sql(sql_z, con=cnx)
             latest_option = pd.DataFrame() if df_option.empty else df_option.iloc[0]
             latest_g = pd.DataFrame() if df_g.empty else df_g.iloc[0]
             latest_z = pd.DataFrame() if df_z.empty else df_z.iloc[0]
@@ -336,7 +336,7 @@ def browse_single_fut_option_1d() -> None:
         elif s in all_fut:
             print(fut_dict_pagina)
             sql: str = f"SELECT * FROM fut_option WHERE symbol = '{s}' ORDER BY t DESC;"
-            df: DataFrame = pd.read_sql(sql, con=postgres_engine)
+            df: DataFrame = pd.read_sql(sql, con=cnx)
             if df.empty:
                 print('empty result')
             else:
@@ -351,7 +351,7 @@ def browse_all_fut_option_1d() -> None:
     cols = 'td, symbol, px, capstr, callratio, putratio, callpc, putpc'
     print(td)
     sql: str = f"SELECT {cols} FROM fut_option WHERE td = '{td}' ORDER BY t DESC;"
-    df: DataFrame = pd.read_sql(sql, con=postgres_engine)
+    df: DataFrame = pd.read_sql(sql, con=cnx)
     print(df)
 
 
@@ -396,10 +396,13 @@ def manage_database():
         else:
             print('invalid input')
 
+### Testing Lab ###
+
+
+
+
 
 if __name__ == '__main__':
-    #update_single_st_price()
-    start()
 
-    #print(sys.path)
+    start()
 
