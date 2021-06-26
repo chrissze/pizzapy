@@ -1,11 +1,10 @@
 
-import sys;
+import sys; sys.path.append('..')
 
 from psycopg2._psycopg import cursor
 
-from shared_model.st_data_model import stock_list_dict
 
-sys.path.append('..')
+
 
 from datetime import date, datetime
 
@@ -24,7 +23,7 @@ import requests
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
-
+from shared_model.st_data_model import stock_list_dict
 from shared_model.sql_model import cnx, db_dict  # the postgres server must running
 from timeit import default_timer
 
@@ -225,7 +224,56 @@ def zacks_scores(s: str, d: DictProxy={}) -> Optional[float]:
 
 
 
+
+
+### TESTING LAB ###
+
+
+# scores_r.status_code will still be 200 for invalid symbols
+def zacks_sco(s: str, d: DictProxy={}) -> Optional[float]:
+    try:
+        headers: CaseInsensitiveDict = requests.utils.default_headers()
+        headers['User-Agent']: str = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
+        # scores_url: str = "https://www.zacks.com/stock/research/" + s + "/stock-style-scores"
+        # scores_r: Response = requests.get(scores_url, headers=headers)
+        #
+        # scores_dfs: List[DataFrame] = pandas.read_html(scores_r.text, header=None)
+        # low_frames: bool = len(scores_dfs) < 18
+
+        # Value Growth Momentum, grading A B C D F
+        # vgm_str: str = '' if low_frames else scores_dfs[9].iloc[1, 1]
+        # vgm_invalid: bool = (not isinstance(vgm_str, str)) or len(vgm_str) != 1
+        # vgm: Optional[str] = None if vgm_invalid else vgm_str
+        # if vgm is not None:  # vgm might be NA
+        #     d['vgm'] = vgm
+        #
+        # cashyield_str: str = '' if low_frames else scores_dfs[9].iloc[2, 1]
+        # cashyield: Optional[float] = readf(cashyield_str)
+        # if cashyield is not None:
+        #      d['cashyield'] = cashyield
+        #
+        # peg_str: str = '' if low_frames else scores_dfs[9].iloc[4, 1]
+        # peg: Optional[float] = readf(peg_str)
+        # if peg is not None:
+        #     d['peg'] = peg
+
+        return s
+    except requests.exceptions.RequestException as e:
+        print('zacks_scores RequestException: ', e)
+        return None
+    except Exception as e2:
+        print('zacks_scores Exception e2: ', e2)
+        return None
+
+
+
+
+
+
+
 if __name__ == '__main__':
-    zacks_upsert_1s('AAPL')
+    stock = input('which stock do you want to check? ')
+
+    zacks_sco(stock)
     print(default_timer())
 

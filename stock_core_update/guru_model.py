@@ -151,7 +151,7 @@ def guru_earn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]
         return None, None
 
 
-def guru_fs(s: str, d: DictProxy={}) -> Tuple[Optional[int],Optional[str]]:
+def guru_fs(s: str, d: DictProxy={}) -> Optional[int]:
     try:
         fs_url: str = "https://www.gurufocus.com/term/rank_balancesheet/" + s + "/Financial-Strength/"
         print(fs_url)
@@ -161,22 +161,20 @@ def guru_fs(s: str, d: DictProxy={}) -> Tuple[Optional[int],Optional[str]]:
         fs_soup_items: ResultSet = fs_soup.find_all('meta', attrs={'name': 'description'})
         content: str = '' if not fs_soup_items else fs_soup_items[0].get('content')
         fs_strlist: List[str] = content.split()
-        fs: Optional[float] = None if fs_strlist[6].__len__() > 1 else readi(fs_strlist[6])
+
+        fs: Optional[float] = None if fs_strlist.__len__() < 11 else readi(fs_strlist[10][:1])
 
         if fs is not None:
             d['strength'] = fs
-        qr: Optional[str] = None if fs is None else fs_strlist[5][:-1] + fs_strlist[6][:-1]
-        #if qr is not None: # todo check later
-        #    d['qr'] = qr
 
-        print(fs, qr)
-        return fs,qr
+        print(fs)
+        return fs
     except requests.exceptions.RequestException as e:
         print('guru_fs RequestException: ', e)
-        return None, None
+        return None
     except Exception as e2:
         print('guru_fs Exception e2: ', e2)
-        return None, None
+        return None
 
 
 def guru_interest(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]]:
@@ -190,19 +188,19 @@ def guru_interest(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[flo
         content: str = '' if not interest_soup_items else interest_soup_items[0].get('content')
         interest_strlist: List[str] = content.split()
 
-        interest: Optional[float] = None if len(interest_strlist) < 7 else readf(interest_strlist[6])
-        print(interest)
-        if interest is not None:
-            d['interest'] = interest
+        interest_mil: Optional[float] = None if len(interest_strlist) < 11 else readf(interest_strlist[10])
+        print(interest_mil)
+        if interest_mil is not None:
+            d['interest_mil'] = interest_mil
 
-        interestpc: Optional[float] = None if ('cap' not in d or interest is None) \
-            else round((1000000.0 * abs(interest) / d['cap'] * 100.0), 2)
+        interestpc: Optional[float] = None if ('cap' not in d or interest_mil is None) \
+            else round((1000000.0 * abs(interest_mil) / d['cap'] * 100.0), 4)
         if interestpc is not None:
             d['interestpc'] = interestpc
 
-        print(s, interest, interestpc)
+        print(s, interest_mil, interestpc)
 
-        return interest, interestpc
+        return interest_mil, interestpc
 
     except requests.exceptions.RequestException as e:
         print('guru_interest RequestException: ', e)
@@ -210,6 +208,7 @@ def guru_interest(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[flo
     except Exception as e2:
         print('guru_interest Exception e2: ', e2)
         return None, None
+
 
 # ADI and CSX got error, no problem for status code
 def guru_lynch(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]]:
@@ -223,7 +222,8 @@ def guru_lynch(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]
         content: str = '' if not soup_items else soup_items[0].get('content')
         strlist: List[str] = content.split()
 
-        lynch: Optional[float] = None if len(strlist) < 9 else readf(strlist[8])
+        lynch: Optional[float] = None if len(strlist) < 13 else readf(strlist[12][:-1])
+
         print(lynch)
 
         if lynch is not None:
@@ -288,7 +288,7 @@ def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float
         content: str = '' if not soup_items else soup_items[0].get('content')
         strlist: List[str] = content.split()
 
-        rev: Optional[float] = None if len(strlist) < 8 else readf(strlist[7])
+        rev: Optional[float] = None if len(strlist) < 12 else readf(strlist[11][:-1])
         print('rev IS', rev)
 
         rev_soup_tables: ResultSet = soup.find_all('table')
@@ -354,7 +354,7 @@ def guru_tb(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
         return None, None
 
 
-def guru_zs(s: str, d: DictProxy={}) -> Optional[float]:
+def guru_zscore(s: str, d: DictProxy={}) -> Optional[float]:
     try:
         url: str = "https://www.gurufocus.com/term/zscore/" + s + "/Altman-Z-Score/"
         print(url)
@@ -363,22 +363,20 @@ def guru_zs(s: str, d: DictProxy={}) -> Optional[float]:
         soup_items: ResultSet = soup.find_all('meta', attrs={'name': 'description'})
         content: str = '' if not soup_items else soup_items[0].get('content')
         strlist: List[str] = content.split()
+        zscore: Optional[float] = None if len(strlist) < 11 else readf(strlist[10])
+        print(zscore)
 
-        zs: Optional[float] = None if len(strlist) < 7 else readf(strlist[6])
-        print(zs)
+        if zscore is not None:
+            d['zscore'] = zscore
 
-        if zs is not None:
-            d['zscore'] = zs
-
-        print(zs)
-        return zs
+        print(zscore)
+        return zscore
     except requests.exceptions.RequestException as e:
         print('guru_zs RequestException: ', e)
         return None
     except Exception as e2:
         print('guru_zs Exception e2: ', e2)
         return None
-
 
 
 def guru_rnd(s: str, d: DictProxy={}) -> Optional[float]:
@@ -466,7 +464,7 @@ def guru_upsert_1s(symbol: str) -> str:
         p6 = Process(target=guru_nn, args=(code, d))
         p7 = Process(target=guru_rev, args=(code, d))
         p8 = Process(target=guru_tb, args=(code, d))
-        p9 = Process(target=guru_zs, args=(code, d))
+        p9 = Process(target=guru_zscore, args=(code, d))
         p10 = Process(target=guru_rnd, args=(code, d))
         p11 = Process(target=guru_revgrowth, args=(code, d))
 
@@ -528,9 +526,22 @@ GU upserted: {d}
         p11.close()
 
 
+
+
+
+
+
+
+
+### Testing Lab ###
+
+
+
 if __name__ == '__main__':
 
-    stock = input ('which stock do you want to check? ')
-    guru_earn(stock, {})
+    stock = input('which stock do you want to check? ')
+
+    guru_zscore(stock)
+    #guru_upsert_1s(stock)
     print(default_timer())
 

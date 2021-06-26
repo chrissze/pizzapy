@@ -126,7 +126,7 @@ usstock_g_command: str = """CREATE TABLE usstock_g
      earn_per_share   FLOAT8,  
      earnpc   FLOAT8,    
      strength   INT,    
-     interest   FLOAT8,    
+     interest_mil   FLOAT8,    
      interestpc   FLOAT8,    
      rnd   FLOAT8, 
      rndpc   FLOAT8,    
