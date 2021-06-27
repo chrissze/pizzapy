@@ -421,10 +421,11 @@ def guru_revgrowth(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[f
         dfs: List[DataFrame] = [] if no_table else pandas.read_html(r.text, header=None)
         print(dfs[1])
         print('no. of dfs: ', len(dfs))
-        growth5y_str: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 2]
-        growth1y_str: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 3]
-        growth5y: Optional[float] = readf(growth5y_str)
-        growth1y: Optional[float] = readf(growth1y_str)
+        # growth5y_raw type is actually numpy.float64
+        growth5y_raw: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 2]
+        growth1y_raw: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 3]
+        growth5y: Optional[float] = readf(growth5y_raw)
+        growth1y: Optional[float] = readf(growth1y_raw)
         print(growth5y)
         print(growth1y)
 
@@ -533,13 +534,11 @@ GU upserted: {d}
 
 
 
-
-
 if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
 
-    guru_rd(stock)
+    guru_revgrowth(stock)
     #guru_upsert_1s(stock)
     print(default_timer())
 
