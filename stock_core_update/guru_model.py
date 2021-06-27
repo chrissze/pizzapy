@@ -388,29 +388,25 @@ def guru_rnd(s: str, d: DictProxy={}) -> Optional[float]:
         soup_items: ResultSet = soup.find_all('meta', attrs={'name': 'description'})
         content: str = '' if not soup_items else soup_items[0].get('content')
         strlist: List[str] = content.split()
-        print(strlist)
-        rnd: Optional[float] = None if len(strlist) < 8 else readf(strlist[7])
-        print(rnd)
+        #print(strlist)
+        rnd_mil: Optional[float] = None if len(strlist) < 12 else readf(strlist[11])
+        print(rnd_mil)
 
-        if rnd is not None:
-            d['rnd'] = rnd
-        rndpc: Optional[float] = None if ('cap' not in d or rnd is None) \
-            else round((1000000.0 * rnd / d['cap'] * 100.0), 2)
+        if rnd_mil is not None:
+            d['rnd_mil'] = rnd_mil
+        rndpc: Optional[float] = None if ('cap' not in d or rnd_mil is None) \
+            else round((1000000.0 * rnd_mil / d['cap'] * 100.0), 2)
         if rndpc is not None:
             d['rndpc'] = rndpc
 
         print(rndpc)
-        return rnd
+        return rnd_mil
     except requests.exceptions.RequestException as e:
         print('guru_rd RequestException: ', e)
         return None
     except Exception as e2:
         print('guru_rd Exception e2: ', e2)
         return None
-
-
-
-
 
 
 def guru_revgrowth(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
@@ -537,11 +533,13 @@ GU upserted: {d}
 
 
 
+
+
 if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
 
-    guru_zscore(stock)
+    guru_rd(stock)
     #guru_upsert_1s(stock)
     print(default_timer())
 

@@ -128,7 +128,7 @@ usstock_g_command: str = """CREATE TABLE usstock_g
      strength   INT,    
      interest_mil   FLOAT8,    
      interestpc   FLOAT8,    
-     rnd   FLOAT8, 
+     rnd_mil   FLOAT8, 
      rndpc   FLOAT8,    
      lynchvalue   FLOAT8,    
      lynchmove   FLOAT8,    

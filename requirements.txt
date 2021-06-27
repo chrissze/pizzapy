@@ -4,7 +4,7 @@ html5lib # for pandas
 lxml     # 
 
 pandas
-psycopg2-binary  # mac needs psycopg2, need to have postgres install on the system
+#psycopg2  # mac needs psycopg2, need to have postgres install on the system
 PySide2
 requests
 selenium
