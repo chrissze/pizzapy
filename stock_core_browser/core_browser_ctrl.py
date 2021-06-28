@@ -7,7 +7,7 @@ from pandas.core.frame import DataFrame
 from PySide2.QtWidgets import QApplication, QCheckBox ,QGridLayout, QLineEdit ,QWidget
 from PySide2.QtCore import Qt, QRegExp
 
-from shared_model.sql_model import cnx, postgres_engine
+from shared_model.sql_model import cnx
 from shared_model.st_data_model import MySortFilterProxyModel, stock_list_dict
 from stock_core_browser.core_browser_view import GuruBrowserWin
 from typing import Any, List, Tuple
@@ -63,7 +63,7 @@ class GuruBrowserDialog(GuruBrowserWin):
         q_clause: str = '' if not stocklist else ' WHERE symbol IN ' + stockliststr  # prevent empty LineEdit
         q: str = 'SELECT * FROM ' + tablename + q_clause
         print(q)
-        df: DataFrame = pandas.read_sql(sql=q, con=postgres_engine)
+        df: DataFrame = pandas.read_sql(sql=q, con=cnx)
         model: DataFrameModel = DataFrameModel(df)
         proxy: MySortFilterProxyModel = MySortFilterProxyModel(self)
         proxy.setSourceModel(model)
