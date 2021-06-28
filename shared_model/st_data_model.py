@@ -69,7 +69,7 @@ def get_sp_500() -> List[str]:
         print('getsp500 error e:', e)
         return []
     except Exception as e2:
-        print('getsp500 error e2:', e2)
+        print('get_sp_500 error e2:', e2)
         return []
 
 
@@ -102,7 +102,7 @@ def get_nasdaq_listed() -> List[str]:
         stocks: List[str] = list(df_nasdaq.iloc[:-1, 0])
         return stocks
     except Exception as e:
-        print('getnasdaq error:', e)
+        print('get_nasdaq_listed error:', e)
         return []
 
 
@@ -148,7 +148,7 @@ def get_russell_2000() -> List[str]:
         stocks = sorted(stocks_a + stocks_z)
         return stocks
     except Exception as e:
-        print('get_nasdaq_traded error:', e)
+        print('get_russell_2000 error:', e)
         return []
 
 
@@ -203,6 +203,11 @@ def stock_list_writer() -> None:
 
 
 if __name__ == '__main__':
+    #print(get_sp_500())
+    #print(get_nasdaq_100())
+    #print(get_nasdaq_listed())
+    #print(get_nasdaq_traded())
+    #print(get_option_traded())
+    #print(get_russell_2000())
     stock_list_writer()
-
     print('done')
