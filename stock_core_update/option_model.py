@@ -67,10 +67,21 @@ def option_upsert_1s(symbol: str) -> str:
             # c.execute(q, values)
             # c.close()
             # cnx.commit()
-            print(symbol, 'Upserted: ', d)
+
+            print(f"""
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            OPTION upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
+
             return symbol
         else:
-            print('no upsert: ', d)
+            print(f"""
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            NO OPTION upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
+
             return symbol
     except Exception as e:
         print(symbol, ' optionupsert1s error: ', e)

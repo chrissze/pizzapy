@@ -30,38 +30,6 @@ from timeit import default_timer
 from typing import Any, List, Optional, Tuple, Union
 
 
-def zacks_upsert_1s(symbol: str) -> str:
-    """ test USO, QQQ, AABA, ADRO, AGEN """
-    code: str = symbol.upper()
-    manager: SyncManager = Manager()
-    d: DictProxy = manager.dict()
-    d['symbol']: str = code
-    d['td']: date = get_trading_day_utc()
-    d['t']: datetime = datetime.now().replace(microsecond=0)
-    try:
-        p1: Process = Process(target=zacks_estimates, args=(code, d))
-        p2: Process = Process(target=zacks_scores, args=(code, d))
-        p1.start()
-        p2.start()
-        p1.join()
-        p2.join()
-
-
-        if 'cash_per_share' in d and 'pb' in d:
-            upsert_dict(table='usstock_z', dict=d, primarykeys=db_dict['usstock_z'].get('pk'), con=cnx)
-            print('upserted: ', d)
-        else:
-            print('no upsert: ', d)
-
-        return code
-    except Exception as e:
-        print(code, e)
-        return (f'{code} salesupdate1s Exception: {e}')
-    finally:  # To make sure processes are closed in the end, even if errors happen
-        p1.close()
-        p2.close()
-
-
 def zacks_estimates(s: str, d: DictProxy={}) -> Optional[str]:
     try:
         headers: CaseInsensitiveDict = requests.utils.default_headers()
@@ -74,8 +42,8 @@ def zacks_estimates(s: str, d: DictProxy={}) -> Optional[str]:
 
         print('no. of frames: ', len(estimates_dfs))
         print(estimates_url)
-        i = input('which dfs frame you want to view? input an integer: ')
-        print(estimates_dfs[int(i)])
+        #i = input('which dfs frame you want to view? input an integer: ')
+        #print(estimates_dfs[int(i)])
 
 
         edate_str: str = '' if low_frames else estimates_dfs[2].iloc[0, 1]
@@ -135,8 +103,8 @@ def zacks_scores(s: str, d: DictProxy={}) -> Optional[str]:
 
         low_frames: bool = len(scores_dfs) < 12
 
-        i = input('which dfs frame you want to view? input an integer: ')
-        print(scores_dfs[int(i)])
+        #i = input('which dfs frame you want to view? input an integer: ')
+        #print(scores_dfs[int(i)])
 
         # Value Growth Momentum, grading A B C D F
         vgm_str: str = '' if low_frames else scores_dfs[4].iloc[8, 1]
@@ -257,6 +225,51 @@ def zacks_scores(s: str, d: DictProxy={}) -> Optional[str]:
         print('zacks_scores Exception e2: ', e2)
         return None
 
+
+def zacks_upsert_1s(symbol: str) -> str:
+    """ test USO, QQQ, AABA, ADRO, AGEN """
+    code: str = symbol.upper()
+    manager: SyncManager = Manager()
+    d: DictProxy = manager.dict()
+    d['symbol']: str = code
+    d['td']: date = get_trading_day_utc()
+    d['t']: datetime = datetime.now().replace(microsecond=0)
+    try:
+        p1: Process = Process(target=zacks_estimates, args=(code, d))
+        p2: Process = Process(target=zacks_scores, args=(code, d))
+        p1.start()
+        p2.start()
+        p1.join()
+        p2.join()
+
+
+        print('length of ZA dict(max 24): ', len(d))
+
+        if len(d) > 3:
+            upsert_dict(table='usstock_z', dict=d, primarykeys=db_dict['usstock_z'].get('pk'), con=cnx)
+
+            print(f"""
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            ZA upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
+
+        else:
+            print(f"""
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            NO ZA upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
+
+        return code
+
+    except Exception as e:
+        print(code, e)
+        return (f'{code} ZA upsert Exception: {e}')
+
+    finally:  # To make sure processes are closed in the end, even if errors happen
+        p1.close()
+        p2.close()
 
 
 ### TESTING LAB ###

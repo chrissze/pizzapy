@@ -494,17 +494,22 @@ def guru_upsert_1s(symbol: str) -> str:
         if coco is not None:
             d['coco'] = coco
 
-        print(d)
+        print('length of GU dict (max 10): ', len(d))
 
-        if 'px' in d and 'earn_per_share' in d:
+        if len(d) > 3:
             upsert_dict(table='usstock_g', dict=d, primarykeys=db_dict['usstock_g'].get('pk'), con=cnx)
             print(f"""
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-GU upserted: {d}
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-""")
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            GU upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
         else:
-            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! no gu upsert: ', d)
+            print(f"""
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            NO GU upserted: {d}
+            @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            """)
+
         return symbol
     except Exception as e:
         print(symbol, 'guruupsert1s error: ', e)
