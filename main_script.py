@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# the script must be run in Virtual Environment so that the required packages are available.
+# the database settings is in /etc/config.json in local computer.
+
 import subprocess
 from datetime import date
 from time import sleep
@@ -52,29 +55,27 @@ def start():
 
 def manage_stocks():
     actions = {
-        '1': lambda: browse_single_st_core_1d(),
-        '2': lambda: browse_st_table_from_list(),
-        '3': lambda: update_single_st_gu(),
-        '4': lambda: update_single_st_za(),
-        '5': lambda: update_single_st_op(),
-        '6': lambda: update_single_st_core(),
-        '7': lambda: update_st_list_core(),
-        '8': lambda: update_single_st_price(),
+        '1': lambda: browse_single_st_guru(),
+        '2': lambda: browse_single_st_zacks(),
+        '3': lambda: browse_single_st_option(),
+        '5': lambda: browse_single_st_core_1d(),
+        '6': lambda: browse_st_table_from_list(),
+        '17': lambda: update_st_list_core(),
+        '18': lambda: update_single_st_price(),
 
     }
     while True:
         ans = input("""\n\n
         Which action do you want to do? 
-        1)  browse_single_st_core_1d
-        2)  browse_st_table_from_list
+        1)  browse_single_st_guru
+        2)  browse_single_st_zacks
+        3)  browse_single_st_option
+        5)  browse_single_st_core_1d
+        6)  browse_st_table_from_list
         
-        Update:
-        3)  update_single_st_gu
-        4)  update_single_st_za
-        5)  update_single_st_op
-        6)  update_single_st_core
-        7)  update_st_list_core
-        8)  update_single_st_price
+        Update:        
+        17)  update_st_list_core
+        18)  update_single_st_price
         0)  go to home screen
         Choose your action: """)
         if ans in actions:
@@ -116,6 +117,65 @@ def browse_st_table_1s(table: str) -> None:
             print('you have entered an invalid symbol')
 
 
+# option_upsert_1s
+def browse_single_st_option() -> None:
+    while True:
+        symbol: str = input('\n\nWhich symbol do you want to check (input * before the symbol to update, input 0 to quit) ?')
+        s = symbol.upper()
+        if s[:1] == '*' and s[1:] in all_stocks:
+            s = s[1:]
+            option_upsert_1s(s)
+        if symbol == '0':
+            break
+        elif s in all_stocks:
+            sql_option: str = f"SELECT * FROM usstock_option WHERE symbol = '{s}' ORDER BY t DESC;"
+            df_option: DataFrame = pd.read_sql(sql_option, con=cnx)
+            latest_option = pd.DataFrame() if df_option.empty else df_option.iloc[0]
+            print(f"""Stock Options:\n{latest_option}""")
+        else:
+            print('you have entered an invalid symbol')
+
+
+
+def browse_single_st_guru() -> None:
+    while True:
+        symbol: str = input('\n\nWhich symbol do you want to check (input * before the symbol to update, input 0 to quit) ?')
+        s = symbol.upper()
+        if s[:1] == '*' and s[1:] in all_stocks:
+            s = s[1:]
+            guru_upsert_1s(s)
+        if symbol == '0':
+            break
+        elif s in all_stocks:
+            sql_g: str = f"SELECT * FROM usstock_g WHERE symbol = '{s}' ORDER BY t DESC;"
+            df_g: DataFrame = pd.read_sql(sql_g, con=cnx)
+            latest_g = pd.DataFrame() if df_g.empty else df_g.iloc[0]
+            print(f"""Fundamentals(guru):\n{latest_g}""")
+        else:
+            print('you have entered an invalid symbol')
+
+
+
+def browse_single_st_zacks() -> None:
+    while True:
+        symbol: str = input('\n\nWhich symbol do you want to check (input * before the symbol to update, input 0 to quit) ?')
+        s = symbol.upper()
+        if s[:1] == '*' and s[1:] in all_stocks:
+            s = s[1:]
+            zacks_upsert_1s(s)
+        if symbol == '0':
+            break
+        elif s in all_stocks:
+            sql_z: str = f"SELECT * FROM usstock_z WHERE symbol = '{s}' ORDER BY t DESC;"
+            df_z: DataFrame = pd.read_sql(sql_z, con=cnx)
+            latest_z = pd.DataFrame() if df_z.empty else df_z.iloc[0]
+            print(f"""Fundamentals(zacks):\n{latest_z}""")
+        else:
+            print('you have entered an invalid symbol')
+
+
+
+
 def browse_single_st_core_1d() -> None:
     while True:
         symbol: str = input('\n\nWhich symbol do you want to check (input * before the symbol to update, input 0 to quit) ?')
@@ -154,6 +214,9 @@ Fundamentals(g):
             """)
         else:
             print('you have entered an invalid symbol')
+
+
+
 
 
 def update_st_list_core() -> None:
@@ -205,55 +268,7 @@ def update_st_list_core() -> None:
 
 
 
-def update_single_st_core() -> None:
-    while True:
-        symbol: str = input('Which stock do you want to update (input 0 to quit) ?')
-        s = symbol.upper()
-        if s == '0':
-            break
-        elif s in all_stocks:
-            guru_upsert_1s(s)
-            zacks_upsert_1s(s)
-            option_upsert_1s(s)
-        else:
-            print('you have entered an invalid symbol')
 
-
-
-def update_single_st_gu() -> None:
-    while True:
-        symbol: str = input('Which stock do you want to update (input 0 to quit) ?')
-        s = symbol.upper()
-        if s == '0':
-            break
-        elif s in all_stocks:
-            guru_upsert_1s(s)
-        else:
-            print('you have entered an invalid symbol')
-
-
-def update_single_st_za() -> None:
-    while True:
-        symbol: str = input('Which stock do you want to update (input 0 to quit) ?')
-        s = symbol.upper()
-        if s == '0':
-            break
-        elif s in all_stocks:
-            zacks_upsert_1s(s)
-        else:
-            print('you have entered an invalid symbol')
-
-
-def update_single_st_op() -> None:
-    while True:
-        symbol: str = input('Which stock do you want to update (input 0 to quit) ?')
-        s = symbol.upper()
-        if s == '0':
-            break
-        elif s in all_stocks:
-            option_upsert_1s(s)
-        else:
-            print('you have entered an invalid symbol')
 
 
 
