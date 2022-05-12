@@ -102,15 +102,15 @@ def op_yahoo(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float
     print(option_url)
     try:
         headers: CaseInsensitiveDict = requests.utils.default_headers()
-        headers['User-Agent']: str = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
+        headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36'
+        
+
         option_r: Response = requests.get(option_url, headers=headers)
 
         list1 = option_r.text.split('"')
         list2 = list(dropwhile(lambda s: s != 'expirationDates', list1))
         dates_str: str = list2[1][2:-2] if len(list2) > 1 else ''
-        
         unix_dates: List[str] = dates_str.split(',')
-        print(unix_dates)
         
         urls = [f'https://finance.yahoo.com/quote/{s}/options?date={d}' for d in unix_dates]
 
@@ -132,19 +132,16 @@ def op_yahoo(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float
         print("Put Money:", putmoney)
         return callmoney, putmoney
 
-    except requests.exceptions.RequestException as e:
-        print('opt RequestException: ', e)
+    except requests.exceptions.RequestException as e1:
+        print('op_yahoo() e1: ', e1)
         return None, None
     except Exception as e2:
-        print('opt Exception e2: ', e2)
+        print('op_yahoo() e2: ', e2)
         return None, None
     finally:  # To make sure processes are closed in the end, even if errors happen
         pool.close()
 
 
-
-
-# temporarity give an Apple stock option url to page, need to delete it later @todo
 def yahoo_calc(page: str) -> Tuple[float, float, float, float]:
     try:
         headers: CaseInsensitiveDict = requests.utils.default_headers()
@@ -189,9 +186,6 @@ def yahoo_calc(page: str) -> Tuple[float, float, float, float]:
     except Exception as e2:
          print('yahoo_calc Exception e2: ', e2, page)
          return 0.0, 0.0, 0.0, 0.0
-
-
-
 
 
 
