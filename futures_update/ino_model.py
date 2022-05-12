@@ -6,6 +6,10 @@ from dimsumpy.database.postgres import upsertquery
 from batterypy.time.cal import get_trading_day_utc
 from batterypy.time.date import is_iso_date_format
 from batterypy.string.read import formatlarge, readf, readlarge, float0
+
+
+from bs4 import BeautifulSoup
+from bs4.element import ResultSet, Tag
 from functools import partial
 from multiprocessing.managers import DictProxy, ListProxy, SyncManager
 
@@ -27,11 +31,14 @@ from selenium.webdriver.remote.webelement import WebElement
 
 
 from shared_model.fut_data_model import all_fut, Contract, fut_dict
+
+import ssl
 import time
 from timeit import default_timer
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-
+from urllib3 import PoolManager
+import urllib
 
 def ino_upsert_all() -> None:
     for f in all_fut:
@@ -101,13 +108,15 @@ def cme_oi(s: str, d: DictProxy={}) -> Optional[float]:
 
 def tradingcharts_oi(s: str, d: DictProxy={}) -> Optional[float] :
     try:
-        url: str = 'http://data.tradingcharts.com/futures/quotes/' + s + '.html'  # https will have error
+        url: str = f'https://futures.tradingcharts.com/marketquotes/{s}.html' 
         print(url)
         browser: WebDriver = webdriver.Chrome()
         browser.get(url)  # navigate to the page
         time.sleep(2)
         tbl: WebElement = browser.find_element_by_id("tblQuote") # error if no such element
         htmltext: str = '<table>' + tbl.get_attribute('innerHTML') + '</table>'
+
+        print(htmltext)
 
         cap_dfs: List[DataFrame] = pandas.read_html(htmltext, header=1)
         df: DataFrame = cap_dfs[0]
@@ -123,8 +132,9 @@ def tradingcharts_oi(s: str, d: DictProxy={}) -> Optional[float] :
         return oi
 
     except Exception as e2:
-        print('tradingcharts_oi Exception e2, switch to ycharts_oi() ', e2)
+        print('tradingcharts_oi Exception e2, could use another function ycharts_oi() ', e2)
         ycharts_oi(s, d)
+
 
 
 
@@ -132,17 +142,30 @@ def tradingcharts_oi(s: str, d: DictProxy={}) -> Optional[float] :
 
 def ycharts_oi(s: str,  d: DictProxy={}) -> Optional[float] :
     '''return the open interest in no. of contract '''
+
+    headers: CaseInsensitiveDict = requests.utils.default_headers()
+    headers['User-Agent']: str = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
     try:
         contract: Optional[Contract] = fut_dict.get(s)
-        ycharts: str = contract.get('ycharts')
-        print(ycharts)
-        cme_r: Response = requests.get(ycharts)
-        bad_status: bool = cme_r.status_code != 200
-        cme_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(cme_r.text, header=0)
-        df: DataFrame = pandas.DataFrame() if not cme_dfs else cme_dfs[0]
-        oi: Optional[float] = 1000000.0 if df.empty else readlarge(df.iloc[0, -1].__str__())
+        url: str = contract.get('ycharts')
+        print(url)
+        r: Response = requests.get(url, headers=headers)
+        bad_status: bool = r.status_code != 200
+        print('bad_status: ', bad_status, r.status_code)
+        html_text: str = r.text
+
+        soup: BeautifulSoup = BeautifulSoup(html_text, 'html.parser')
+        soup_items: ResultSet = soup.find_all('div', class_='key-stat-title')
+
+        print(soup_items)
+        
+        str_list = str(soup_items).split()
+        print(str_list)
+        oi: Optional[float] = 1000000.0 if len(str_list) < 3 else readlarge(str_list[2])
+
+        print(oi)
         if oi is not None:
-            d['oi'] = oi
+             d['oi'] = oi
 
         return oi
 
@@ -197,10 +220,26 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     return callmoney, putmoney, price
     6J got some invalid data with expiration dates missing
     '''
+    headers = {
+        'Host': 'quote.ino.com',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+    #headers: CaseInsensitiveDict = requests.utils.default_headers()
+    
+    http = PoolManager()
+    context = ssl._create_unverified_context()
+
+
     pool: Pool = Pool() # do not put into try block, as it need to be closed
     contract: Optional[Contract] = fut_dict.get(s)
     lot: Optional[float] = contract.get('lot')
     exchange: Optional[str] = contract.get('exchange')
+    
+
     if exchange == 'ICE':
         month_url: str = "https://quotes.ino.com/exchanges/contracts.html?r=" + exchange + "_@" + s
     else:
@@ -208,9 +247,21 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
 
     print(month_url)
     try:
-        month_r: Response = requests.get(month_url)
+        #month_r: Response = urllib.request.urlopen(month_url, context=context)
+        #month_r: Response = http.request('GET', month_url, context=context)
+        month_r: Response = requests.get(month_url, headers=headers, verify=True)
         bad_status: bool = month_r.status_code != 200
-        month_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(month_r.text, header=0)
+        #bad_status: bool = month_r.status != 200
+        print('bad_status: ', bad_status, month_r.status_code)
+        #print('bad_status: ', bad_status, month_r.status)
+
+        html_text: str = month_r.text
+        
+        #print(html_text)
+
+        month_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(html_text, header=0)
+        
+        print(month_dfs)
         df: DataFrame = pandas.DataFrame() if not month_dfs else month_dfs[0]
         px: Optional[float] = None if df.empty else readf(df.iloc[2, 5])
         if px is not None:
@@ -218,7 +269,8 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
 
         month_column: List[str] = [] if df.empty else list(df.iloc[2:, 0])
         months: List[str] = [ x for x in month_column if len(x) < 8] # ICE product has @
-        op_urls: List[str] = ["http://quotes.ino.com/options/?s=" + exchange + "_" + x for x in months]
+        #op_urls: List[str] = ["https://quotes.ino.com/options/?s=" + exchange + "_" + x for x in months]
+        op_urls: List[str] = [f'https://quotes.ino.com/options/?s={exchange}_{x}' for x in months]
         result: List[Tuple[float, float]] = pool.map(ino_calc, op_urls)
 
         callmoney: float = sum(cm for cm, _ in result) * lot
@@ -291,6 +343,8 @@ def ino_calc(page: str) -> Tuple[float, float]:
 
 
 if __name__ == '__main__':
+    
+    symbol = input('which symbol do you want to check? ')
 
-    ino_ratio('6E')
-
+    #ycharts_oi(symbol)
+    ino_op(symbol)
