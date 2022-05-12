@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup, ResultSet
 
 import urllib.request as request
 from batterypy.string.read import is_floatable, readf
+from datetime import date
+
 import io
 import pandas as pd
 from pandas.core.frame import DataFrame
@@ -13,8 +15,13 @@ from PySide2.QtCore import (QDate, QDateTime ,
 import requests
 from requests.models import Response
 from typing import Any, Dict, List, Set, Union
-from shared_model.stock_list import sp_500_stocks, nasdaq_100_stocks, nasdaq_traded_stocks, nasdaq_listed_stocks, \
-    option_stocks, russell_2000_stocks
+from shared_model.stock_list import russell_2000_stocks
+
+from shared_model.sp_500_stocks import sp_500_stocks
+from shared_model.nasdaq_100_stocks import nasdaq_100_stocks
+from shared_model.option_stocks import option_stocks
+from shared_model.nasdaq_listed_stocks import nasdaq_listed_stocks
+from shared_model.nasdaq_traded_stocks import nasdaq_traded_stocks
 
 
 class MySortFilterProxyModel(QSortFilterProxyModel):
@@ -173,12 +180,6 @@ stock_list_dict: Dict[str, List[str]] = {
 
 def stock_list_writer() -> None:
     file_import: str = 'from typing import Any, Dict, List'
-    nasdaq_100: List[str] = get_nasdaq_100()
-    nasdaq_100_str: str = f'# {len(nasdaq_100)} \nnasdaq_100_stocks: List[str] = {nasdaq_100}'
-    sp_500: List[str] = get_sp_500()
-    sp_500_str: str = f'# {len(sp_500)} \nsp_500_stocks: List[str] = {sp_500}'
-    option: List[str] = get_option_traded()
-    option_str: str = f'# {len(option)} \noption_stocks: List[str] = {option}'
     nasdaq_listed: List[str] = get_nasdaq_listed()
     nasdaq_listed_str: str = f'# {len(nasdaq_listed)} \nnasdaq_listed_stocks: List[str] = {nasdaq_listed}'
     nasdaq_traded: List[str] = get_nasdaq_traded()
@@ -187,9 +188,6 @@ def stock_list_writer() -> None:
     russell_2000_str: str = f'# {len(russell_2000)} \nrussell_2000_stocks: List[str] = {russell_2000}'
 
     content: str = f"""{file_import}
-{nasdaq_100_str}
-{sp_500_str}
-{option_str}
 {nasdaq_listed_str}
 {nasdaq_traded_str}
 {russell_2000_str}
@@ -202,12 +200,100 @@ def stock_list_writer() -> None:
 
 
 
+
+def nasdaq_100_writer() -> None:
+    """ get_nasdaq_100() """
+    filename = 'nasdaq_100_stocks.py'
+    nasdaq_100: List[str] = get_nasdaq_100()
+    nasdaq_100_str: str = f'nasdaq_100_stocks: List[str] = {nasdaq_100}'
+    content: str = f"""from typing import List
+# https://en.wikipedia.org/wiki/NASDAQ-100
+# auto created by nasdaq_100_writer() in st_data_model.py on {date.today()}
+# {len(nasdaq_100)}
+{nasdaq_100_str}
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f'write {filename} done')
+    return None
+
+
+
+def sp_500_writer() -> None:
+    """ get_sp_500() """
+    filename = 'sp_500_stocks.py'
+    sp_500: List[str] = get_sp_500()
+    sp_500_str: str = f'sp_500_stocks: List[str] = {sp_500}'
+    content: str = f"""from typing import List
+# https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
+# auto created by sp_500_writer() in st_data_model.py on {date.today()}
+# {len(sp_500)}
+{sp_500_str}
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f'write {filename} done')
+    return None
+
+
+def option_stocks_writer() -> None:
+    """ get_option_traded() """
+    filename = 'option_stocks.py'
+    option: List[str] = get_option_traded()
+    option_str: str = f'option_stocks: List[str] = {option}'
+    content: str = f"""from typing import List
+# auto created by option_stocks_writer() in st_data_model.py on {date.today()}
+# {len(option)}
+{option_str}
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f'write {filename} done')
+    return None
+
+
+
+
+def nasdaq_listed_writer() -> None:
+    """ get_nasdaq_listed() """
+    filename = 'nasdaq_listed_stocks.py'
+    nasdaq_listed: List[str] = get_nasdaq_listed()
+    nasdaq_listed_str: str = f'nasdaq_listed_stocks: List[str] = {nasdaq_listed}'
+    content: str = f"""from typing import List
+# ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt
+# auto created by nasdaq_listed_writer() in st_data_model.py on {date.today()}
+# {len(nasdaq_listed)}
+{nasdaq_listed_str}
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f'write {filename} done')
+    return None
+
+
+
+def nasdaq_traded_writer() -> None:
+    """ get_nasdaq_traded() """
+    filename = 'nasdaq_traded_stocks.py'
+    nasdaq_traded: List[str] = get_nasdaq_traded()
+    nasdaq_traded_str: str = f'nasdaq_traded_stocks: List[str] = {nasdaq_traded}'
+    content: str = f"""from typing import List
+# ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt
+# auto created by nasdaq_traded_writer() in st_data_model.py on {date.today()}
+# {len(nasdaq_traded)}
+{nasdaq_traded_str}
+"""
+    with open(filename, 'w') as f:
+        f.write(content)
+    print(f'write {filename} done')
+    return None
+
+
+
 if __name__ == '__main__':
-    #print(get_sp_500())
-    #print(get_nasdaq_100())
-    #print(get_nasdaq_listed())
-    #print(get_nasdaq_traded())
-    #print(get_option_traded())
-    #print(get_russell_2000())
-    stock_list_writer()
-    print('done')
+    #sp_500_writer()
+    #nasdaq_100_writer()
+    #option_stocks_writer()
+    #nasdaq_listed_writer()
+    #nasdaq_traded_writer()
+    print('All finished')
