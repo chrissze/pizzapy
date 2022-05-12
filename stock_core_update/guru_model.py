@@ -2,7 +2,7 @@
 import sys; sys.path.append('..')
 import json
 
-from itertools import dropwhile
+from itertools import dropwhile, takewhile
 from typing import Any, List, Optional, Tuple, Union
 from timeit import default_timer
 from multiprocessing.managers import DictProxy
@@ -20,6 +20,7 @@ import pandas
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
 
+import re
 import requests
 from requests.models import Response
 
@@ -278,12 +279,13 @@ def guru_nn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
         return None, None
 
 
-def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     try:
         url: str = "https://www.gurufocus.com/term/per+share+rev/" + s + "/Revenue-per-Share/"
         print(url)
         r: Response = requests.get(url)
-        soup: BeautifulSoup = BeautifulSoup(r.text, 'html.parser')
+        html_text: str = r.text
+        soup: BeautifulSoup = BeautifulSoup(html_text, 'html.parser')
         soup_items: ResultSet = soup.find_all('meta', attrs={'name': 'description'})
         content: str = '' if not soup_items else soup_items[0].get('content')
         strlist: List[str] = content.split()
@@ -296,7 +298,7 @@ def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float
         if rev is not None:
             d['rev_per_share'] = rev
 
-        rev_dfs: List[DataFrame] = [] if no_table else pandas.read_html(r.text, header=None)
+        rev_dfs: List[DataFrame] = [] if no_table else pandas.read_html(html_text, header=None)
 
         revqr_str: Any = '' if no_table or len(rev_dfs) < 3 or rev_dfs[2].empty else rev_dfs[2].iloc[-1, -1]
         print('revqr_str IS', revqr_str)
@@ -312,15 +314,28 @@ def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float
         if revpc is not None:
             d['revpc'] = revpc
 
-        print(rev, revqr, rev4q, revpc)
-        return rev, revqr, rev4q, revpc
+        strlist1: List[str] = re.split('[<>%]+', html_text)
+        strlist2: List[str] = list(dropwhile(lambda x: x != 'past 12 months', strlist1))
+        strlist3: List[str] = strlist2[:40]
+        growth_list: list[str] = list(filter(lambda x: readf(x), strlist3)) # growth strings of 1,3,5,10 years
+        growth1y: Optional[float] = None if len(growth_list) < 1 else readf(growth_list[0])
+        growth5y: Optional[float] = None if len(growth_list) < 3 else readf(growth_list[2])
+
+
+        if growth1y is not None:
+            d['growth1y'] = growth1y
+        if growth5y is not None:
+            d['growth5y'] = growth5y
+
+        print(rev, revqr, rev4q, revpc, growth1y, growth5y)
+        return rev, revqr, rev4q, revpc, growth1y, growth5y
 
     except requests.exceptions.RequestException as e:
         print('guru_rev RequestException: ', e)
-        return None, None, None, None
+        return None, None, None, None, None, None
     except Exception as e2:
         print('guru_rev Exception e2: ', e2)
-        return None, None, None, None
+        return None, None, None, None, None, None
 
 
 
@@ -409,40 +424,6 @@ def guru_rnd(s: str, d: DictProxy={}) -> Optional[float]:
         return None
 
 
-def guru_revgrowth(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
-    try:
-        url: str = f"https://www.gurufocus.com/financials/{s}"
-
-        r: Response = requests.get(url)
-        soup: BeautifulSoup = BeautifulSoup(r.text, 'html.parser')
-        soup_tables: ResultSet = soup.find_all('table')
-        no_table: bool = len(soup_tables) == 0
-
-        dfs: List[DataFrame] = [] if no_table else pandas.read_html(r.text, header=None)
-        print(dfs[1])
-        print('no. of dfs: ', len(dfs))
-        # growth5y_raw type is actually numpy.float64
-        growth5y_raw: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 2]
-        growth1y_raw: Any = '' if no_table or len(dfs) < 3 or dfs[1].empty else dfs[1].iloc[0, 3]
-        growth5y: Optional[float] = readf(growth5y_raw)
-        growth1y: Optional[float] = readf(growth1y_raw)
-        print(growth5y)
-        print(growth1y)
-
-        if growth5y is not None:
-            d['growth5y'] = growth5y
-
-        if growth1y is not None:
-            d['growth1y'] = growth1y
-
-        return growth5y, growth1y
-    except requests.exceptions.RequestException as e:
-        print('revgrowth RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('revgrowth Exception e2: ', e2)
-        return None, None
-
 
 def guru_upsert_1s(symbol: str) -> str:
     code = symbol.upper()
@@ -463,7 +444,6 @@ def guru_upsert_1s(symbol: str) -> str:
         p8 = Process(target=guru_tb, args=(code, d))
         p9 = Process(target=guru_zscore, args=(code, d))
         p10 = Process(target=guru_rnd, args=(code, d))
-        p11 = Process(target=guru_revgrowth, args=(code, d))
 
         p1.start()
         p2.start()
@@ -475,7 +455,6 @@ def guru_upsert_1s(symbol: str) -> str:
         p8.start()
         p9.start()
         p10.start()
-        p11.start()
 
         p1.join()
         p2.join()
@@ -487,7 +466,6 @@ def guru_upsert_1s(symbol: str) -> str:
         p8.join()
         p9.join()
         p10.join()
-        p11.join()
 
         coco: Optional[float] = None if not all(key in d for key in ['earnpc', 'net_capital_pc', 'tbookpc']) \
             else round((d['earnpc'] * 5.0 + d['net_capital_pc'] + d['tbookpc']), 2)
@@ -525,17 +503,12 @@ def guru_upsert_1s(symbol: str) -> str:
         p8.close()
         p9.close()
         p10.close()
-        p11.close()
 
 
 
 
 
 
-
-
-
-### Testing Lab ###
 
 
 
@@ -543,7 +516,7 @@ if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
 
-    guru_revgrowth(stock)
+    guru_rev(stock)
     #guru_upsert_1s(stock)
     print(default_timer())
 
