@@ -1,5 +1,8 @@
 import sys; sys.path.append('..')
 
+from bs4 import BeautifulSoup
+from bs4.element import ResultSet, Tag
+
 from datetime import date, datetime
 
 from dimsumpy.database.postgres import upsertquery
@@ -8,8 +11,6 @@ from batterypy.time.date import is_iso_date_format
 from batterypy.string.read import formatlarge, readf, readlarge, float0
 
 
-from bs4 import BeautifulSoup
-from bs4.element import ResultSet, Tag
 from functools import partial
 from multiprocessing.managers import DictProxy, ListProxy, SyncManager
 
@@ -26,12 +27,9 @@ from requests.models import Response
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-
-# from shared_model.sqlmodel import cnx, cur  # the postgres server must running
-
-
 from shared_model.fut_data_model import all_fut, Contract, fut_dict
 
+# from shared_model.sqlmodel import cnx, cur  # the postgres server must running
 import ssl
 import time
 from timeit import default_timer
@@ -230,7 +228,7 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     }
     #headers: CaseInsensitiveDict = requests.utils.default_headers()
     
-    http = PoolManager()
+    #http = PoolManager()
     context = ssl._create_unverified_context()
 
 
@@ -243,13 +241,15 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     if exchange == 'ICE':
         month_url: str = "https://quotes.ino.com/exchanges/contracts.html?r=" + exchange + "_@" + s
     else:
-        month_url: str = "https://quotes.ino.com/exchanges/contracts.html?r=" + exchange + "_" + s
+        #month_url: str = "https://quotes.ino.com/exchanges/contracts.html?r=" + exchange + "_" + s
+        month_url: str = f"https://www.ino.com"
 
     print(month_url)
     try:
+        http = PoolManager(ssl_minimum_version=ssl.TLSVersion.TLSv1)
         #month_r: Response = urllib.request.urlopen(month_url, context=context)
         #month_r: Response = http.request('GET', month_url, context=context)
-        month_r: Response = requests.get(month_url, headers=headers, verify=True)
+        month_r: Response = requests.get(month_url, verify=False)
         bad_status: bool = month_r.status_code != 200
         #bad_status: bool = month_r.status != 200
         print('bad_status: ', bad_status, month_r.status_code)

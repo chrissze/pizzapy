@@ -263,5 +263,5 @@ def test_postgres_server() -> None:
     print(df)
 
 if __name__ == '__main__':
-    print(usstock_price_command)
+    test_postgres_server()
     print('done')
