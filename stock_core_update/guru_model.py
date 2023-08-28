@@ -37,10 +37,15 @@ from shared_model.sql_model import cnx, db_dict  # the postgres server must runn
 from shared_model.st_data_model import stock_list_dict
 
 
-def bar_cap(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] :
+def bar_cap(symbol: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] :
+    '''
+    In barchart.com, the market cap is shown in $k for both large cap like Apple and small cap like GME (GameStop)
+
+
+    '''
     headers = {'User-Agent': 'Safari/13.1.1'}
     try:
-        url: str = "https://www.barchart.com/stocks/quotes/" + s
+        url: str = "https://www.barchart.com/stocks/quotes/" + symbol
         print(url)
         r: Response = requests.get(url, headers=headers)
         #req = Request(url=url, headers=headers)
@@ -78,11 +83,11 @@ def bar_cap(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] 
             print(px, cap, d['capstr'])
         return px, cap
 
-    except requests.exceptions.RequestException as e:
-        print('bar_cap RequestException: ', e)
+    except requests.exceptions.RequestException as requests_error:
+        print('bar_cap RequestException: ', requests_error)
         return None, None
-    except Exception as e2:
-        print('bar_cap Exception e2: ', e2)
+    except Exception as error:
+        print('bar_cap Exception: ', error)
         return None, None
 
 
@@ -515,8 +520,8 @@ def guru_upsert_1s(symbol: str) -> str:
 if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
-
-    guru_rev(stock)
+    bar_cap(stock)
+    #guru_rev(stock)
     #guru_upsert_1s(stock)
     print(default_timer())
 

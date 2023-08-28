@@ -1,14 +1,15 @@
+
+
 beautifulsoup4
 certifi  # for urllib barchart web
 html5lib # for pandas 
-lxml     # 
+#lxml     # failed to build lxml in mac mini
 
 pandas
-#psycopg2  # mac needs psycopg2, need to have postgres install on the system
-PySide2
+psycopg[binary, pool]
+#PySide2
 requests
 selenium
 sqlalchemy
+
 wheel
-
-
