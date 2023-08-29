@@ -1,0 +1,39 @@
+#########################
+# PIZZAPY DOCUMENTATION #
+#########################
+
+
+CONTENTS
+
+
+
+
+
+SECTION: STRUCTURE
+
+
+
+
+
+
+
+SECTION: FOLDER STRUCTURE AND IMPORT
+------------------------------------
+This program has a 2-layer folder structure. The parent folder 'pizzapy' has the following files
+    .gitignore
+    __init__.py             
+    main.py
+    main_script.py
+    requirements.txt
+    documentation.txt
+
+
+SECTION: CUSTOM LIBRARIES
+--------------------------
+I have custom libraries like batterypy and dimsumpy, in order to use them, they must be at sys.path, so that python programs can import them. site-packages folder is in sys.path (search path), so I must put the custom libraries into site-packages, or create symlinks in site-packages to point to the custom libraries.
+
+Sometimes, if I need to use modules in the same program, I need to append parent program folder to the sys.path.
+
+    import sys; sys.path.append('..')
+
+
