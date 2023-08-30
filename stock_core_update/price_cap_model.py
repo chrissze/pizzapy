@@ -10,7 +10,8 @@ from typing import Any, Dict, List, Optional, Tuple
 # THIRD PARTY LIBRARIES
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
-
+import pandas
+from pandas.core.frame import DataFrame
 import requests
 from requests.models import Response
 
@@ -20,15 +21,28 @@ from batterypy.string.json import extract_nested_values
 from batterypy.string.read import formatlarge, readf
 
 
+safari_headers: Dict[str, str] = {'User-Agent': 'Safari/13.1.1'}
 
 def get_html_soup(url: str) -> BeautifulSoup :
     ''' INDEPENDENT
-    requires 3rd party libs: beautifulsoup4 requests
+    requires: beautifulsoup4, requests
     '''
-    headers: Dict[str, str] = {'User-Agent': 'Safari/13.1.1'}
-    html_response: Response = requests.get(url, headers=headers)
+    html_response: Response = requests.get(url, headers=safari_headers)
     soup: BeautifulSoup = BeautifulSoup(html_response.text, 'html.parser')
     return soup
+
+
+def get_html_dataframes(url: str) -> List[DataFrame]:
+    '''INDEPENDENT
+    requires: beautifulsoup4, pandas, requests
+    '''
+    html_response: Response = requests.get(url, headers=safari_headers)
+    soup: BeautifulSoup = BeautifulSoup(html_response.text, 'html.parser')
+    soup_tables: ResultSet = soup.find_all('table')
+    no_table: bool = len(soup_tables) == 0
+    dataframes: List[DataFrame] = [] if no_table else pandas.read_html(html_response.text, header=0)
+    return dataframes
+
 
 
 def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
@@ -42,8 +56,8 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
         json_cap_pretty: str = json.dumps(json_cap, indent=2)
 
     '''
-    barchart_quotes_url: str = "https://www.barchart.com/stocks/quotes/"
-    soup = get_html_soup(barchart_quotes_url + symbol)
+    barchart_quotes_url: str = f'https://www.barchart.com/stocks/quotes/{symbol}'
+    soup = get_html_soup(barchart_quotes_url)
     soup_items: ResultSet = soup.find('div', attrs={'data-ng-controller': 'symbolHeaderCtrl'})
     item: str = soup_items.get('data-ng-init')
     json_price: Dict[str, Any] = json.loads(item[5:-1])

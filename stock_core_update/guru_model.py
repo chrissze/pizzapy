@@ -38,143 +38,11 @@ from shared_model.st_data_model import stock_list_dict
 
 
 
-def get_barchart_marketcap(symbol: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] :
-    '''
-    requires standard libs: json, multiprocessing, typing
-    requires 3rd party libs: beautifulsoup4, pandas, requests,
-    requires custom libs: batterypy
-        
-    I can use this function to display the marketcap dictionary in formatted string:
-        json_cap_pretty: str = json.dumps(json_cap, indent=2)
-
-    '''
-    headers: Dict[str, str] = {'User-Agent': 'Safari/13.1.1'}
-    try:
-        url: str = "https://www.barchart.com/stocks/quotes/" + symbol
-        html_response: Response = requests.get(url, headers=headers)
-        soup: BeautifulSoup = BeautifulSoup(html_response.text, 'html.parser')
-        soup_items: ResultSet = soup.find('div', attrs={'data-ng-controller': 'symbolHeaderCtrl'})
-        item: str = soup_items.get('data-ng-init')
-
-        json_price: Dict[str, Any] = json.loads(item[5:-1])
-
-        price: Optional[float] = readf(json_price.get('lastPrice'))
-        if price is not None:
-            d['price'] = price
-        
-        cap_soup_items: ResultSet = soup.find('script', id='bc-dynamic-config')
-        json_cap: Dict[str, Any] = json.loads(cap_soup_items.string)
-        
-        marketcaps: List[Any] = extract_nested_values(json_cap, 'marketCap')
-        cap: Optional[float] = None if len(marketcaps) < 3 else readf(marketcaps[2])
-
-        if cap is not None:
-            d['cap'] = cap
-            d['capstr']: str = formatlarge(cap)
-            print(price, cap, d['capstr'])
-        return price, cap
-        
-
-    except requests.exceptions.RequestException as requests_error:
-        print('bar_cap RequestException: ', requests_error)
-        return None, None
-    except Exception as error:
-        print('bar_cap Exception: ', error)
-        return None, None
-
-
-
-
-def guru_debt(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
-    """ TTWO debt is 0.00 with tables, take two's debt is really 0.00
-        USO is also 0.00 without table
-    """
-    try:
-        debt_url: str = "https://www.gurufocus.com/term/Total_Debt_Per_Share/" + s + "/Total-Debt-per-Share/"
-        print(debt_url) ##
-        debt_r: Response = requests.get(debt_url)
-        debt_soup: BeautifulSoup = BeautifulSoup(debt_r.text, 'html.parser')
-        debt_soup_tables: ResultSet = debt_soup.find_all('table')
-        no_table: bool = len(debt_soup_tables) == 0
-
-        debt_dfs: List[DataFrame] = [] if no_table else pandas.read_html(debt_r.text, header=0)
-        debt_str: Any = '' if no_table or len(debt_dfs) < 3 or debt_dfs[2].empty else debt_dfs[2].iloc[-1, -1] # can be str or float64 type
-        # valid_type: bool = isinstance(debt_str, float64) or (isinstance(debt_str, str) and '.' in debt_str and len(debt_str) < 9)
-        debt: Optional[float] = readf(debt_str)
-        if debt is not None:
-            d['debt_per_share'] = debt
-
-        debtpc: Optional[float] = None if ('px' not in d or debt is None) else round((debt / d['px'] * 100.0), 2)
-        if debtpc is not None:
-            d['debtpc'] = debtpc
-
-        print(debt, debtpc)
-        return debt, debtpc
-
-    except requests.exceptions.RequestException as e:
-        print('guru_debt RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('guru_debt Exception e2: ', e2)
-        return None, None
-
-
-def guru_earn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
-    try:
-        earn_url: str = "https://www.gurufocus.com/term/eps_nri/" + s + "/EPS-without-NRI/"
-        print(earn_url)
-        earn_r: Response = requests.get(earn_url)
-        earn_soup: BeautifulSoup = BeautifulSoup(earn_r.text, 'html.parser')
-
-        earn_soup_items: ResultSet = earn_soup.find_all('meta', attrs={'name': 'description'})
-        content: str = '' if not earn_soup_items else earn_soup_items[0].get('content')
-
-        earn_strlist: List[str] = content.split()
-        earn_strlist2: List[str] = list(filter(lambda x: '$' in x, earn_strlist))
-        earn: Optional[float] = readf(earn_strlist2[0][:-1]) if earn_strlist2 else None
-
-        # ^ string will be 0.00 even if the symbol is invalid, string have a suffix dot.
-        if earn is not None:
-            d['earn_per_share'] = earn
-        print('earn:', earn, d)
-        earnpc: Optional[float] = None if ('px' not in d or earn is None) else round((earn / d['px'] * 100.0), 2)
-        if earnpc is not None:
-            d['earnpc'] = earnpc
-
-        print('earnpc:', earnpc)
-        return earn, earnpc
-    except requests.exceptions.RequestException as e:
-        print('guru_earn RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('guru_earn Exception e2: ', e2)
-        return None, None
-
-
-def guru_fs(s: str, d: DictProxy={}) -> Optional[int]:
-    try:
-        fs_url: str = "https://www.gurufocus.com/term/rank_balancesheet/" + s + "/Financial-Strength/"
-        print(fs_url)
-        fs_r: Response = requests.get(fs_url)
-        fs_soup: BeautifulSoup = BeautifulSoup(fs_r.text, 'html.parser')
-
-        fs_soup_items: ResultSet = fs_soup.find_all('meta', attrs={'name': 'description'})
-        content: str = '' if not fs_soup_items else fs_soup_items[0].get('content')
-        fs_strlist: List[str] = content.split()
-
-        fs: Optional[float] = None if fs_strlist.__len__() < 11 else readi(fs_strlist[10][:1])
-
-        if fs is not None:
-            d['strength'] = fs
-
-        print(fs)
-        return fs
-    except requests.exceptions.RequestException as e:
-        print('guru_fs RequestException: ', e)
-        return None
-    except Exception as e2:
-        print('guru_fs Exception e2: ', e2)
-        return None
+# PROGRAM MODULES
+from price_cap_model import proxy_price_cap
+from guru_debt_model import proxy_guru_debt
+from guru_earn_model import proxy_guru_earn
+from guru_strength_model import proxy_guru_strength
 
 
 def guru_interest(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]]:
@@ -425,24 +293,24 @@ def guru_rnd(s: str, d: DictProxy={}) -> Optional[float]:
 
 
 def guru_upsert_1s(symbol: str) -> str:
-    code = symbol.upper()
+    SYMBOL: str = symbol.upper()
     manager = Manager()
     d = manager.dict()
-    d['symbol'] = code
+    d['symbol'] = SYMBOL
     d['td'] = get_trading_day_utc()
     d['t'] = datetime.now().replace(microsecond=0)
     try:
-        bar_cap(code, d)
-        p1 = Process(target=guru_debt, args=(code, d))
-        p2 = Process(target=guru_earn, args=(code, d))
-        p3 = Process(target=guru_fs, args=(code, d))
-        p4 = Process(target=guru_interest, args=(code, d))
-        p5 = Process(target=guru_lynch, args=(code, d))
-        p6 = Process(target=guru_nn, args=(code, d))
-        p7 = Process(target=guru_rev, args=(code, d))
-        p8 = Process(target=guru_tb, args=(code, d))
-        p9 = Process(target=guru_zscore, args=(code, d))
-        p10 = Process(target=guru_rnd, args=(code, d))
+        proxy_price_cap(SYMBOL, d)
+        p1 = Process(target=proxy_guru_debt, args=(SYMBOL, d))
+        p2 = Process(target=proxy_guru_earn, args=(SYMBOL, d))
+        p3 = Process(target=proxy_guru_strength, args=(SYMBOL, d))
+        p4 = Process(target=guru_interest, args=(SYMBOL, d))
+        p5 = Process(target=guru_lynch, args=(SYMBOL, d))
+        p6 = Process(target=guru_nn, args=(SYMBOL, d))
+        p7 = Process(target=guru_rev, args=(SYMBOL, d))
+        p8 = Process(target=guru_tb, args=(SYMBOL, d))
+        p9 = Process(target=guru_zscore, args=(SYMBOL, d))
+        p10 = Process(target=guru_rnd, args=(SYMBOL, d))
 
         p1.start()
         p2.start()

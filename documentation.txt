@@ -84,6 +84,15 @@ SECTION: requirements.txt
         # DOCS: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
         # the BeautifulSoup (ver3) package is the old libray
 
+    
+
+    lxml
+        # lxml==4.9
+        # will install: lxml
+        # pandas requires lxml to parse HTML documents, when I install pandas, pandas will not automatically install lxml.
+        # NOTE: I have successufully installed lxml on mac mini m1 by just put 'lxml' in requirements.txt, and it installed 4.9.3; before I installed lxml by pip, I edit /etc/paths and put /opt/homebrew/opt/llvm/bin/ at the top, so it use homebrew clang compiler. In addition, before I pip install lxml, I also use brew to install libxml2, but I am not sure whether libxml2 helps pip install lxml.
+    
+
     pandas
         # pandas==2.0
         # will install: pandas, numpy, python-dateutil, pytz, six, tzdata
@@ -110,7 +119,7 @@ SECTION: requirements.txt
 
     requests
         # requests==2.31
-        # will install: requests, charset-normalizer, idna, urllib3
+        # will install: requests, certifi, charset-normalizer, idna, urllib3
         # version 2.31.0 in 2023 AUG
         # https://pypi.org/project/requests/
         # DOCS: https://requests.readthedocs.io/en/latest/
@@ -142,6 +151,13 @@ Currently working on barchart.com marketcap on guru_model.py
 
 MODULE: price_cap_model.py
 ----------------------------
+PACKAGE: stock_core_update
+
 This module does NOT depend on other program modules. It is to fetch current price and market cap from barchart.com
+
+guru_model.py depends on price_cap_model.py to get price and cap.
+
+
+
 
 
