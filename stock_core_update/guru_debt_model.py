@@ -16,7 +16,7 @@ import requests
 from batterypy.string.read import readf
 
 # PROGRAM MODULES
-from price_cap_model import get_html_dataframes
+from price_cap_model import get_html_dataframes, proxy_price_cap
 
 
 def get_guru_debt_per_share(symbol: str) -> Optional[float]:
@@ -54,18 +54,19 @@ def tryget_guru_debt_per_share(symbol: str) -> Optional[float]:
 
 
 
-def proxy_guru_debt(symbol: str, d: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_debt_per_share > get_guru_debt_per_share'''
+def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
+    '''
+    DEPENDS: tryget_guru_debt_per_share > get_guru_debt_per_share
+    tryget_guru_debt_per_share() can be changed to get_guru_debt_per_share()
+    '''
     debt_per_share: Optional[float]  = tryget_guru_debt_per_share(symbol)
-    debtpc: Optional[float] = None if ('price' not in d or debt_per_share is None) else round((debt_per_share / d['price'] * 100.0), 2)
-
     if debt_per_share is not None:
-        d['debt_per_share'] = debt_per_share
+        proxy['debt_per_share'] = debt_per_share
 
+    debtpc: Optional[float] = None if ('price' not in proxy or debt_per_share is None) else round((debt_per_share / proxy['price'] * 100.0), 2)
     if debtpc is not None:
-        d['debtpc'] = debtpc
-
-    return d
+        proxy['debtpc'] = debtpc
+    return proxy
 
 
 
@@ -73,6 +74,7 @@ def proxy_guru_debt(symbol: str, d: DictProxy={}) -> DictProxy:
 if __name__ == '__main__':
     
     stock = input('which stock do you want to check? ')
-    x = get_guru_debt_per_share(stock)
+    proxy = proxy_price_cap(stock)
+    x = proxy_guru_debt(stock, proxy=proxy)
     print(x)
     

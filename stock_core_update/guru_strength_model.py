@@ -16,7 +16,7 @@ import requests
 from batterypy.string.read import readf
 
 # PROGRAM MODULES
-from price_cap_model import get_html_soup
+from price_cap_model import get_html_soup, proxy_price_cap
 
 
 def get_guru_strength(symbol: str) -> Optional[float]:
@@ -50,12 +50,12 @@ def tryget_guru_strength(symbol: str) -> Optional[float]:
 
 
 
-def proxy_guru_strength(symbol: str, d: DictProxy={}) -> DictProxy:
+def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_guru_strength > get_guru_strength'''
-    strength: Optional[float]  = tryget_guru_strength(symbol)
+    strength: Optional[float] = tryget_guru_strength(symbol)
     if strength is not None:
-        d['strength'] = strength
-    return d
+        proxy['strength'] = strength
+    return proxy
 
 
 
@@ -63,6 +63,7 @@ def proxy_guru_strength(symbol: str, d: DictProxy={}) -> DictProxy:
 if __name__ == '__main__':
     
     stock = input('which stock do you want to check? ')
-    x = get_guru_strength(stock)
+    proxy = proxy_price_cap(stock)
+    x = proxy_guru_strength(stock, proxy=proxy)
     print(x)
     

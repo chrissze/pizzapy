@@ -20,7 +20,7 @@ import requests
 from batterypy.string.read import readf
 
 # PROGRAM MODULES
-from price_cap_model import get_html_soup
+from price_cap_model import get_html_soup, proxy_price_cap
 
 
 
@@ -57,16 +57,17 @@ def tryget_guru_earn_per_share(symbol: str) -> Optional[float]:
 
 
 
-def proxy_guru_earn(symbol: str, d: DictProxy={}) -> DictProxy:
+def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_guru_earn_per_share > get_guru_earn_per_share'''
     earn_per_share: Optional[float]  = tryget_guru_earn_per_share(symbol)
-    earnpc: Optional[float] = None if ('price' not in d or earn_per_share is None) else round((earn_per_share / d['price'] * 100.0), 2)
-
     if earn_per_share is not None:
-        d['earn_per_share'] = earn_per_share
+        proxy['earn_per_share'] = earn_per_share
+    
+    earnpc: Optional[float] = None if ('price' not in proxy or earn_per_share is None) \
+        else round((earn_per_share / proxy['price'] * 100.0), 2)
     if earnpc is not None:
-        d['earnpc'] = earnpc
-    return d
+        proxy['earnpc'] = earnpc
+    return proxy
 
 
 
@@ -74,6 +75,7 @@ def proxy_guru_earn(symbol: str, d: DictProxy={}) -> DictProxy:
 if __name__ == '__main__':
     
     stock = input('which stock do you want to check? ')
-    x = get_guru_earn_per_share(stock)
+    proxy = proxy_price_cap(stock)
+    x = proxy_guru_earn(stock, proxy=proxy)
     print(x)
     

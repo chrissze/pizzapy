@@ -46,34 +46,6 @@ from guru_lynch_model import proxy_guru_lynch
 from guru_strength_model import proxy_guru_strength
 
 
-def guru_nn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
-    try:
-        nn_url: str = "https://www.gurufocus.com/term/NCAV/" + s + "/Net-Net-Working-Capital/"
-        nn_r: Response = requests.get(nn_url)
-
-        nn_soup: BeautifulSoup = BeautifulSoup(nn_r.text, 'html.parser')
-        nn_soup_tables: ResultSet = nn_soup.find_all('table')
-        no_table: bool = len(nn_soup_tables) == 0
-
-        nn_dfs: List[DataFrame] = [] if no_table else pandas.read_html(nn_r.text, header=None)
-        nn_str: Any = '' if no_table or len(nn_dfs) < 3 or nn_dfs[2].empty else nn_dfs[2].iloc[-1, -1]
-        nn: Optional[float] = readf(nn_str)
-        if nn is not None:
-            d['net_capital'] = nn
-
-        nnpc: Optional[float] = None if ('px' not in d or nn is None) else round((nn / d['px'] * 100.0), 2)
-        if nnpc is not None:
-            d['net_capital_pc'] = nnpc
-        print(nn_url)
-        print(nn, nnpc)
-        return nn, nnpc
-    except requests.exceptions.RequestException as e:
-        print('guru_nn RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('guru_nn Exception e2: ', e2)
-        return None, None
-
 
 def guru_rev(s: str, d: DictProxy = {}) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     try:

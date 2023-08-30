@@ -15,7 +15,7 @@ import requests
 from batterypy.string.read import readf
 
 # PROGRAM MODULES
-from price_cap_model import get_html_soup
+from price_cap_model import get_html_soup, proxy_price_cap
 
 
 
@@ -49,23 +49,23 @@ def tryget_guru_interest(symbol: str) -> Optional[float]:
 
 
 
-def proxy_guru_interest(symbol: str, d: DictProxy={}) -> DictProxy:
+def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_guru_interest > get_guru_interest'''
     interest: Optional[float]  = tryget_guru_interest(symbol)
     if interest is not None:
-        d['interest'] = interest
+        proxy['interest'] = interest
 
-    interestpc: Optional[float] = None if ('cap' not in d or interest is None) \
-        else round((interest / d['cap'] * 100.0), 4)
-    
+    interestpc: Optional[float] = None if ('cap' not in proxy or interest is None) \
+        else round((interest / proxy['cap'] * 100.0), 4)
     if interestpc is not None:
-            d['interestpc'] = interestpc
-    return d
+        proxy['interestpc'] = interestpc
+    return proxy
 
 
 if __name__ == '__main__':
     
     stock = input('which stock do you want to check interest? ')
+    proxy = proxy_price_cap(stock)
     x = proxy_guru_interest(stock)
     print(x)
     
