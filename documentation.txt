@@ -30,11 +30,24 @@ This program has a 2-layer folder structure. The parent folder 'pizzapy' has the
 
 SECTION: CUSTOM LIBRARIES
 --------------------------
-I have custom libraries like batterypy and dimsumpy, in order to use them, they must be at sys.path, so that python programs can import them. site-packages folder is in sys.path (search path), so I must put the custom libraries into site-packages, or create symlinks in site-packages to point to the custom libraries.
+    I have custom libraries like batterypy and dimsumpy, in order to use them, they must be at sys.path, so that python programs can import them. site-packages folder is in sys.path (search path), so I must put the custom libraries into site-packages, or create symlinks in site-packages to point to the custom libraries.
 
-Sometimes, if I need to use modules in the same program, I need to append parent program folder to the sys.path.
+    Sometimes, if I need to use modules in the same program, I need to append parent program folder to the sys.path.
 
-    import sys; sys.path.append('..')
+        import sys; sys.path.append('..')
+
+    I better keep this program to only 2-layer folder structure to simplify the imports.
+
+    Install custom libraries in virtual environment's site-packages folder:
+
+        step 1: go to site-packages folder
+        /Users/chris/github/pizzapy/venv/lib/python3.11/site-packages
+
+        step 2: create symlinks
+        ln -s ~/github/batterypy batterypy
+        ln -s ~/github/dimsumpy dimsumpy
+
+
 
 SECTION: IMPORT
 ------------------
@@ -53,7 +66,82 @@ Inside subfolder's modules like module1.py, I should not use relative imports be
 
 In main.py and test.py, I do not need to have above sys.path line.
 
+SECTION: requirements.txt
+---------------------------
+
+    VIRTUAL ENVIRONMENT:
+        # will install: pip, setuptools
+        # command to create virtual environment: 
+        # alias pv='python3 -m venv venv && source venv/bin/activate && pip3 install --upgrade pip && which python3 && python3 -V &&  pip3 -V &&  pip3 list'
+        # /Users/chris/github/pizzapy/venv/lib/python3.11/site-packages
 
 
+    beautifulsoup4
+        # beautifulsoup4==4.12
+        # will install: beautifulsoup4, soupsieve
+        # version 4.12.2 in 2023 AUG; 4 is the major version, 12 is the minor version, 2 is the patch version, it should be compatible for minor version updates like 4.13, 4.14
+        # https://pypi.org/project/beautifulsoup4/
+        # DOCS: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+        # the BeautifulSoup (ver3) package is the old libray
+
+    pandas
+        # pandas==2.0
+        # will install: pandas, numpy, python-dateutil, pytz, six, tzdata
+        # version 2.0.3 in 2023 AUG
+        # https://pypi.org/project/pandas/
+        # DOCS: https://pandas.pydata.org/docs/
+
+    psycopg[binary, pool]
+        # psycopg[binary, pool]   # if I sepecify the version, it cannot be installed
+        # will install: psycopg, psycopg-binary, psycopg-pool, typing_extensions
+        # version 3.1.10 for binary and 3.1.7 for pool in 2023 AUG
+        # after I install psycopg[binary, pool], 'psycopg', 'psycopg-binary' and 'psycopg-pool' were installed
+        # https://pypi.org/project/psycopg-binary/
+        # DOCS: https://www.psycopg.org/psycopg3/docs/
+
+    PySide6
+        # PySide6==6.5
+        # will install: PySide6, PySide6-Addons, PySide6-Essentials, shiboken6
+        # version 6.5.2 in 2023 AUG
+        # https://pypi.org/project/PySide6/
+        # DOCS: https://doc.qt.io/qtforpython-6/
+        # homepgae: https://wiki.qt.io/Qt_for_Python
+
+
+    requests
+        # requests==2.31
+        # will install: requests, charset-normalizer, idna, urllib3
+        # version 2.31.0 in 2023 AUG
+        # https://pypi.org/project/requests/
+        # DOCS: https://requests.readthedocs.io/en/latest/
+
+
+
+SECTION: TIMER
+------------------
+I can use timeit package from the Standard Library to record the execution time in seconds:
+
+from timeit import default_timer
+
+if __name__ == '__main__':
+    start: float = default_timer()
+    print("Run some IO operations")
+    print('elapsed time in seconds:', default_timer() - start)
+
+
+
+
+
+SECTION: TEMP
+----------------
+Currently working on barchart.com marketcap on guru_model.py
+
+
+
+
+
+MODULE: price_cap_model.py
+----------------------------
+This module does NOT depend on other program modules. It is to fetch current price and market cap from barchart.com
 
 

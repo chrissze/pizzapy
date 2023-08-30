@@ -1,15 +1,24 @@
 
 
-beautifulsoup4
-certifi  # for urllib barchart web
-html5lib # for pandas 
-#lxml     # failed to build lxml in mac mini
 
-pandas
+
+beautifulsoup4==4.12
+
+pandas==2.0
+
 psycopg[binary, pool]
-#PySide2
-requests
-selenium
-sqlalchemy
 
-wheel
+PySide6==6.5
+
+requests==2.31
+
+
+# certifi  # for urllib barchart web
+# html5lib # for pandas 
+# #lxml     # failed to build lxml in mac mini
+
+
+# selenium
+# sqlalchemy
+
+# wheel

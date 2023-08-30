@@ -37,51 +37,43 @@ from shared_model.sql_model import cnx, db_dict  # the postgres server must runn
 from shared_model.st_data_model import stock_list_dict
 
 
-def bar_cap(symbol: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] :
-    '''
-    In barchart.com, the market cap is shown in $k for both large cap like Apple and small cap like GME (GameStop)
 
+def get_barchart_marketcap(symbol: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]] :
+    '''
+    requires standard libs: json, multiprocessing, typing
+    requires 3rd party libs: beautifulsoup4, pandas, requests,
+    requires custom libs: batterypy
+        
+    I can use this function to display the marketcap dictionary in formatted string:
+        json_cap_pretty: str = json.dumps(json_cap, indent=2)
 
     '''
-    headers = {'User-Agent': 'Safari/13.1.1'}
+    headers: Dict[str, str] = {'User-Agent': 'Safari/13.1.1'}
     try:
         url: str = "https://www.barchart.com/stocks/quotes/" + symbol
-        print(url)
-        r: Response = requests.get(url, headers=headers)
-        #req = Request(url=url, headers=headers)
-        #with urlopen(req) as r:
-        #    rtext = r.read()
-
-        soup: BeautifulSoup = BeautifulSoup(r.text, 'html.parser')
+        html_response: Response = requests.get(url, headers=headers)
+        soup: BeautifulSoup = BeautifulSoup(html_response.text, 'html.parser')
         soup_items: ResultSet = soup.find('div', attrs={'data-ng-controller': 'symbolHeaderCtrl'})
-        item = soup_items.get('data-ng-init')
-        jason_px = json.loads(item[5:-1])
+        item: str = soup_items.get('data-ng-init')
 
-        #bar_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(bar_r.text, header=None)
-        #length_dfs = len(bar_dfs)
+        json_price: Dict[str, Any] = json.loads(item[5:-1])
 
-        px: Optional[float] = readf(jason_px.get('lastPrice'))
-        if px is not None:
-            d['px'] = px
-
+        price: Optional[float] = readf(json_price.get('lastPrice'))
+        if price is not None:
+            d['price'] = price
+        
         cap_soup_items: ResultSet = soup.find('script', id='bc-dynamic-config')
-        jason_cap = json.loads(cap_soup_items.string)
-        jason_cap_pretty = json.dumps(jason_cap, indent=2)
-        marketcaps: List[Any] = extract_nested_values(jason_cap, 'marketCap')
-        cap: Optional[float] = None if len(marketcaps) < 3 else marketcaps[2]
-        #print(jason_cap_pretty)
-        print(cap)
+        json_cap: Dict[str, Any] = json.loads(cap_soup_items.string)
+        
+        marketcaps: List[Any] = extract_nested_values(json_cap, 'marketCap')
+        cap: Optional[float] = None if len(marketcaps) < 3 else readf(marketcaps[2])
 
-        #cap_strlist: List[str] = [] if bad_status else bar_soup_items.__str__().split('  ')
-        #cap_str: str = '' if bad_status else cap_strlist[1].replace(',', '')
-        #cap_multiplier: float = 1000.0 if len(bar_soup_items) > 10 else 1.0 # ETF length is 9; stock 14
-        # multipler can also be determined by len(cap_strlist[0]
-        #cap: Optional[float] = float(cap_str) * cap_multiplier if is_floatable(cap_str) else None
         if cap is not None:
             d['cap'] = cap
             d['capstr']: str = formatlarge(cap)
-            print(px, cap, d['capstr'])
-        return px, cap
+            print(price, cap, d['capstr'])
+        return price, cap
+        
 
     except requests.exceptions.RequestException as requests_error:
         print('bar_cap RequestException: ', requests_error)
@@ -89,6 +81,8 @@ def bar_cap(symbol: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[flo
     except Exception as error:
         print('bar_cap Exception: ', error)
         return None, None
+
+
 
 
 def guru_debt(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
@@ -520,7 +514,7 @@ def guru_upsert_1s(symbol: str) -> str:
 if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
-    bar_cap(stock)
+    get_barchart_marketcap(stock)
     #guru_rev(stock)
     #guru_upsert_1s(stock)
     print(default_timer())
