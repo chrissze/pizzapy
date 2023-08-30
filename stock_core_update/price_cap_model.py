@@ -82,23 +82,22 @@ def tryget_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
         return None, None
 
 
-def proxy_price_cap(symbol: str, d: DictProxy={}) -> DictProxy:
+def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_price_cap > get_barchart_price_cap'''
     price, cap = tryget_price_cap(symbol)
     if price is not None:
-        d['price'] = price
+        proxy['price'] = price
     
     if cap is not None:
-        d['cap'] = cap
-        d['capstr']: str = formatlarge(cap)
-    return d
+        proxy['cap'] = cap
+        proxy['capstr']: str = formatlarge(cap)
+    return proxy
 
 
 if __name__ == '__main__':
     start: float = default_timer()
-    
     stock = input('which stock do you want to check? ')
-    proxy = proxy_price_cap(stock)
-    print(proxy)
+    x = proxy_price_cap(stock)
+    print(x)
     print('elapsed time in seconds:', default_timer() - start)
     

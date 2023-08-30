@@ -1,4 +1,4 @@
-
+# STANDARD LIBS
 import sys; sys.path.append('..')
 import json
 
@@ -11,28 +11,27 @@ from datetime import datetime
 from urllib.request import Request, urlopen
 
 
+# THIRD PARTY LIBS
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet, Tag
 from numpy import float64
-
-
 import pandas
 from pandas.core.frame import DataFrame
 from pandas.core.series import Series
-
 import re
 import requests
 from requests.models import Response
 
 from PySide2.QtWidgets import (QApplication, QTableView, QVBoxLayout ,QWidget)
 
+# CUSTOM LIBS
 from dimsumpy.database.postgres import upsertquery, upsert_dict
 from dimsumpy.qt5.dataframemodel import DataFrameModel
 from batterypy.string.json import extract_nested_values
 from batterypy.time.cal import get_trading_day, get_trading_day_utc
 from batterypy.string.read import formatlarge, is_floatable, readf, readi, readlarge
 
-
+# PROGRAM MODULES
 from shared_model.sql_model import cnx, db_dict  # the postgres server must running
 from shared_model.st_data_model import stock_list_dict
 
@@ -42,79 +41,9 @@ from shared_model.st_data_model import stock_list_dict
 from price_cap_model import proxy_price_cap
 from guru_debt_model import proxy_guru_debt
 from guru_earn_model import proxy_guru_earn
+from guru_interest_model import proxy_guru_interest
+from guru_lynch_model import proxy_guru_lynch
 from guru_strength_model import proxy_guru_strength
-
-
-def guru_interest(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]]:
-    try:
-        interest_url: str = "https://www.gurufocus.com/term/InterestExpense/" + s + "/Interest-Expense/"
-        print(interest_url)
-        interest_r: Response = requests.get(interest_url)
-        interest_soup: BeautifulSoup = BeautifulSoup(interest_r.text, 'html.parser')
-
-        interest_soup_items: ResultSet = interest_soup.find_all('meta', attrs={'name': 'description'})
-        content: str = '' if not interest_soup_items else interest_soup_items[0].get('content')
-        interest_strlist: List[str] = content.split()
-
-        interest_mil: Optional[float] = None if len(interest_strlist) < 11 else readf(interest_strlist[10])
-        print(interest_mil)
-        if interest_mil is not None:
-            d['interest_mil'] = interest_mil
-
-        interestpc: Optional[float] = None if ('cap' not in d or interest_mil is None) \
-            else round((1000000.0 * abs(interest_mil) / d['cap'] * 100.0), 4)
-        if interestpc is not None:
-            d['interestpc'] = interestpc
-
-        print(s, interest_mil, interestpc)
-
-        return interest_mil, interestpc
-
-    except requests.exceptions.RequestException as e:
-        print('guru_interest RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('guru_interest Exception e2: ', e2)
-        return None, None
-
-
-# ADI and CSX got error, no problem for status code
-def guru_lynch(s: str, d: DictProxy={}) -> Tuple[Optional[float],Optional[float]]:
-    try:
-        url: str = "https://www.gurufocus.com/term/lynchvalue/" + s + "/Peter-Lynch-Fair-Value/"
-        print(url)
-        r: Response = requests.get(url)
-        soup: BeautifulSoup = BeautifulSoup(r.text, 'html.parser')
-
-        soup_items: ResultSet = soup.find_all('meta', attrs={'name': 'description'})
-        content: str = '' if not soup_items else soup_items[0].get('content')
-        strlist: List[str] = content.split()
-
-        lynch: Optional[float] = None if len(strlist) < 13 else readf(strlist[12][:-1])
-
-        print(lynch)
-
-        if lynch is not None:
-            d['lynchvalue'] = lynch
-
-        lynchmove: Optional[float] = None if ('px' not in d or lynch is None) \
-            else round((lynch - d['px']) / d['px'] * 100.0, 2)
-        if lynchmove is not None:
-            d['lynchmove'] = lynchmove
-
-        print(s, 'Fair Value:', lynch)
-        print('Expected move: ', lynchmove, '%')
-
-        return lynch, lynchmove
-
-
-    except requests.exceptions.RequestException as e:
-        print('guru_lynch RequestException: ', e)
-        return None, None
-    except Exception as e2:
-        print('guru_lynch Exception e2: ', e2)
-        return None, None
-
 
 
 def guru_nn(s: str, d: DictProxy={}) -> Tuple[Optional[float], Optional[float]]:
@@ -304,8 +233,8 @@ def guru_upsert_1s(symbol: str) -> str:
         p1 = Process(target=proxy_guru_debt, args=(SYMBOL, d))
         p2 = Process(target=proxy_guru_earn, args=(SYMBOL, d))
         p3 = Process(target=proxy_guru_strength, args=(SYMBOL, d))
-        p4 = Process(target=guru_interest, args=(SYMBOL, d))
-        p5 = Process(target=guru_lynch, args=(SYMBOL, d))
+        p4 = Process(target=proxy_guru_interest, args=(SYMBOL, d))
+        p5 = Process(target=proxy_guru_lynch, args=(SYMBOL, d))
         p6 = Process(target=guru_nn, args=(SYMBOL, d))
         p7 = Process(target=guru_rev, args=(SYMBOL, d))
         p8 = Process(target=guru_tb, args=(SYMBOL, d))

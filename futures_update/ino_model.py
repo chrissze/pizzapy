@@ -2,7 +2,7 @@ import sys; sys.path.append('..')
 
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet, Tag
-
+from cloudscraper import create_scraper, CloudScraper
 from datetime import date, datetime
 
 from dimsumpy.database.postgres import upsertquery
@@ -24,6 +24,10 @@ from pandas.core.series import Series
 
 import requests
 from requests.models import Response
+import requests.packages.urllib3
+
+
+
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
@@ -211,6 +215,28 @@ def ino_ratio(s: str, d: DictProxy={}) -> Dict[str, Any]:
     print(d)
     return d
 
+def ino_op_test() -> None:
+    try:
+        month_url: str = 'https://quotes.ino.com/exchanges/contracts.html?r=NYMEX_GC'
+        #month_url: str = 'https://google.com'
+        print(month_url)
+        headers = {
+            'Referer': 'https://quotes.ino.com/',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"',
+            'sec-ch-ua-mobile': '$0',
+            'sec-ch-us-platform': 'macOS'
+        }
+        scraper = CloudScraper()
+        month_r: Response = scraper.get(url=month_url, headers=headers)
+        bad_status: bool = month_r.status_code != 200 #and month_r.status_code != 403
+        #bad_status: bool = month_r.status != 200
+        print(month_r.text)
+        print('bad_status: ', bad_status, month_r.status_code)
+        
+    except Exception as e:
+        print(e)
+
 
 def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], Optional[float]]:
     '''
@@ -218,6 +244,7 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     return callmoney, putmoney, price
     6J got some invalid data with expiration dates missing
     '''
+
     headers = {
         'Host': 'quote.ino.com',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36',
@@ -237,6 +264,7 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     lot: Optional[float] = contract.get('lot')
     exchange: Optional[str] = contract.get('exchange')
     
+    #requests.packages.urllib3.disable_warnings()
 
     if exchange == 'ICE':
         month_url: str = "https://quotes.ino.com/exchanges/contracts.html?r=" + exchange + "_@" + s
@@ -249,8 +277,9 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
         http = PoolManager(ssl_minimum_version=ssl.TLSVersion.TLSv1)
         #month_r: Response = urllib.request.urlopen(month_url, context=context)
         #month_r: Response = http.request('GET', month_url, context=context)
-        month_r: Response = requests.get(month_url, verify=False)
-        bad_status: bool = month_r.status_code != 200
+        #month_r: Response = requests.post(url=month_url, headers=headers, verify='certs.pem')
+        month_r: Response = requests.get(url=month_url, headers=headers, verify=True)
+        bad_status: bool = month_r.status_code != 200 #and month_r.status_code != 403
         #bad_status: bool = month_r.status != 200
         print('bad_status: ', bad_status, month_r.status_code)
         #print('bad_status: ', bad_status, month_r.status)
@@ -259,7 +288,8 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
         
         #print(html_text)
 
-        month_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(html_text, header=0)
+        #month_dfs: List[DataFrame] = [] if bad_status else pandas.read_html(html_text, header=0)
+        month_dfs: List[DataFrame] = pandas.read_html(html_text, header=0)
         
         print(month_dfs)
         df: DataFrame = pandas.DataFrame() if not month_dfs else month_dfs[0]
@@ -344,7 +374,7 @@ def ino_calc(page: str) -> Tuple[float, float]:
 
 if __name__ == '__main__':
     
-    symbol = input('which symbol do you want to check? ')
+    #symbol = input('which symbol do you want to check? ')
 
     #ycharts_oi(symbol)
-    ino_op(symbol)
+    ino_op_test()
