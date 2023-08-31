@@ -10,9 +10,13 @@ pandas==2.0
 
 psycopg[binary, pool]
 
+psycopg2
+
 PySide6==6.5
 
 requests==2.31
+
+SQLAlchemy
 
 wheel
 
@@ -24,4 +28,4 @@ wheel
 
 
 # selenium
-# sqlalchemy
+

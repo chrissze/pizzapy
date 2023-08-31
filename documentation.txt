@@ -124,6 +124,15 @@ SECTION: requirements.txt
         # https://pypi.org/project/requests/
         # DOCS: https://requests.readthedocs.io/en/latest/
 
+    SQLalchemy
+        # SQLAlchemy==2.0
+        # will install: SQLAlchemy, greenlet
+        # pandas.read_sql() function works best with SQLalchemy connection, if I use psycopg connection, the terminal will have warnings.
+        # SQLAlchemy v2.0 still depends on psycopg2 library
+        # DOCS: https://docs.sqlalchemy.org/en/20/
+        # https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection
+        
+
 
 
 SECTION: TIMER
