@@ -2,26 +2,24 @@
 import sys; sys.path.append('..')
 
 from typing import Any, List, Optional, Tuple, Union
-from timeit import default_timer
 from multiprocessing.managers import DictProxy
-from multiprocessing import Manager, Process
-from datetime import datetime
 
 
 # THIRD PARTY LIBS
 
 # CUSTOM LIBS
 from dimsumpy.database.postgres import upsert_dict
-from batterypy.time.cal import get_trading_day_utc
-
-# PROGRAM MODULES
-from shared_model.sql_model import cnx, db_dict  # the remote postgres server must running
 
 # PROGRAM MODULES
 from guru_proxy_model import proxy_guru_wealth
+from shared_model.sql_model import cnx, db_dict  # the remote postgres server must running
+
 
 
 def upsert_guru(symbol: str) -> None:
+    '''
+    DEPENDS: proxy_guru_wealth, upsert_dict, cnx, db_dict
+    '''
     proxy: DictProxy = proxy_guru_wealth(symbol)
     valid_data: bool = proxy.get('wealth_pc') is not None
 
