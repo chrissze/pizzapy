@@ -1,3 +1,9 @@
+'''
+    https://www.gurufocus.com/term/rank_balancesheet/NVDA/Financial-Strength/
+
+'''
+
+
 # STANDARD LIBRARIES
 import sys; sys.path.append('..')
 from itertools import dropwhile
@@ -21,7 +27,6 @@ from price_cap_model import get_html_soup, proxy_price_cap
 
 def get_guru_strength(symbol: str) -> Optional[float]:
     '''
-    https://www.gurufocus.com/term/rank_balancesheet/NVDA/Financial-Strength/
 
     '''
     strength_url: str = f'https://www.gurufocus.com/term/rank_balancesheet/{symbol}/Financial-Strength/'
@@ -53,8 +58,7 @@ def tryget_guru_strength(symbol: str) -> Optional[float]:
 def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_guru_strength > get_guru_strength'''
     strength: Optional[float] = tryget_guru_strength(symbol)
-    if strength is not None:
-        proxy['strength'] = strength
+    proxy['strength'] = strength if strength is not None else None
     return proxy
 
 

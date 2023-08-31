@@ -60,13 +60,10 @@ def tryget_guru_earn_per_share(symbol: str) -> Optional[float]:
 def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: tryget_guru_earn_per_share > get_guru_earn_per_share'''
     earn_per_share: Optional[float]  = tryget_guru_earn_per_share(symbol)
-    if earn_per_share is not None:
-        proxy['earn_per_share'] = earn_per_share
+    proxy['earn_per_share'] = earn_per_share if earn_per_share is not None else None
     
-    earnpc: Optional[float] = None if ('price' not in proxy or earn_per_share is None) \
-        else round((earn_per_share / proxy['price'] * 100.0), 2)
-    if earnpc is not None:
-        proxy['earnpc'] = earnpc
+    earn_pc: Optional[float] = None if ('price' not in proxy or earn_per_share is None) else round((earn_per_share / proxy['price'] * 100.0), 2)
+    proxy['earn_pc'] = earn_pc if earn_pc is not None else None
     return proxy
 
 

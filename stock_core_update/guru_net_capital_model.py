@@ -50,14 +50,11 @@ def proxy_guru_net_capital(symbol: str, proxy: DictProxy={}) -> DictProxy:
     DEPENDS: tryget_guru_net_capital > get_guru_net_capital
     tryget_guru_net_capital() can be changed to get_guru_net_capital()
     '''
-    net_capital: Optional[float]  = tryget_guru_net_capital(symbol)
-    if net_capital is not None:
-        proxy['net_capital'] = net_capital
+    net_capital: Optional[float] = tryget_guru_net_capital(symbol)
+    proxy['net_capital'] = net_capital if net_capital is not None else None
 
     net_capital_pc: Optional[float] = None if ('price' not in proxy or net_capital is None) else round((net_capital / proxy['price'] * 100.0), 2)
-    if net_capital_pc is not None:
-        proxy['net_capital_pc'] = net_capital_pc
-
+    proxy['net_capital_pc'] = net_capital_pc if net_capital_pc is not None else None
     return proxy
 
 
