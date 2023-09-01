@@ -1,7 +1,9 @@
+
+### MY CUSTOM IGNORES
 .DS_Store
 certs.pem
-# .idea folder (hidden on OS X) in the solution root contains IntelliJ's project specific settings files.
-.idea/
+
+.idea/   # IntelliJ's project specific settings files
 
 venv/
 
