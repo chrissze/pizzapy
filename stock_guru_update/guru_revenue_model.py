@@ -25,9 +25,10 @@ import requests
 
 # CUSTOM LIBRARIES
 from batterypy.string.read import readf
+from dimsumpy.web.crawler import get_html_soup, get_html_text
 
 # PROGRAM MODULES
-from price_cap_model import get_html_soup, get_html_text, proxy_price_cap
+from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_revenue_per_share(symbol: str) -> Optional[float]:

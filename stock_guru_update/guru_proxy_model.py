@@ -13,12 +13,9 @@ from datetime import datetime
 # CUSTOM LIBS
 from batterypy.time.cal import get_trading_day_utc
 
-# PROGRAM MODULES
-
-
 
 # PROGRAM MODULES
-from price_cap_model import proxy_price_cap
+from stock_general_update.price_cap_model import proxy_price_cap
 from guru_book_value_model import proxy_guru_book_value   # dataframes
 from guru_debt_model import proxy_guru_debt   # dataframes
 from guru_earn_model import proxy_guru_earn

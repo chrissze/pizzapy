@@ -22,19 +22,14 @@ from requests.models import Response
 # CUSTOM LIBS
 from batterypy.string.read import is_floatable, readf
 
+# PROGRAM MODULES
+from 
 
 def get_sp_500() -> List[str]:
-    try:
-        r: Response = requests.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
-        dfs: List[DataFrame] = pandas.read_html(r.text, header=0)
-        stocks: List[str] = list(dfs[0].iloc[0:, 0])
-        return stocks
-    except requests.exceptions.RequestException as e:
-        print('getsp500 error e:', e)
-        return []
-    except Exception as e2:
-        print('get_sp_500 error e2:', e2)
-        return []
+    r: Response = requests.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
+    dfs: List[DataFrame] = pandas.read_html(r.text, header=0)
+    stocks: List[str] = list(dfs[0].iloc[0:, 0])
+    return stocks
 
 def try_get_sp_500() -> List[str]:
     try:
@@ -113,27 +108,12 @@ def get_option_traded() -> List[str]:
 
 
 
-sp_500_nasdaq_100: List[str] = sorted(list(set(sp_500_stocks + nasdaq_100_stocks)))
-
-all_stocks = nasdaq_traded_stocks + ['ATHM']
-
-stock_list_dict: Dict[str, List[str]] = {
-    f'S&P 500 + Nasdqa 100 ({len(sp_500_nasdaq_100)})': sp_500_nasdaq_100,
-    f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
-    f'Nasdaq 100({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
-    f'Option Stocks ({len(option_stocks)})': option_stocks,
-    f'Nasdaq Listed({len(nasdaq_listed_stocks)})': nasdaq_listed_stocks,
-    f'Nasdaq Traded({len(nasdaq_traded_stocks)})': nasdaq_traded_stocks,
-    f'Russell 2000({len(russell_2000_stocks)})': russell_2000_stocks,
-    f'All Stocks ({len(all_stocks)})': all_stocks,
-}
 
 
 
 if __name__ == '__main__':
-    #sp_500_writer()
-    #nasdaq_100_writer()
-    #option_stocks_writer()
-    #nasdaq_listed_writer()
-    #nasdaq_traded_writer()
-    print('All finished')
+    x = get_sp_500()
+
+    print(x)
+    
+    print(f'{__file__} DONE')

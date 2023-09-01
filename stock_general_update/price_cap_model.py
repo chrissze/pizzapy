@@ -3,69 +3,26 @@
 import sys; sys.path.append('..')
 import json
 from multiprocessing.managers import DictProxy
-from timeit import default_timer
 from typing import Any, Dict, List, Optional, Tuple
 
 
 # THIRD PARTY LIBRARIES
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet, Tag
-import pandas
-from pandas.core.frame import DataFrame
 import requests
-from requests.models import Response
 
 
 # CUSTOM LIBRARIES
 from batterypy.string.json import extract_nested_values
 from batterypy.string.read import formatlarge, readf
-
-
-safari_headers: Dict[str, str] = {'User-Agent': 'Safari/13.1.1'}
-
-def get_html_text(url: str) -> str :
-    ''' INDEPENDENT
-    requires: requests
-    '''
-    html_response: Response = requests.get(url, headers=safari_headers)
-    return html_response.text
-
-
-def get_html_soup(url: str) -> BeautifulSoup :
-    ''' 
-    depends: get_html_text
-    requires: beautifulsoup4
-    '''
-    html_text: str = get_html_text(url)
-    soup: BeautifulSoup = BeautifulSoup(html_text, 'html.parser')
-    return soup
-
-
-def get_html_dataframes(url: str) -> List[DataFrame]:
-    '''INDEPENDENT
-    requires: beautifulsoup4, pandas, requests
-
-    https://google.com   (has <table>)
-    https://yahoo.com   (no <table>)
-    https://googel.com   (INVALID SSL cert)
-
-    If there is non <table> tag, soup_tables will be just be empty ResultRet [], soup.find_all() function is safe.
-    
-    I MUST ensure html_text has a <table> tag, otherwise pandas.read_html will have No tables found error.
-    '''
-    html_text: str = get_html_text(url)
-    soup: BeautifulSoup = BeautifulSoup(html_text, 'html.parser')
-    soup_tables: ResultSet = soup.find_all('table')
-    dataframes: List[DataFrame] = pandas.read_html(html_text, header=0) if soup_tables else []
-    return dataframes
+from dimsumpy.web.crawler import get_html_soup
 
 
 def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
-    '''DEPENDS: get_html_soup
+    '''
+    * INDEPENDENT *
 
-    requires standard libs: json
-    requires 3rd party libs: beautifulsoup4
-    requires custom libs: batterypy
+    IMPORTS: json, beautifulsoup4, batterypy, dimsumpy
         
     I can use this function to display the marketcap dictionary in formatted string:
         json_cap_pretty: str = json.dumps(json_cap, indent=2)
@@ -87,7 +44,9 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
 
 
 def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
-    '''DEPENDS: get_barchart_price_cap '''
+    '''
+    DEPENDS ON: get_barchart_price_cap() 
+    '''
     try:
         price, cap = get_barchart_price_cap(symbol)
         return price, cap
@@ -101,8 +60,8 @@ def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
 
 def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
-    DEPENDS: try_get_price_cap > get_barchart_price_cap
-    I write is not None for testing below since price, cap might be 0, which is a false value.
+    DEPENDS ON: try_get_price_cap()
+    I write `is not None` for testing below since price, cap might be 0, which is a false value.
     '''
     price, cap = try_get_price_cap(symbol)    
     proxy['price'] = price if price is not None else None
