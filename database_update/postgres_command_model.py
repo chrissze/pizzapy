@@ -154,8 +154,7 @@ stock_option_create_table_command: str = '''
 
 
 #ino
-futures_option_create_table_command: str = '''
-    CREATE TABLE fut_option (
+futures_option_create_table_command: str = '''CREATE TABLE futures_option (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        

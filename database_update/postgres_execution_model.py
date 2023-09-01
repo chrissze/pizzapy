@@ -70,6 +70,11 @@ def show_table(table_name: str) -> DataFrame:
     * INDEPENDENT *
     IMPORTS: execute_pandas_read() 
     CALLED BY: loop_show_table()
+    {table_name} in the cmd needs to be single quoted. Semicolon at the end is optional.
+    
+    full_cmd: str = f"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
+
+    empty tables without any column will have empty dataframe result.
     '''
     cmd: str = f"SELECT column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
     df: DataFrame = execute_pandas_read(cmd)
@@ -96,15 +101,14 @@ def loop_show_table() -> None:
     IMPORTS: db_table_command_dict
     '''
     while True:
+        print()
         print(show_tables())
-        table_name: str = input('Input table name (0 to quit): ')
+        table_name: str = input('\nInput a table name to show table columns (0 to quit): ')
         if table_name == '0':
             break
-        elif table_name in db_table_command_dict:
-            print(show_table(table_name))
         else:
-            print('invalid table name')
-
+            print(show_table(table_name))
+        
 
 
 
@@ -118,7 +122,16 @@ def create_table(table_name:str) -> None:
     if table_name in db_table_command_dict:
         cmd: str = db_table_command_dict[table_name].get('command')
         execute_psycopg_command(cmd)
-        show_table(table_name)
+        print(show_table(table_name))
+    
+    elif table_name:
+        reply = input(f"\nYour input {table_name} is not in db_table_command_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
+
+        if reply == 'y':
+            cmd: str = f'CREATE TABLE {table_name} ( id BIGSERIAL, PRIMARY KEY (id) );'
+            execute_psycopg_command(cmd)
+            print(show_tables())
+            print(show_table(table_name))
     else:
         print('invalid table name')
 
@@ -146,8 +159,9 @@ if __name__ == '__main__':
     cmd1 = 'SELECT now()'
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
-    
-    x = show_table('em9')
+
+    s: str = input("\nWhich string do you want to input? ")
+    x = show_tables()
     print(x)
 
     print(f'{__file__} done')
