@@ -42,8 +42,8 @@ def proxy_guru_process(symbol: str) -> DictProxy:
     proxy: DictProxy = manager.dict()
 
     proxy['symbol'] = SYMBOL
-    proxy['trade_date'] = get_trading_day_utc()
-    proxy['update_time'] = datetime.now().replace(microsecond=0)
+    proxy['td'] = get_trading_day_utc()
+    proxy['t'] = datetime.now().replace(microsecond=0)
     try:
         proxy_price_cap(SYMBOL, proxy)
         p1 = Process(target=proxy_guru_book_value, args=(SYMBOL, proxy))

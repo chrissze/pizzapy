@@ -12,7 +12,8 @@ from dimsumpy.database.postgres import upsert_dict
 
 # PROGRAM MODULES
 from guru_proxy_model import proxy_guru_wealth
-from shared_model.sql_model import cnx, db_dict  # the remote postgres server must running
+from database_update.postgres_command_model import db_table_command_dict
+from database_update.postgres_connection_model import make_psycopg_connection
 
 
 
@@ -24,12 +25,7 @@ def upsert_guru(symbol: str) -> None:
     valid_data: bool = proxy.get('wealth_pc') is not None
 
     if valid_data:
-        upsert_dict(table='usstock_g', dict=proxy, primarykeys=db_dict['usstock_g'].get('pk'), con=cnx)
-
-
-
-
-
+        upsert_dict(table='stock_guru', dict=proxy, primarykeys=db_table_command_dict['stock_guru'].get('pk'), con=make_psycopg_connection())
 
 
 def try_upsert_guru(symbol: str) -> None:

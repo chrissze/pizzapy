@@ -17,8 +17,8 @@ from typing import Any, Dict
 stock_guru_create_table_command: str = '''
     CREATE TABLE IF NOT EXISTS stock_guru (
     guru_id BIGSERIAL, 
-    update_time   TIMESTAMP,                    
-    trade_date   DATE,              
+    t   TIMESTAMP,                    
+    td   DATE,              
     symbol   VARCHAR(10),         
     
     price   FLOAT8,
@@ -49,8 +49,8 @@ stock_guru_create_table_command: str = '''
     revenue_pc   FLOAT8,    
     growth1y   FLOAT8,    
     growth3y   FLOAT8,        
-    qrowth5y   FLOAT8,    
-    qrowth10y   FLOAT8,    
+    growth5y   FLOAT8,    
+    growth10y   FLOAT8,    
     
     strength   FLOAT8,    
     zscore   FLOAT8,
