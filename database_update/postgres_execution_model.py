@@ -1,4 +1,6 @@
 '''
+This module's function are mainly called by terminal scripts.
+
 Prerequites of Postgres Server connection:
     (1) local computer has correct server IP in /etc/config.json 59.149.100.105 (hetzner a9)
     (2) hetzner cloud portal firewall allow local computer's IP (eg Seymour home IP, Arion IP)
@@ -32,6 +34,7 @@ from postgres_connection_model import execute_pandas_read, execute_psycopg_comma
 
 def create_new_postgres_db():
     '''
+    * INDEPENDENT *
     IMPORTS: subprocess
     '''
     new_database_name = input('Please input the desired database name then press ENTER: ')
@@ -48,6 +51,7 @@ def create_new_postgres_db():
 
 def describe_table(table_name: str) -> DataFrame:
     '''
+    * INDEPENDENT *
     IMPORTS: execute_pandas_read() 
     CALLED BY: show_single_table()
     '''
@@ -59,6 +63,7 @@ def describe_table(table_name: str) -> DataFrame:
 
 def show_tables() -> DataFrame:
     '''
+    * INDEPENDENT *
     IMPORTS: execute_pandas_read()
     '''
     cmd = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
@@ -68,7 +73,7 @@ def show_tables() -> DataFrame:
 
 def show_single_table() -> None:
     '''
-    DEPENDS: show_tables(), describe_table()
+    DEPENDS ON: show_tables(), describe_table()
     IMPORTS: db_table_command_dict
     '''
     while True:
@@ -87,6 +92,7 @@ def show_single_table() -> None:
 
 def show_databases() -> DataFrame:
     '''
+    * INDEPENDENT *
     IMPORTS: execute_pandas_read()
     '''
     cmd: str = "SELECT datname FROM pg_database WHERE datistemplate = false"
@@ -97,7 +103,7 @@ def show_databases() -> DataFrame:
 
 def create_table(table_name:str) -> None:
     '''
-    DEPENDS: describe_table
+    DEPENDS ON: describe_table()
     IMPORTS: db_table_command_dict, execute_psycopg_command()
     '''
     if table_name in db_table_command_dict:
@@ -111,6 +117,7 @@ def create_table(table_name:str) -> None:
 
 def drop_table():
     '''
+    * INDEPENDENT *
     IMPORTS:  db_table_command_dict, execute_psycopg_command()
     '''
     while True:
@@ -126,13 +133,12 @@ def drop_table():
 
 
 
-
 if __name__ == '__main__':
-    
     cmd1 = 'SELECT now()'
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
     
-    x = show_tables()
+    x = show_tables()    
     print(x)
-    print('done')
+
+    print(f'{__file__} done')
