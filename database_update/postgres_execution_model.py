@@ -9,7 +9,7 @@ Prerequites of Postgres Server connection:
 SQL commands format in execute_pandas_read() and execute_psycopg_command():
     (1) Optional to add semicolon add the end. That is, I can omit it.
 
-
+    (2) Need to have conn.commit() in psycopg execute() function.
     
 '''
 
@@ -30,8 +30,6 @@ from postgres_command_model import stock_guru_create_table_command, stock_zacks_
 from postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
         
-
-
 def show_databases() -> DataFrame:
     '''
     * INDEPENDENT *
@@ -111,26 +109,28 @@ def loop_show_table() -> None:
         
 
 
-
-
-
 def create_table(table_name:str) -> None:
     '''
-    DEPENDS ON: show_table()
+    DEPENDS ON: show_table(), show_tables()
     IMPORTS: db_table_command_dict, execute_psycopg_command()
     '''
     if table_name in db_table_command_dict:
         cmd: str = db_table_command_dict[table_name].get('command')
         execute_psycopg_command(cmd)
+        print('\nLatest available tables in Postgresql database: \n')
+        print(show_tables())
+        print(f"\nTable {table_name} columns: \n")
         print(show_table(table_name))
     
     elif table_name:
-        reply = input(f"\nYour input {table_name} is not in db_table_command_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
+        reply = input(f"\nYour input '{table_name}' is not in db_table_command_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
 
         if reply == 'y':
-            cmd: str = f'CREATE TABLE {table_name} ( id BIGSERIAL, PRIMARY KEY (id) );'
+            cmd: str = f'CREATE TABLE IF NOT EXISTS {table_name} ( id BIGSERIAL, PRIMARY KEY (id) );'
             execute_psycopg_command(cmd)
+            print('\nLatest available tables in Postgresql database: \n')
             print(show_tables())
+            print(f"\nTable {table_name} columns: \n")
             print(show_table(table_name))
     else:
         print('invalid table name')
@@ -139,16 +139,22 @@ def create_table(table_name:str) -> None:
 
 def drop_table():
     '''
-    * INDEPENDENT *
+    DEPENDS ON: show_tables()
     IMPORTS:  db_table_command_dict, execute_psycopg_command()
     '''
     while True:
+        print('\nLatest available tables in Postgresql database: \n')
+        print(show_tables())
         table_name: str = input("\nWhich table do you want to DROP? input the table name or '0' to cancel: ")
+        drop_table_cmd: str = f'DROP TABLE IF EXISTS {table_name}'
         if table_name == '0':
             break
         elif table_name in db_table_command_dict:
-            cmd: str = f'DROP TABLE {table_name}'
-            execute_psycopg_command(cmd)
+            reply = input(f"\nYou are going to DROP TABLE '{table_name}', it is a CRITICAL TABLE in db_table_command_dict, do you really want to drop this table (y/N)?")
+            if reply == 'y':
+                execute_psycopg_command(drop_table_cmd)
+        elif table_name:
+                execute_psycopg_command(drop_table_cmd)
         else:
             print('invalid table name')
 
@@ -160,8 +166,8 @@ if __name__ == '__main__':
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
 
-    s: str = input("\nWhich string do you want to input? ")
-    x = execute_psycopg_command(s)
+    #s: str = input("\nWhich string do you want to input? ")
+    x = drop_table()
     print(x)
 
     print(f'{__file__} done')
