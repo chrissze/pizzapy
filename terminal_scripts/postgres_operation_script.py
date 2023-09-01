@@ -1,9 +1,6 @@
 
-
 '''
-This script must be run in Virtual Environment so that the required packages are available.
 
-The postgres server settings is in /etc/config.json in local computer.
 '''
 
 # STANDARD LIBS
@@ -11,58 +8,64 @@ import sys; sys.path.append('..')
 import subprocess
 from typing import Any, Dict, List
 
-
-
 # PROGRAM MODULES
-from database_update.postgres_execution_model import create_new_postgres_db, create_table,  drop_table, loop_show_table, show_databases, show_tables
+from database_update.postgres_execution_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
 
 
+postgres_menu_text: str = '''\n
+    Which action do you want to do? 
+        1) show_databases()   
+        2) create_new_postgres_db()
+        3) show_tables()
+        4) loop_show_table()
+        5) loop_drop_table()
+        6) loop_show_table_rows()
 
-def manage_database():
-    actions: Dict[str, Any] = {
-        '1': lambda: print(show_databases()),
-        '2': lambda: create_new_postgres_db(),
-        '3': lambda: print(show_tables()),
-        '4': lambda: loop_show_table(),
-        '5': lambda: drop_table(),
-        '6': lambda: subprocess.run('cat /etc/config.json', stdin=True, shell=True),
-                                     
-        '11': lambda: create_table('stock_guru'),
-        '12': lambda: create_table('stock_zacks'),
-        '13': lambda: create_table('stock_option'),
-        '14': lambda: create_table('stock_price'),
-        '15': lambda: create_table('stock_technical'),
-        '16': lambda: create_table('futures_option'),
+        9) Run a custom SQL command - loop_execute_sql()
+        10) Print content of /etc/config.json            
+        11) create_table('stock_guru')
+        12) create_table('stock_zacks')
+        13) create_table('stock_option')
+        14) create_table('stock_price')
+        15) create_table('stock_technical')
+        16) create_table('futures_option')
+        
+        0) quit
+    Choose your action: '''
+
+
+actions_dict: Dict[str, Any] = {
+    '1': lambda: print(show_databases()),
+    '2': lambda: create_new_postgres_db(),
+    '3': lambda: print(show_tables()),
+    '4': lambda: loop_show_table(),
+    '5': lambda: loop_drop_table(),
+    '6': lambda: loop_show_table_rows(),
+
+    '9': lambda: loop_execute_sql(),
+    '10': lambda: subprocess.run('cat /etc/config.json', stdin=True, shell=True),                             
+    '11': lambda: create_table('stock_guru'),
+    '12': lambda: create_table('stock_zacks'),
+    '13': lambda: create_table('stock_option'),
+    '14': lambda: create_table('stock_price'),
+    '15': lambda: create_table('stock_technical'),
+    '16': lambda: create_table('futures_option'),
     }
+
+
+def manage_database(): 
+    '''
+    DEPENDS ON: postgres_menu_text, actions_dict
+    '''
     while True:
-        ans: str = input("""\n\n
-        Which action do you want to do? 
-            
-            1) show_databases()   
-            2) create_new_postgres_db()
-            3) show_tables()
-            4) loop_show_table()
-            5) drop_table()      
-            6) Print content of /etc/config.json
-                            
-            11) create_table('stock_guru')
-            12) create_table('stock_zacks')
-            13) create_table('stock_option')
-            14) create_table('stock_price')
-            15) create_table('stock_technical')
-            16) create_table('futures_option')
-            
-            0) go to home screen
-        Choose your action: """)
-        if ans in actions:
-            print('\n\n')
-            actions[ans]()
+        ans: str = input(postgres_menu_text)
+        if ans in actions_dict:
+            print()
+            actions_dict[ans]()
         elif ans == '0':
             break
         else:
             print('invalid input')
-
-
 
 
 

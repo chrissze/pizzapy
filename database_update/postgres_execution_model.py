@@ -1,5 +1,5 @@
 '''
-This module's function are mainly called by terminal scripts.
+This module's function are mainly called by terminal_scripts/postgres_operation_script.py.
 
 Prerequites of Postgres Server connection:
     (1) local computer has correct server IP in /etc/config.json 59.149.100.105 (hetzner a9)
@@ -51,13 +51,16 @@ def create_new_postgres_db() -> None:
     initial_reply = input(f'\n\nDo you want to create a new database in Postgresql (y/N)? ')
     if initial_reply != 'y':
         return
+    
     new_database_name = input('\nPlease input the desired database name then press ENTER: ')
     confirmation_reply = input(f'\nDo you want to create a new database - {new_database_name} (y/N)? ')
+    
     if confirmation_reply == 'y':
         createdb_cmd = f'createdb {new_database_name} -U postgres'
         subprocess.run(createdb_cmd, stdin=True, shell=True)
         print(f'Just created a database -- {new_database_name}')
         print(show_databases())
+    
     else:
         print('no database is created')
 
@@ -91,7 +94,6 @@ def show_tables() -> DataFrame:
 
 
 
-
 def loop_show_table() -> None:
     '''
     DEPENDS ON: show_tables(), show_table()
@@ -108,6 +110,63 @@ def loop_show_table() -> None:
         
 
 
+def show_table_rows(table_name: str, limit_rows: int) -> DataFrame:
+    '''
+    * INDEPENDENT *
+    IMPORTS: execute_pandas_read() 
+    CALLED BY: loop_show_table_rows()
+
+    empty tables without any column will have empty dataframe result.
+    '''
+    cmd: str = f"SELECT * FROM {table_name} LMIIT {limit_rows};"
+    df: DataFrame = execute_pandas_read(cmd)
+    return df
+
+
+
+def loop_show_table_rows() -> DataFrame:
+    '''
+    DEPENDS ON: show_table_rows()
+    IMPORTS: execute_pandas_read() 
+
+    '''
+    while True: 
+        print(show_tables())
+        print()
+        table_name: str = input('Input a TABLE NAME to show content (0 to cancel): ')
+        if table_name == '0':
+            break
+        elif table_name: 
+            limit_rows: str = input('Input NUMBER OF ROWS: ')
+            cmd: str = f"SELECT * FROM {table_name} LIMIT {limit_rows}"
+            df: DataFrame = execute_pandas_read(cmd)
+            print(df)
+        else:
+            print('Invalid input.')
+
+
+def loop_execute_sql() -> DataFrame:
+    '''
+    * INDEPENDENT *
+    IMPORTS: execute_psycopg_command() 
+    sample cmd: INSERT INTO domain5 (domain) VALUES ('eee.com')
+    '''
+    while True: 
+        print()
+        cmd: str = input('Input a SQL COMMAND to execute (0 to cancel): ')
+        if cmd == '0':
+            break
+        reply: str = input(f"\n {cmd} \n\n Do you want to execute above command ('y' to excute, 'n' to restart, '0' to cancel)? ")
+        if reply == '0':
+            break
+        elif reply == 'y': 
+            execute_psycopg_command(cmd)
+            print('command executed')
+        else:
+            print('Restart')
+
+
+
 def create_table(table_name:str) -> None:
     '''
     DEPENDS ON: show_table(), show_tables()
@@ -116,10 +175,10 @@ def create_table(table_name:str) -> None:
     if table_name in db_table_command_dict:
         cmd: str = db_table_command_dict[table_name].get('command')
         execute_psycopg_command(cmd)
-        print('\nLatest available tables in Postgresql database: \n')
-        print(show_tables())
         print(f"\nTable {table_name} columns: \n")
         print(show_table(table_name))
+        print('\nLatest available tables in Postgresql database: \n')
+        print(show_tables())
     
     elif table_name:
         reply = input(f"\nYour input '{table_name}' is not in db_table_command_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
@@ -127,16 +186,16 @@ def create_table(table_name:str) -> None:
         if reply == 'y':
             cmd: str = f'CREATE TABLE IF NOT EXISTS {table_name} ( id BIGSERIAL, PRIMARY KEY (id) );'
             execute_psycopg_command(cmd)
-            print('\nLatest available tables in Postgresql database: \n')
-            print(show_tables())
             print(f"\nTable {table_name} columns: \n")
             print(show_table(table_name))
+            print('\nLatest available tables in Postgresql database: \n')
+            print(show_tables())
     else:
         print('invalid table name')
 
 
 
-def drop_table():
+def loop_drop_table():
     '''
     DEPENDS ON: show_tables()
     IMPORTS:  db_table_command_dict, execute_psycopg_command()
