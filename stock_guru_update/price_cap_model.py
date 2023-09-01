@@ -86,25 +86,25 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
     return price, cap
 
 
-def tryget_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
+def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
     '''DEPENDS: get_barchart_price_cap '''
     try:
         price, cap = get_barchart_price_cap(symbol)
         return price, cap
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_barchart_price_cap RequestException: ', requests_error)
+        print('try_get_barchart_price_cap RequestException: ', requests_error)
         return None, None
     except Exception as error:
-        print('tryget_barchart_price_cap general Exception: ', error)
+        print('try_get_barchart_price_cap general Exception: ', error)
         return None, None
 
 
 def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
-    DEPENDS: tryget_price_cap > get_barchart_price_cap
+    DEPENDS: try_get_price_cap > get_barchart_price_cap
     I write is not None for testing below since price, cap might be 0, which is a false value.
     '''
-    price, cap = tryget_price_cap(symbol)    
+    price, cap = try_get_price_cap(symbol)    
     proxy['price'] = price if price is not None else None
     proxy['cap'] = cap if cap is not None else None
     proxy['capstr'] = formatlarge(cap) if cap is not None else None

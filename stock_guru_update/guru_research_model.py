@@ -44,23 +44,23 @@ def get_guru_research(symbol: str) -> Optional[float]:
     return research
 
 
-def tryget_guru_research(symbol: str) -> Optional[float]:
+def try_get_guru_research(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_research"""
     try:
         research: Optional[float] =  get_guru_research(symbol)
         return research
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_research RequestException: ', requests_error)
+        print('try_get_guru_research RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_research general Exception: ', error)
+        print('try_get_guru_research general Exception: ', error)
         return None
 
 
 
 def proxy_guru_research(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_research > get_guru_research'''
-    research: Optional[float] = tryget_guru_research(symbol)
+    '''DEPENDS: try_get_guru_research > get_guru_research'''
+    research: Optional[float] = try_get_guru_research(symbol)
     proxy['research'] = research if research is not None else None
     
     research_pc: Optional[float] = None if ('cap' not in proxy or research is None) else round((research / proxy['cap'] * 100.0), 2)

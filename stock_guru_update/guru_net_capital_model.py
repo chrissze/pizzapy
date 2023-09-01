@@ -29,7 +29,7 @@ def get_guru_net_capital(symbol: str) -> Optional[float]:
     return net_capital
 
 
-def tryget_guru_net_capital(symbol: str) -> Optional[float]:
+def try_get_guru_net_capital(symbol: str) -> Optional[float]:
     '''
     DEPENDS: get_guru_net_capital
     '''
@@ -37,20 +37,20 @@ def tryget_guru_net_capital(symbol: str) -> Optional[float]:
         net_capital: Optional[float] =  get_guru_net_capital(symbol)
         return net_capital
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_net_capital RequestException: ', requests_error)
+        print('try_get_guru_net_capital RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_net_capital general Exception: ', error)
+        print('try_get_guru_net_capital general Exception: ', error)
         return None
 
 
 
 def proxy_guru_net_capital(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
-    DEPENDS: tryget_guru_net_capital > get_guru_net_capital
-    tryget_guru_net_capital() can be changed to get_guru_net_capital()
+    DEPENDS: try_get_guru_net_capital > get_guru_net_capital
+    try_get_guru_net_capital() can be changed to get_guru_net_capital()
     '''
-    net_capital: Optional[float] = tryget_guru_net_capital(symbol)
+    net_capital: Optional[float] = try_get_guru_net_capital(symbol)
     proxy['net_capital'] = net_capital if net_capital is not None else None
 
     net_capital_pc: Optional[float] = None if ('price' not in proxy or net_capital is None) else round((net_capital / proxy['price'] * 100.0), 2)

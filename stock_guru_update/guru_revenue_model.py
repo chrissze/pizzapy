@@ -44,22 +44,22 @@ def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
     return revenue_per_share
 
 
-def tryget_guru_revenue_per_share(symbol: str) -> Optional[float]:
+def try_get_guru_revenue_per_share(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_revenue"""
     try:
         revenue_per_share: Optional[float] =  get_guru_revenue_per_share(symbol)
         return revenue_per_share
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_revenue RequestException: ', requests_error)
+        print('try_get_guru_revenue RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_revenue general Exception: ', error)
+        print('try_get_guru_revenue general Exception: ', error)
         return None
 
 
 def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_revenue > get_guru_revenue'''
-    revenue_per_share: Optional[float] = tryget_guru_revenue_per_share(symbol)   
+    '''DEPENDS: try_get_guru_revenue > get_guru_revenue'''
+    revenue_per_share: Optional[float] = try_get_guru_revenue_per_share(symbol)   
     proxy['revenue_per_share'] = revenue_per_share if revenue_per_share is not None else None
     
     revenue_pc: Optional[float] = None if ('price' not in proxy or revenue_per_share is None) else round((revenue_per_share / proxy['price'] * 100.0), 2)
@@ -91,22 +91,22 @@ def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[flo
     return growth1y, growth3y, growth5y, growth10y
 
 
-def tryget_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+def try_get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
     """ DEPENDS: get_guru_revenue_growths """
     try:
         growth1y, growth3y, growth5y, growth10y = get_guru_revenue_growths(symbol)
         return growth1y, growth3y, growth5y, growth10y
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_revenue_growths RequestException: ', requests_error)
+        print('try_get_guru_revenue_growths RequestException: ', requests_error)
         return None, None, None, None
     except Exception as error:
-        print('tryget_guru_revenue_growths general Exception: ', error)
+        print('try_get_guru_revenue_growths general Exception: ', error)
         return None, None, None, None
 
 
 def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_revenue_growths'''
-    growth1y, growth3y, growth5y, growth10y = tryget_guru_revenue_growths(symbol)
+    '''DEPENDS: try_get_guru_revenue_growths'''
+    growth1y, growth3y, growth5y, growth10y = try_get_guru_revenue_growths(symbol)
     proxy['growth1y'] = growth1y if growth1y is not None else None
     proxy['growth3y'] = growth3y if growth3y is not None else None
     proxy['growth5y'] = growth5y if growth5y is not None else None

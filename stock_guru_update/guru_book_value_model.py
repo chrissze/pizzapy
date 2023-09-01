@@ -35,26 +35,26 @@ def get_guru_book_value(symbol: str) -> Optional[float]:
     return book_value
 
 
-def tryget_guru_book_value(symbol: str) -> Optional[float]:
+def try_get_guru_book_value(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_book_value"""
     try:
         book_value: Optional[float] =  get_guru_book_value(symbol)
         return book_value
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_book_value RequestException: ', requests_error)
+        print('try_get_guru_book_value RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_book_value general Exception: ', error)
+        print('try_get_guru_book_value general Exception: ', error)
         return None
 
 
 
 def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
-    DEPENDS: tryget_guru_book_value > get_guru_book_value
+    DEPENDS: try_get_guru_book_value > get_guru_book_value
     I use is not None to test because 0.0 is false.
     '''
-    book_value: Optional[float] = tryget_guru_book_value(symbol)
+    book_value: Optional[float] = try_get_guru_book_value(symbol)
     proxy['book_value'] = book_value if book_value is not None else None
 
     book_value_pc: Optional[float] = None if ('price' not in proxy or book_value is None) else round((book_value / proxy['price'] * 100.0), 2)

@@ -30,30 +30,30 @@ def get_guru_lynch(symbol: str) -> Optional[float]:
     return lynch
 
 
-def tryget_guru_lynch(symbol: str) -> Optional[float]:
+def try_get_guru_lynch(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_lynch"""
     try:
         lynch: Optional[float] =  get_guru_lynch(symbol)
         return lynch
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_lynch RequestException: ', requests_error)
+        print('try_get_guru_lynch RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_lynch general Exception: ', error)
+        print('try_get_guru_lynch general Exception: ', error)
         return None
 
 
 
 def proxy_guru_lynch(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_lynch > get_guru_lynch
+    '''DEPENDS: try_get_guru_lynch > get_guru_lynch
     
     lynch is Peter Lynch's fair price.
 
     lynchmove is the expected movement in percentage, 20.0 means expecting to have 20% price increase; -30 means expecting to have 20% price drop.
     
-    tryget_guru_lynch() below can be changed to get_guru_lynch()
+    try_get_guru_lynch() below can be changed to get_guru_lynch()
     '''
-    lynch: Optional[float]  = tryget_guru_lynch(symbol)   
+    lynch: Optional[float]  = try_get_guru_lynch(symbol)   
     proxy['lynch'] = lynch if lynch is not None else None
 
     lynch_move_pc: Optional[float] = None if ('price' not in proxy or lynch is None) \

@@ -35,23 +35,23 @@ def get_guru_interest(symbol: str) -> Optional[float]:
 
 
 
-def tryget_guru_interest(symbol: str) -> Optional[float]:
+def try_get_guru_interest(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_interest"""
     try:
         interest: Optional[float] =  get_guru_interest(symbol)
         return interest
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_interest RequestException: ', requests_error)
+        print('try_get_guru_interest RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_interest general Exception: ', error)
+        print('try_get_guru_interest general Exception: ', error)
         return None
 
 
 
 def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_interest > get_guru_interest'''
-    interest: Optional[float]  = tryget_guru_interest(symbol)
+    '''DEPENDS: try_get_guru_interest > get_guru_interest'''
+    interest: Optional[float]  = try_get_guru_interest(symbol)
     proxy['interest'] = interest if interest is not None else None
 
     interest_pc: Optional[float] = None if ('cap' not in proxy or interest is None) \

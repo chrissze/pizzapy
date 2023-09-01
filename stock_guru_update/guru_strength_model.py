@@ -41,23 +41,23 @@ def get_guru_strength(symbol: str) -> Optional[float]:
 
 
 
-def tryget_guru_strength(symbol: str) -> Optional[float]:
+def try_get_guru_strength(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_strength"""
     try:
         strength: Optional[float] =  get_guru_strength(symbol)
         return strength
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_strength RequestException: ', requests_error)
+        print('try_get_guru_strength RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_strength general Exception: ', error)
+        print('try_get_guru_strength general Exception: ', error)
         return None
 
 
 
 def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_strength > get_guru_strength'''
-    strength: Optional[float] = tryget_guru_strength(symbol)
+    '''DEPENDS: try_get_guru_strength > get_guru_strength'''
+    strength: Optional[float] = try_get_guru_strength(symbol)
     proxy['strength'] = strength if strength is not None else None
     return proxy
 

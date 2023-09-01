@@ -44,23 +44,23 @@ def get_guru_zscore(symbol: str) -> Optional[float]:
     return zscore
 
 
-def tryget_guru_zscore(symbol: str) -> Optional[float]:
+def try_get_guru_zscore(symbol: str) -> Optional[float]:
     """ DEPENDS: get_guru_zscore"""
     try:
         zscore: Optional[float] =  get_guru_zscore(symbol)
         return zscore
     except requests.exceptions.RequestException as requests_error:
-        print('tryget_guru_zscore RequestException: ', requests_error)
+        print('try_get_guru_zscore RequestException: ', requests_error)
         return None
     except Exception as error:
-        print('tryget_guru_zscore general Exception: ', error)
+        print('try_get_guru_zscore general Exception: ', error)
         return None
 
 
 
 def proxy_guru_zscore(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: tryget_guru_zscore > get_guru_zscore'''
-    zscore: Optional[float] = tryget_guru_zscore(symbol)
+    '''DEPENDS: try_get_guru_zscore > get_guru_zscore'''
+    zscore: Optional[float] = try_get_guru_zscore(symbol)
     proxy['zscore'] = zscore if zscore is not None else None
     return proxy
 
