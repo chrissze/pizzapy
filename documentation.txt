@@ -3,14 +3,6 @@
 #########################
 
 
-CONTENTS
-
-
-
-
-
-SECTION: STRUCTURE
-
 
 
 
@@ -173,20 +165,21 @@ Currently working on barchart.com marketcap on guru_model.py
 
 
 ==========================
-PACKAGE: stock_core_update
+PACKAGE: stock_guru_update
 ==========================
-
 
 [ price_cap_model.py ]
     * INDEPENDENT *
 
-    This module does NOT depend on other program modules. It is to fetch current price and market cap from barchart.com
+    PROVIDES: proxy_price_cap()
 
-    guru_proxy_model.py depends on price_cap_model.py to get price and cap.
+    This module DOES NOT depend on other program modules. It provides proxy_price_cap() to other modules to fetch current price and market cap.
 
 
 [ guru_proxy_model.py ]
-    DEPENDS: price_cap_model.py
+    DEPENDS ON: price_cap_model.py
+
+    PROVIDES: proxy_guru_wealth()
 
     guru_proxy_model.py module depends on price_cap_model.py to get current stock price and market cap.
 
@@ -194,15 +187,68 @@ PACKAGE: stock_core_update
 
     proxy_guru_process() will return a proxy dictionary containing all GURU WEB core data.
 
-    proxy_guru_wealth() will return a proxy dictionary containing all GURU data and wealth_pc. 
+    proxy_guru_wealth() is the most import function, which returns a proxy dictionary containing all GURU data and wealth_pc. 
 
-[ guru_database_model.py ]
-    DEPENDS: price_proxy_model.py
+[ guru_update_database_model.py ]
+    DEPENDS ON: price_proxy_model.py
+
+    Part of Model-View-Controller
 
     This module is for database upsert, it gets data from guru_proxy_model.py module.
 
     I use wealth_pc variable from proxy_guru_wealth() to determine whether I will do the upsert in guru_database_model.py module. 
 
+[ guru_update_view.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
 
 
+[ guru_update_ctrl.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+
+
+===========================
+PACKAGE: stock_zacks_update
+===========================
+
+[ zacks_update_database_model.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+[ zacks_update_view.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+
+[ zacks_update_ctrl.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+
+============================
+PACKAGE: stock_option_update
+============================
+
+[ option_update_database_model.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+[ option_update_view.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
+
+
+[ option_update_ctrl.py ]
+    DEPENDS ON: 
+
+    Part of Model-View-Controller
 
