@@ -4,6 +4,8 @@
 
 
 
+SECTION: CURRENT WORK
+---------------------
 
 
 
@@ -11,13 +13,13 @@
 
 SECTION: FOLDER STRUCTURE AND IMPORT
 ------------------------------------
-This program has a 2-layer folder structure. The parent folder 'pizzapy' has the following files
-    .gitignore
-    __init__.py             
-    main.py
-    main_script.py
-    requirements.txt
-    documentation.txt
+    This program has a 2-layer folder structure. The parent folder 'pizzapy' has the following files
+        .gitignore
+        __init__.py             
+        main.py
+        main_script.py
+        requirements.txt
+        documentation.txt
 
 
 SECTION: CUSTOM LIBRARIES
@@ -43,20 +45,20 @@ SECTION: CUSTOM LIBRARIES
 
 SECTION: IMPORT
 ------------------
-pasta/
-    main.py
-    test.py
-    subfolder1/
-        |-- module1.py
-    subfolder2/
-        |-- module2a.py
-        |-- module2b.py
+    pasta/
+        main.py
+        test.py
+        subfolder1/
+            |-- module1.py
+        subfolder2/
+            |-- module2a.py
+            |-- module2b.py
 
-Inside subfolder's modules like module1.py, I should not use relative imports because relative imports work only when I call them from program folder main.py or test.py, instead I should have the following sys.path line at the top of subfolders' modules, so that I could use if __name__ == '__main__': to test functions of that module
+    Inside subfolder's modules like module1.py, I should not use relative imports because relative imports work only when I call them from program folder main.py or test.py, instead I should have the following sys.path line at the top of subfolders' modules, so that I could use if __name__ == '__main__': to test functions of that module
 
-    import sys; sys.path.append('..')
+        import sys; sys.path.append('..')
 
-In main.py and test.py, I do not need to have above sys.path line.
+    In main.py and test.py, I do not need to have above sys.path line.
 
 SECTION: requirements.txt
 ---------------------------
@@ -108,10 +110,12 @@ SECTION: requirements.txt
         # https://pypi.org/project/psycopg-binary/
         # DOCS: https://www.psycopg.org/psycopg3/docs/
 
-    psycopg2
-        # psycopg2
+    psycopg2-binary
+        # psycopg2-binary
         # no need to specify the version, as it will installed the latest version 2.
-        # This psycopg2 library is a prerequisite of SQLAlchemy ver 2, even in 2023.
+        # This psycopg2-binary library is a prerequisite of SQLAlchemy ver 2, even in 2023.
+        # Intel Mac can use either psycopg2 or psycopg2-binary.
+        # Apple Silicon Mac can ONLY use psycopy2-binary. Installing psycopg2 will be failed on Apple Silicon.
 
 
     PySide6
@@ -132,10 +136,13 @@ SECTION: requirements.txt
 
     SQLalchemy
         # SQLAlchemy
-        # no need to specify the version, it will install version 2.0.XX
+        # no need to specify the version, it will install version 2.0.XX in 2023.
         # will install: SQLAlchemy, greenlet
-        # pandas.read_sql() function works best with SQLalchemy connection, if I use psycopg connection, the terminal will have warnings.
-        # SQLAlchemy v2.0 still depends on psycopg2 library
+        # Success install in Intel and Apple Silicon mac, the challenge is the prerequite psycopg2 library.
+        # Intel Mac can use either psycopg2 or psycopg2-binary as a prerequisite in requirements.txt
+        # While Apple Silicon Mac can ONLY use psycopy2-binary. Installing psycopg2 will be failed on Apple Silicon.
+        # pandas.read_sql() function works best with SQLalchemy connection, if I use psycopg 3 connection, the terminal will have warnings.
+        # SQLAlchemy v2.0 still depends on psycopg2 library in 2023.
         # DOCS: https://docs.sqlalchemy.org/en/20/
         # https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Connection
         
@@ -144,22 +151,20 @@ SECTION: requirements.txt
 
 SECTION: TIMER
 ------------------
-I can use timeit package from the Standard Library to record the execution time in seconds:
+    I can use timeit package from the Standard Library to record the execution time in seconds:
 
-from timeit import default_timer
+    from timeit import default_timer
 
-if __name__ == '__main__':
-    start: float = default_timer()
-    print("Run some IO operations")
-    print('elapsed time in seconds:', default_timer() - start)
-
-
+    if __name__ == '__main__':
+        start: float = default_timer()
+        print("Run some IO operations")
+        print('Elapsed time in seconds:', default_timer() - start)
 
 
 
-SECTION: TEMP
-----------------
-Currently working on barchart.com marketcap on guru_model.py
+
+
+
 
 
 
