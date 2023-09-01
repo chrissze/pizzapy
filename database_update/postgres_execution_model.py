@@ -15,7 +15,6 @@ SQL commands format in execute_pandas_read() and execute_psycopg_command():
 
 # STANDARD LIB
 import sys; sys.path.append('..')
-import json
 import subprocess
 from typing import Any, Dict, List, Union
 
@@ -25,7 +24,7 @@ import pandas
 from pandas.core.frame import DataFrame
 
 # PROGRAM MODULES
-from postgres_command_model import stock_guru_create_table_command, stock_zacks_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command,futures_option_create_table_command, db_table_command_dict
+from postgres_command_model import db_table_command_dict
 
 from postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
