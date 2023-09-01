@@ -15,7 +15,7 @@ from typing import Any, Dict
 
 
 stock_guru_create_table_command: str = '''
-    CREATE TABLE stock_guru (
+    CREATE TABLE IF NOT EXISTS stock_guru (
     guru_id BIGSERIAL, 
     update_time   TIMESTAMP,                    
     trade_date   DATE,              
@@ -62,7 +62,7 @@ stock_guru_create_table_command: str = '''
 
 
 stock_zacks_create_table_command: str = '''
-    CREATE TABLE stock_zacks ( 
+    CREATE TABLE IF NOT EXISTS stock_zacks ( 
     zacks_id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE,        
@@ -95,7 +95,7 @@ stock_zacks_create_table_command: str = '''
 
 # yahoo
 stock_price_create_table_command: str = '''
-    CREATE TABLE stock_price (
+    CREATE TABLE IF NOT EXISTS stock_price (
     price_id  BIGSERIAL, 
     t   TIMESTAMP,                    
     symbol   VARCHAR(10) NOT NULL,         
@@ -112,7 +112,7 @@ stock_price_create_table_command: str = '''
 
 # from stock_price
 stock_technical_create_table_command: str = '''
-    CREATE TABLE stock_tech (
+    CREATE TABLE IF NOT EXISTS stock_tech (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
     symbol   VARCHAR(10) NOT NULL,         
@@ -130,7 +130,7 @@ stock_technical_create_table_command: str = '''
 
 # nasdaq or barchart
 stock_option_create_table_command: str = '''
-    CREATE TABLE stock_option (
+    CREATE TABLE IF NOT EXISTS stock_option (
     option_id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        
@@ -154,7 +154,7 @@ stock_option_create_table_command: str = '''
 
 
 #ino
-futures_option_create_table_command: str = '''CREATE TABLE futures_option (
+futures_option_create_table_command: str = '''CREATE TABLE IF NOT EXISTS futures_option (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        

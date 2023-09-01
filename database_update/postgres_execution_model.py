@@ -161,7 +161,7 @@ if __name__ == '__main__':
     cmd3 = 'SELECT version()'
 
     s: str = input("\nWhich string do you want to input? ")
-    x = show_tables()
+    x = execute_psycopg_command(s)
     print(x)
 
     print(f'{__file__} done')

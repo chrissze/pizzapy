@@ -46,14 +46,24 @@ def make_psycopg_cursor() -> Cursor:
 
 def execute_psycopg_command(cmd: str) -> None: 
     '''
-    DEPENDS: make_postgres_cursor() 
+    DEPENDS: make_psycopg_connection()
 
+    I must include conn.commit(), otherwise the cmd will not be executed.
     cur.excute(cmd) returns None
+    
+    In psycopg 3, the connection object can directly execute SQL commands
+    without creating a cursor object, because execute() function returns the cursor
+    object itself, so we can chain commands.
+
+    Optional to include semicolon at the end of the SQL command in psycopg.
+    sample cmd: 'DROP TABLE emptytable1'
+
     compare with - pandas.read_sql(sql=cmd, con=make_postgres_connection())
     pandas.read_sql returns a DataFrame which contains results.
     '''
-    with make_psycopg_cursor() as cur:
-        cur.execute(cmd)
+    with make_psycopg_connection() as conn:
+        conn.execute(cmd)
+        conn.commit()
         
 
 def make_sqlalchemy_engine() -> Engine:
@@ -91,7 +101,7 @@ if __name__ == '__main__':
     cmd1 = 'SELECT now()'
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
-
-    df = execute_psycopg_command(cmd3)
-    print(df)
+    s = input('What string do you want to input? ')
+    x = execute_psycopg_command(s)
+    print(x)
     print('done')
