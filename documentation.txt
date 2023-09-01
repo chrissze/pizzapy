@@ -176,7 +176,7 @@ PACKAGE: stock_guru_update
 [ price_cap_model.py ]
     * INDEPENDENT *
 
-    PROVIDES: proxy_price_cap()
+    EXPORTS: proxy_price_cap()
 
     This module DOES NOT depend on other program modules. It provides proxy_price_cap() to other modules to fetch current price and market cap.
 
@@ -184,7 +184,7 @@ PACKAGE: stock_guru_update
 [ guru_proxy_model.py ]
     DEPENDS ON: price_cap_model.py
 
-    PROVIDES: proxy_guru_wealth()
+    EXPORTS: proxy_guru_wealth()
 
     guru_proxy_model.py module depends on price_cap_model.py to get current stock price and market cap.
 
@@ -257,3 +257,28 @@ PACKAGE: stock_option_update
 
     Part of Model-View-Controller
 
+
+
+============================
+PACKAGE: database_update
+============================
+
+[ postgres_command_model.py ]
+    * INDEPENDENT *
+
+    EXPORTS: stock_guru_create_table_command, stock_zacks_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command,  db_table_command_dict
+
+
+[ postgres_connection_model.py ]
+    * INDEPENDENT *
+
+    EXPORTS: 
+        make_psycopg_connection()
+        make_psycopg_cursor() -> Cursor
+        execute_psycopg_command(cmd: str) -> None
+
+        make_sqlalchemy_engine() -> Engine
+        execute_pandas_read(cmd: str) -> DataFrame
+
+[ postgres_execution_model.py ]
+    DEPENDS ON: postgres_command_model.py, postgres_connection_model.py 

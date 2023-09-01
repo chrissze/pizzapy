@@ -20,7 +20,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 
 
-def make_postgres_connection() -> Connection:
+def make_psycopg_connection() -> Connection:
     '''
     DEPENDS: json, /etc/config.json FILE
     DO NOT put with open config.json at the global scope, other it will run everytime we import this module
@@ -35,16 +35,16 @@ def make_postgres_connection() -> Connection:
     return connect(dbname=pg_db, user=pg_user, password=pg_pass, host=pg_host, port=pg_port)
 
 
-def make_postgres_cursor() -> Cursor: 
+def make_psycopg_cursor() -> Cursor: 
     '''
     DEPENDS: make_postgres_connection()
     If I want to return a Cursor, the make_connection function cannot be put into a with clause
     '''
-    return make_postgres_connection().cursor()
+    return make_psycopg_connection().cursor()
 
 
 
-def execute_postgres_command(cmd: str) -> None: 
+def execute_psycopg_command(cmd: str) -> None: 
     '''
     DEPENDS: make_postgres_cursor() 
 
@@ -52,11 +52,11 @@ def execute_postgres_command(cmd: str) -> None:
     compare with - pandas.read_sql(sql=cmd, con=make_postgres_connection())
     pandas.read_sql returns a DataFrame which contains results.
     '''
-    with make_postgres_cursor() as cur:
+    with make_psycopg_cursor() as cur:
         cur.execute(cmd)
         
 
-def make_postgres_engine() -> Engine:
+def make_sqlalchemy_engine() -> Engine:
     '''
     DEPENDS: sqlalchemy, json, FILE /etc/config.json
     DO NOT put with open config.json at the global scope, other it will run everytime we import this module
@@ -81,7 +81,7 @@ def execute_pandas_read(cmd: str) -> DataFrame:
 
     we do not need to add semicolon to the end of the sql command used in read_sql
     '''
-    dataframe: DataFrame = pandas.read_sql(sql=cmd, con=make_postgres_engine())
+    dataframe: DataFrame = pandas.read_sql(sql=cmd, con=make_sqlalchemy_engine())
     return dataframe
 
 
@@ -92,6 +92,6 @@ if __name__ == '__main__':
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
 
-    df = execute_postgres_command(cmd3)
+    df = execute_psycopg_command(cmd3)
     print(df)
     print('done')

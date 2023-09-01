@@ -1,7 +1,5 @@
 
 
-
-
 beautifulsoup4==4.12
 
 html5lib
@@ -12,7 +10,7 @@ pandas==2.0
 
 psycopg[binary, pool]
 
-psycopg2-binary  # For Mac M1
+psycopg2-binary  # For both Apple Silicon Mac and Intel Mac
 
 PySide6==6.5
 
