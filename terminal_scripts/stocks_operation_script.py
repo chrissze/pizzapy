@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 
 '''
 This script must be run in Virtual Environment so that the required packages are available.
@@ -18,11 +18,11 @@ from database_update.postgres_execution_model import create_new_postgres_db, cre
 
 
 
-def manage_database():
+def manage_stocks():
     actions: Dict[str, Any] = {
-        '1': lambda: print(show_databases()),
+        '1': lambda: show_databases(),
         '2': lambda: create_new_postgres_db(),
-        '3': lambda: print(show_tables()),
+        '3': lambda: show_tables(),
         '4': lambda: loop_show_table(),
         '5': lambda: drop_table(),
         '6': lambda: subprocess.run('cat /etc/config.json', stdin=True, shell=True),
@@ -55,7 +55,6 @@ def manage_database():
             0) go to home screen
         Choose your action: """)
         if ans in actions:
-            print('\n\n')
             actions[ans]()
         elif ans == '0':
             break

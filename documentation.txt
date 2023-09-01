@@ -60,6 +60,14 @@ SECTION: IMPORT
 
     In main.py and test.py, I do not need to have above sys.path line.
 
+    In order for main.py or terminal scripts to import sub folder modules, 
+    the following must be satisfied:
+        (1) each module in a subfolder must have sys.path.append('..')
+
+        (2) each module in a subfolder must have full path import even for same folder module, see database_update/postgres_execution_model.py
+
+
+
 SECTION: requirements.txt
 ---------------------------
 
