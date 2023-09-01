@@ -85,12 +85,18 @@ SECTION: requirements.txt
         # the BeautifulSoup (ver3) package is the old libray
 
     
+    html5lib
+        # html5lib
+        # no need to specify version
+        # html5lib library is required by pandas.read_html() when the HTML page does not have <table> tag.
+
 
     lxml
-        # lxml==4.9
+        # lxml
+        # I cannot specify minor version of 4.9 in Apple Silicon, if I specify the version, it cannot be installed despite I input a valid version in Apple Silicon.
         # will install: lxml
         # pandas requires lxml to parse HTML documents, when I install pandas, pandas will not automatically install lxml.
-        # NOTE: I have successufully installed lxml on mac mini m1 by just put 'lxml' in requirements.txt, and it installed 4.9.3; before I installed lxml by pip, I edit /etc/paths and put /opt/homebrew/opt/llvm/bin/ at the top, so it use homebrew clang compiler. In addition, before I pip install lxml, I also use brew to install libxml2, but I am not sure whether libxml2 helps pip install lxml.
+        # NOTE: I have successufully installed lxml on mac mini m1 by just put 'lxml' without version in requirements.txt, and it installed 4.9.3; before I installed lxml by pip, I edit /etc/paths and put /opt/homebrew/opt/llvm/bin/ at the top, so it use homebrew clang compiler. In addition, before I pip install lxml, I also use brew to install libxml2, but I am not sure whether libxml2 helps pip install lxml.
     
 
     pandas
@@ -101,12 +107,20 @@ SECTION: requirements.txt
         # DOCS: https://pandas.pydata.org/docs/
 
     psycopg[binary, pool]
-        # psycopg[binary, pool]   # if I sepecify the version, it cannot be installed
+        # psycopg[binary, pool]   
+        # if I sepecify the version, it cannot be installed
         # will install: psycopg, psycopg-binary, psycopg-pool, typing_extensions
+        # DO NOT directly put psycopg, psycopg-binary, psycopg-pool into requirements.txt, that might not install properly.
         # version 3.1.10 for binary and 3.1.7 for pool in 2023 AUG
         # after I install psycopg[binary, pool], 'psycopg', 'psycopg-binary' and 'psycopg-pool' were installed
         # https://pypi.org/project/psycopg-binary/
         # DOCS: https://www.psycopg.org/psycopg3/docs/
+
+    psycopg2
+        # psycopg2
+        # no need to specify the version, as it will installed the latest version 2.
+        # This psycopg2 library is a prerequisite of SQLAlchemy ver 2, even in 2023.
+
 
     PySide6
         # PySide6==6.5
@@ -125,7 +139,8 @@ SECTION: requirements.txt
         # DOCS: https://requests.readthedocs.io/en/latest/
 
     SQLalchemy
-        # SQLAlchemy==2.0
+        # SQLAlchemy
+        # no need to specify the version, it will install version 2.0.XX
         # will install: SQLAlchemy, greenlet
         # pandas.read_sql() function works best with SQLalchemy connection, if I use psycopg connection, the terminal will have warnings.
         # SQLAlchemy v2.0 still depends on psycopg2 library
@@ -157,15 +172,36 @@ Currently working on barchart.com marketcap on guru_model.py
 
 
 
-
-MODULE: price_cap_model.py
-----------------------------
+==========================
 PACKAGE: stock_core_update
+==========================
 
-This module does NOT depend on other program modules. It is to fetch current price and market cap from barchart.com
 
-guru_model.py depends on price_cap_model.py to get price and cap.
+[ price_cap_model.py ]
+    * INDEPENDENT *
 
+    This module does NOT depend on other program modules. It is to fetch current price and market cap from barchart.com
+
+    guru_proxy_model.py depends on price_cap_model.py to get price and cap.
+
+
+[ guru_proxy_model.py ]
+    DEPENDS: price_cap_model.py
+
+    guru_proxy_model.py module depends on price_cap_model.py to get current stock price and market cap.
+
+    This module get all data from gurufocus and calculate the wealth percentage. The proxy dictionary is for database upsert in guru_database_model.py module.
+
+    proxy_guru_process() will return a proxy dictionary containing all GURU WEB core data.
+
+    proxy_guru_wealth() will return a proxy dictionary containing all GURU data and wealth_pc. 
+
+[ guru_database_model.py ]
+    DEPENDS: price_proxy_model.py
+
+    This module is for database upsert, it gets data from guru_proxy_model.py module.
+
+    I use wealth_pc variable from proxy_guru_wealth() to determine whether I will do the upsert in guru_database_model.py module. 
 
 
 
