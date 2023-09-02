@@ -60,7 +60,7 @@ def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
     DEPENDS: try_get_guru_debt_per_share > get_guru_debt_per_share
     try_get_guru_debt_per_share() can be changed to get_guru_debt_per_share()
     '''
-    debt_per_share: Optional[float]  = try_get_guru_debt_per_share(symbol)
+    debt_per_share: Optional[float]  = get_guru_debt_per_share(symbol)
     proxy['debt_per_share'] = debt_per_share if debt_per_share is not None else None
 
     debt_pc: Optional[float] = None if ('price' not in proxy or debt_per_share is None) else round((debt_per_share / proxy['price'] * 100.0), 2)

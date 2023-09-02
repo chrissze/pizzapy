@@ -24,6 +24,8 @@ def upsert_guru_proxy(proxy: DictProxy) -> str:
     '''
     * INDEPENDENT *
     IMPORTS: dimsumpy(upsert_dict), db_table_command_dict, make_psycopg_connection()
+    USED BY: upsert_guru()
+    
     Make sure the DictProxy parameter is valid before running this upsert function.
 
     upsert_psycopg returns the query_and_values string.

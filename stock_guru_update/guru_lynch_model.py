@@ -54,7 +54,7 @@ def proxy_guru_lynch(symbol: str, proxy: DictProxy={}) -> DictProxy:
     
     try_get_guru_lynch() below can be changed to get_guru_lynch()
     '''
-    lynch: Optional[float]  = try_get_guru_lynch(symbol)   
+    lynch: Optional[float]  = get_guru_lynch(symbol)   
     proxy['lynch'] = lynch if lynch is not None else None
 
     lynch_move_pc: Optional[float] = None if ('price' not in proxy or lynch is None) \

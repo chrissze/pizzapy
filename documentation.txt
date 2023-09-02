@@ -202,6 +202,11 @@ PACKAGE: stock_guru_update
 
     proxy_guru_wealth() is the most import function, which returns a proxy dictionary containing all GURU data and wealth_pc. 
 
+    Try or not try? child functions such proxy_guru_book_value() does not use try block,
+    similar child functions are used in the last chain function in guru_proxy_model.py,
+    it is much faster to run 10 functions at the same time without nested try blocks.
+
+
 [ guru_update_database_model.py ]
     DEPENDS ON: price_proxy_model.py
 

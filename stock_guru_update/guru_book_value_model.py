@@ -3,6 +3,10 @@ Tangible book value per share is calculated as the total tangible equity divided
 
 https://www.gurufocus.com/term/Tangibles_book_per_share/NVDA/Tangible-Book-per-Share/
 
+Try or not try? this module's proxy_guru_book_value() does not use try block,
+this function is used in the last chain function in guru_proxy_model.py,
+it is much faster to run 10 functions at the same time without nested try blocks.
+
 '''
 
 # STANDARD LIBRARIES
@@ -39,6 +43,8 @@ def get_guru_book_value(symbol: str) -> Optional[float]:
 def try_get_guru_book_value(symbol: str) -> Optional[float]:
     '''
     DEPENDS ON: get_guru_book_value()
+
+    I can use try_str in batterypy, I could later delete this function.
     '''
     try:
         book_value: Optional[float] =  get_guru_book_value(symbol)
@@ -54,10 +60,14 @@ def try_get_guru_book_value(symbol: str) -> Optional[float]:
 
 def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
-    DEPENDS: try_get_guru_book_value > get_guru_book_value
-    I use is not None to test because 0.0 is false.
+    DEPENDS ON: get_guru_book_value
+    
+    USED BY: guru_proxy_model.py
+
+    I use `is not None` to test because 0.0 is false.
+    No need to use try block, as the last chaining function used this function will have tried.  
     '''
-    book_value: Optional[float] = try_get_guru_book_value(symbol)
+    book_value: Optional[float] = get_guru_book_value(symbol)
     proxy['book_value'] = book_value if book_value is not None else None
 
     book_value_pc: Optional[float] = None if ('price' not in proxy or book_value is None) else round((book_value / proxy['price'] * 100.0), 2)

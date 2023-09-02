@@ -60,7 +60,7 @@ def try_get_guru_revenue_per_share(symbol: str) -> Optional[float]:
 
 def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_revenue > get_guru_revenue'''
-    revenue_per_share: Optional[float] = try_get_guru_revenue_per_share(symbol)   
+    revenue_per_share: Optional[float] = get_guru_revenue_per_share(symbol)   
     proxy['revenue_per_share'] = revenue_per_share if revenue_per_share is not None else None
     
     revenue_pc: Optional[float] = None if ('price' not in proxy or revenue_per_share is None) else round((revenue_per_share / proxy['price'] * 100.0), 2)
@@ -107,7 +107,7 @@ def try_get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional
 
 def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_revenue_growths'''
-    growth1y, growth3y, growth5y, growth10y = try_get_guru_revenue_growths(symbol)
+    growth1y, growth3y, growth5y, growth10y = get_guru_revenue_growths(symbol)
     proxy['growth1y'] = growth1y if growth1y is not None else None
     proxy['growth3y'] = growth3y if growth3y is not None else None
     proxy['growth5y'] = growth5y if growth5y is not None else None

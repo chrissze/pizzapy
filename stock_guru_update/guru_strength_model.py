@@ -58,7 +58,7 @@ def try_get_guru_strength(symbol: str) -> Optional[float]:
 
 def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_strength > get_guru_strength'''
-    strength: Optional[float] = try_get_guru_strength(symbol)
+    strength: Optional[float] = get_guru_strength(symbol)
     proxy['strength'] = strength if strength is not None else None
     return proxy
 

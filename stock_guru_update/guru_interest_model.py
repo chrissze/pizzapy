@@ -52,7 +52,7 @@ def try_get_guru_interest(symbol: str) -> Optional[float]:
 
 def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_interest > get_guru_interest'''
-    interest: Optional[float]  = try_get_guru_interest(symbol)
+    interest: Optional[float]  = get_guru_interest(symbol)
     proxy['interest'] = interest if interest is not None else None
 
     interest_pc: Optional[float] = None if ('cap' not in proxy or interest is None) \
