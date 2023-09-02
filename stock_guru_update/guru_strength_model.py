@@ -42,17 +42,6 @@ def get_guru_strength(symbol: str) -> Optional[float]:
 
 
 
-def try_get_guru_strength(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_strength"""
-    try:
-        strength: Optional[float] =  get_guru_strength(symbol)
-        return strength
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_strength RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_strength general Exception: ', error)
-        return None
 
 
 

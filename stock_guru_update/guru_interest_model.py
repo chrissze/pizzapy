@@ -36,18 +36,6 @@ def get_guru_interest(symbol: str) -> Optional[float]:
 
 
 
-def try_get_guru_interest(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_interest"""
-    try:
-        interest: Optional[float] =  get_guru_interest(symbol)
-        return interest
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_interest RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_interest general Exception: ', error)
-        return None
-
 
 
 def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:

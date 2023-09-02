@@ -14,6 +14,7 @@ import requests
 
 # CUSTOM LIBRARIES
 from batterypy.string.read import readf
+
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
@@ -41,19 +42,6 @@ def get_guru_debt_per_share(symbol: str) -> Optional[float]:
 
 
 
-def try_get_guru_debt_per_share(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_debt_per_share"""
-    try:
-        debt_per_share: Optional[float] =  get_guru_debt_per_share(symbol)
-        return debt_per_share
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_debt RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_debt general Exception: ', error)
-        return None
-
-
 
 def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
@@ -73,7 +61,6 @@ def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
 if __name__ == '__main__':
     
     stock = input('which stock do you want to check? ')
-    proxy = proxy_price_cap(stock)
-    x = proxy_guru_debt(stock, proxy=proxy)
+    x = get_guru_debt_per_share(stock)
     print(x)
     

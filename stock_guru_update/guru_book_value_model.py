@@ -40,24 +40,6 @@ def get_guru_book_value(symbol: str) -> Optional[float]:
     return book_value
 
 
-def try_get_guru_book_value(symbol: str) -> Optional[float]:
-    '''
-    DEPENDS ON: get_guru_book_value()
-
-    I can use try_str in batterypy, I could later delete this function.
-    '''
-    try:
-        book_value: Optional[float] =  get_guru_book_value(symbol)
-        return book_value
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_book_value RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_book_value general Exception: ', error)
-        return None
-
-
-
 def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
     DEPENDS ON: get_guru_book_value

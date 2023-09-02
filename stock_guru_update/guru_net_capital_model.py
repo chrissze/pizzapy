@@ -30,20 +30,6 @@ def get_guru_net_capital(symbol: str) -> Optional[float]:
     return net_capital
 
 
-def try_get_guru_net_capital(symbol: str) -> Optional[float]:
-    '''
-    DEPENDS: get_guru_net_capital
-    '''
-    try:
-        net_capital: Optional[float] =  get_guru_net_capital(symbol)
-        return net_capital
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_net_capital RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_net_capital general Exception: ', error)
-        return None
-
 
 
 def proxy_guru_net_capital(symbol: str, proxy: DictProxy={}) -> DictProxy:

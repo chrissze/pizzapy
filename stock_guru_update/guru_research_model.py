@@ -46,17 +46,6 @@ def get_guru_research(symbol: str) -> Optional[float]:
     return research
 
 
-def try_get_guru_research(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_research"""
-    try:
-        research: Optional[float] =  get_guru_research(symbol)
-        return research
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_research RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_research general Exception: ', error)
-        return None
 
 
 

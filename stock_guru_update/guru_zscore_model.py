@@ -50,17 +50,6 @@ def get_guru_zscore(symbol: str) -> Optional[float]:
     return zscore
 
 
-def try_get_guru_zscore(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_zscore"""
-    try:
-        zscore: Optional[float] =  get_guru_zscore(symbol)
-        return zscore
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_zscore RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_zscore general Exception: ', error)
-        return None
 
 
 

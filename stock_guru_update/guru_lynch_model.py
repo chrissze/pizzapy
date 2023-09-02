@@ -31,19 +31,6 @@ def get_guru_lynch(symbol: str) -> Optional[float]:
     return lynch
 
 
-def try_get_guru_lynch(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_lynch"""
-    try:
-        lynch: Optional[float] =  get_guru_lynch(symbol)
-        return lynch
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_lynch RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_lynch general Exception: ', error)
-        return None
-
-
 
 def proxy_guru_lynch(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_lynch > get_guru_lynch

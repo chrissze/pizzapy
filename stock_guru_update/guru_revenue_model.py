@@ -45,17 +45,6 @@ def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
     return revenue_per_share
 
 
-def try_get_guru_revenue_per_share(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_revenue"""
-    try:
-        revenue_per_share: Optional[float] =  get_guru_revenue_per_share(symbol)
-        return revenue_per_share
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_revenue RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_revenue general Exception: ', error)
-        return None
 
 
 def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
@@ -92,17 +81,6 @@ def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[flo
     return growth1y, growth3y, growth5y, growth10y
 
 
-def try_get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
-    """ DEPENDS: get_guru_revenue_growths """
-    try:
-        growth1y, growth3y, growth5y, growth10y = get_guru_revenue_growths(symbol)
-        return growth1y, growth3y, growth5y, growth10y
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_revenue_growths RequestException: ', requests_error)
-        return None, None, None, None
-    except Exception as error:
-        print('try_get_guru_revenue_growths general Exception: ', error)
-        return None, None, None, None
 
 
 def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:

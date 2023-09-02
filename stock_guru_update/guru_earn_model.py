@@ -44,19 +44,6 @@ def get_guru_earn_per_share(symbol: str, d: DictProxy={}) -> Optional[float]:
 
 
 
-def try_get_guru_earn_per_share(symbol: str) -> Optional[float]:
-    """ DEPENDS: get_guru_earn_per_share"""
-    try:
-        earn_per_share: Optional[float] =  get_guru_earn_per_share(symbol)
-        return earn_per_share
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_guru_earn_per_share RequestException: ', requests_error)
-        return None
-    except Exception as error:
-        print('try_get_guru_earn_per_share general Exception: ', error)
-        return None
-
-
 
 def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''DEPENDS: try_get_guru_earn_per_share > get_guru_earn_per_share'''
