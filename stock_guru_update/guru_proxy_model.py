@@ -16,16 +16,16 @@ from batterypy.time.cal import get_trading_day_utc
 
 # PROGRAM MODULES
 from stock_general_update.price_cap_model import proxy_price_cap
-from guru_book_value_model import proxy_guru_book_value   # dataframes
-from guru_debt_model import proxy_guru_debt   # dataframes
-from guru_earn_model import proxy_guru_earn
-from guru_interest_model import proxy_guru_interest
-from guru_lynch_model import proxy_guru_lynch
-from guru_net_capital_model import proxy_guru_net_capital   # dataframes
-from guru_research_model import proxy_guru_research
-from guru_revenue_model import proxy_guru_revenue, proxy_guru_revenue_growths
-from guru_strength_model import proxy_guru_strength
-from guru_zscore_model import proxy_guru_zscore
+from stock_guru_update.guru_book_value_model import proxy_guru_book_value   # dataframes
+from stock_guru_update.guru_debt_model import proxy_guru_debt   # dataframes
+from stock_guru_update.guru_earn_model import proxy_guru_earn
+from stock_guru_update.guru_interest_model import proxy_guru_interest
+from stock_guru_update.guru_lynch_model import proxy_guru_lynch
+from stock_guru_update.guru_net_capital_model import proxy_guru_net_capital   # dataframes
+from stock_guru_update.guru_research_model import proxy_guru_research
+from stock_guru_update.guru_revenue_model import proxy_guru_revenue, proxy_guru_revenue_growths
+from stock_guru_update.guru_strength_model import proxy_guru_strength
+from stock_guru_update.guru_zscore_model import proxy_guru_zscore
 
 
 

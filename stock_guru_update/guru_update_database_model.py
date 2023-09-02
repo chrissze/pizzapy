@@ -8,7 +8,8 @@ from multiprocessing.managers import DictProxy
 # THIRD PARTY LIBS
 
 # CUSTOM LIBS
-from dimsumpy.database.postgres import upsert_dict
+from batterypy.control.tools import trys
+from dimsumpy.database.postgres import upsert_psycopg, execute_psycopg
 
 # PROGRAM MODULES
 from guru_proxy_model import proxy_guru_wealth
@@ -17,30 +18,44 @@ from database_update.postgres_connection_model import make_psycopg_connection
 
 
 
-def upsert_guru(symbol: str) -> None:
+
+
+def upsert_guru_proxy(proxy: DictProxy) -> str:
     '''
-    DEPENDS: proxy_guru_wealth, upsert_dict, cnx, db_dict
+    * INDEPENDENT *
+    IMPORTS: dimsumpy(upsert_dict), db_table_command_dict, make_psycopg_connection()
+    Make sure the DictProxy parameter is valid before running this upsert function.
+
+    upsert_psycopg returns the query_and_values string.
+    '''
+    pk_list: List[str] = db_table_command_dict['stock_guru'].get('pk')
+    query_and_values: str = upsert_psycopg(dict=proxy, table='stock_guru', primary_key_list=pk_list, connection=make_psycopg_connection())
+    return query_and_values
+
+
+def upsert_guru(symbol: str) -> str:
+    '''
+    DEPENDS ON: upsert_guru_proxy
+    IMPORTS: proxy_guru_wealth()
+
+    I could wrap this function into trys(upsert, symbol),  
+    because this function returns None.
     '''
     proxy: DictProxy = proxy_guru_wealth(symbol)
     valid_data: bool = proxy.get('wealth_pc') is not None
 
     if valid_data:
-        upsert_dict(table='stock_guru', dict=proxy, primarykeys=db_table_command_dict['stock_guru'].get('pk'), con=make_psycopg_connection())
-
-
-def try_upsert_guru(symbol: str) -> None:
-    try:
-        upsert_guru(symbol)
-    except Exception as error:
-        print('try_upsert_guru error: ', error)
-    
+        query_and_values: str = upsert_guru_proxy(proxy)
+        return query_and_values
+    else:
+        return f'{symbol} ProxyDict missed wealth_pc'
 
 
 if __name__ == '__main__':
 
     s = input('which string to input? ')
 
-    x = upsert_guru(s)
+    x = execute_psycopg(s, make_psycopg_connection())
 
     print(x)
 

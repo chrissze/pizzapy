@@ -6,6 +6,9 @@ When Altman Z-Score GREATER THAN 3, it is in Safe Zones.
 
 https://www.gurufocus.com/term/zscore/NVDA/Altman-Z-Score/
 
+Morgan Stanley zscore is None, need further investigate
+
+
 '''
 
 
@@ -34,6 +37,8 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 def get_guru_zscore(symbol: str) -> Optional[float]:
     '''
+
+    Morgan Stanley zscore is None, need further investigate
     '''
     zscore_url: str = f'https://www.gurufocus.com/term/zscore/{symbol}/Altman-Z-Score/'
     zscore_soup: BeautifulSoup = get_html_soup(zscore_url)
