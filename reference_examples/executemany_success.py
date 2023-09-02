@@ -12,8 +12,6 @@ sample list of values  (list of dictionary) for upsert_many_psycopg:
     CONVERTED INTO:    [('aaaaaa.com',),('bbbbbb.com',)]
 
 
-
-
 def make_upsert_psycopg_query(table: str, columns: List[str], primary_key_list: List[str]) -> str:
     
 '''
@@ -66,7 +64,13 @@ def make_dicts() -> List[Dict]:
 
 def upsert_dicts_example() -> None:
     '''
-    def upsert_many_psycopg(dictionaries: List[Dict], table: str, primary_key_list: List[str], connection: Connection) -> str:
+    It is not practical to fetch mutiple DictProxies and accumulate them, then run upsert_many_psycopg. As this increase the code complexity and harder to debug. Not much time saved.
+
+    I would rather loop through a list of stock symbols, fetch a DictProxy, and run upsert_psycopg() one by one.
+
+    FUNCION SIGNATURE:
+        def upsert_many_psycopg(dictionaries: List[Dict], table: str, primary_key_list: List[str], connection: Connection) -> str:
+    
     '''
     dicts = make_dicts()
     pk_list = ['symbol']
