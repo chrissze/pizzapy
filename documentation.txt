@@ -100,6 +100,15 @@ SECTION: requirements.txt
         # pandas requires lxml to parse HTML documents, when I install pandas, pandas will not automatically install lxml.
         # NOTE: I have successufully installed lxml on mac mini m1 by just put 'lxml' without version in requirements.txt, and it installed 4.9.3; before I installed lxml by pip, I edit /etc/paths and put /opt/homebrew/opt/llvm/bin/ at the top, so it use homebrew clang compiler. In addition, before I pip install lxml, I also use brew to install libxml2, but I am not sure whether libxml2 helps pip install lxml.
     
+    more-itertools
+
+        # pip install more-itertools
+        # will install more-itertools
+        # DOCS: https://more-itertools.readthedocs.io/en/stable
+        # NOTE: 'chunked' is frequently used. 
+        from more_itertools import chunked, sliced
+        list(chunked(my_collection, 3))
+        list(sliceded(my_collection, 3))
 
     pandas
         # pandas==2.0
