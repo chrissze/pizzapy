@@ -15,7 +15,7 @@ from pandas import DataFrame, Series
 # PROGRAM MODULES
 from stock_guru_update.guru_update_database_model import upsert_guru, upsert_gurus_by_terminal
 
-from database_update.stock_list_model import all_stocks
+from database_update.stock_list_model import all_stocks, get_sp_500, get_nasdaq_100, get_sp_nasdaq
 from database_update.postgres_command_model import db_table_command_dict
 from database_update.postgres_connection_model import execute_pandas_read
 
@@ -67,6 +67,23 @@ def update_guru_loop() -> None:
 
 
 
+def update_guru_list(symbol_list: List[str]) -> None:
+    '''
+    * INDEPENDENT *
+    IMPORTS: upsert_gurus_by_terminal()
+    '''
+    number_of_stocks: int = len(symbol_list)
+
+    reply: str = input(f'\n\nAre you really want to UPDATE {number_of_stocks} stocks to stock_guru table (yes/no)? ')
+    REPLY: str = reply.upper()
+    if REPLY == 'YES':
+        upsert_gurus_by_terminal(symbol_list)
+    else:
+        print('Stock list update cancelled.')
+
+
+
+
 
 
 
@@ -92,7 +109,9 @@ guru_menu_text: str = '''\n\n
 guru_actions_dict: Dict[str, Any] = {
         '1': lambda: browse_guru_loop(),
         '2': lambda: update_guru_loop(),
-        '5': lambda: update_guru_loop(),
+        '10': lambda: update_guru_list(get_sp_500()),
+        '11': lambda: update_guru_list(get_nasdaq_100()),
+        '12': lambda: update_guru_list(get_sp_nasdaq()),
 
     }
 

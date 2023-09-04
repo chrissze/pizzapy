@@ -71,6 +71,16 @@ def get_nasdaq_100() -> List[str]:
     return stocks
 
 
+def get_sp_nasdaq() -> List[str]:
+    '''
+    DEPENDS ON: get_sp_500(), get_nasdaq_100()
+    USED BY: guru_operation_script.py
+    '''
+    sp_500_stocks: List[str] = get_sp_500()
+    nasdaq_100_stocks: List[str] = get_nasdaq_100()
+    sp_nasdaq_stocks: List[str] = sorted(list(set(sp_500_stocks + nasdaq_100_stocks)))
+    return sp_nasdaq_stocks
+
 
 
 '''
