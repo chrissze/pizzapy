@@ -40,6 +40,8 @@ def get_guru_book_value(symbol: str) -> Optional[float]:
     return book_value
 
 
+
+
 def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     '''
     DEPENDS ON: get_guru_book_value
@@ -57,9 +59,16 @@ def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-if __name__ == '__main__':    
+
+
+def test_proxy_guru_book_value() -> None:    
     stock = input('which stock do you want to check book_value? ')
     proxy = proxy_price_cap(stock)
     x = proxy_guru_book_value(stock, proxy=proxy)
     print(x)
-    
+
+
+
+
+if __name__ == '__main__':    
+    test_proxy_guru_book_value()     

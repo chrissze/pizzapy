@@ -1,4 +1,9 @@
 '''
+* INDEPENDENT MODULE *
+
+USED BY: 
+    stock_guru_update/
+
 This module contains variables and dictionaries only, line below is for copy and paste:
 
                 stock_guru_create_table_command, stock_zacks_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command,  db_table_command_dict
@@ -57,7 +62,7 @@ stock_guru_create_table_command: str = '''
     
     wealth_pc   FLOAT8,  
     PRIMARY KEY (symbol)
-    );
+    )
     '''
 
 
@@ -89,7 +94,7 @@ stock_zacks_create_table_command: str = '''
     chg3m   FLOAT8,    
     chg1y   FLOAT8,
     PRIMARY KEY (symbol)
-    );
+    )
     '''
 
 
@@ -145,7 +150,7 @@ stock_option_create_table_command: str = '''
     callpc   FLOAT8,    
     putpc   FLOAT8,    
     PRIMARY KEY (symbol, td) 
-    );
+    )
     '''
 
 
@@ -179,12 +184,12 @@ futures_option_create_table_command: str = '''CREATE TABLE IF NOT EXISTS futures
 # This dictionary can be used to compose upsert commands
 # option, price and technicals are from yahoo
 db_table_command_dict: Dict[str, Any] = {
-    'stock_guru': {'pk': ['symbol'], 'command': stock_guru_create_table_command},
-    'stock_zacks': {'pk': ['symbol'], 'command': stock_zacks_create_table_command},
-    'stock_option': {'pk': ['symbol', 'td'], 'command': stock_option_create_table_command},
-    'stock_price': {'pk': ['symbol', 'td'], 'command': stock_price_create_table_command},
-    'stock_technical': {'pk': ['symbol', 'td'], 'command': stock_technical_create_table_command},
-    'futures_option': {'pk': ['symbol', 'td'], 'command': futures_option_create_table_command},
+    'stock_guru': {'primary_key_list': ['symbol'], 'command': stock_guru_create_table_command},
+    'stock_zacks': {'primary_key_list': ['symbol'], 'command': stock_zacks_create_table_command},
+    'stock_option': {'primary_key_list': ['symbol', 'td'], 'command': stock_option_create_table_command},
+    'stock_price': {'primary_key_list': ['symbol', 'td'], 'command': stock_price_create_table_command},
+    'stock_technical': {'primary_key_list': ['symbol', 'td'], 'command': stock_technical_create_table_command},
+    'futures_option': {'primary_key_list': ['symbol', 'td'], 'command': futures_option_create_table_command},
 }
 
 

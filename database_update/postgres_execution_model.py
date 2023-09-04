@@ -124,7 +124,7 @@ def show_table_rows(table_name: str, limit_rows: int) -> DataFrame:
 
 
 
-def loop_show_table_rows() -> DataFrame:
+def loop_show_table_rows() -> None:
     '''
     DEPENDS ON: show_table_rows()
     IMPORTS: execute_pandas_read() 
@@ -145,7 +145,7 @@ def loop_show_table_rows() -> DataFrame:
             print('Invalid input.')
 
 
-def loop_execute_sql() -> DataFrame:
+def loop_execute_sql() -> None:
     '''
     * INDEPENDENT *
     IMPORTS: execute_psycopg_command() 
@@ -218,14 +218,18 @@ def loop_drop_table():
 
 
 
-
-if __name__ == '__main__':
+def test() -> None:
     cmd1 = 'SELECT now()'
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
 
     #s: str = input("\nWhich string do you want to input? ")
-    x = drop_table()
+    x = loop_drop_table()
     print(x)
 
     print(f'{__file__} done')
+
+
+
+if __name__ == '__main__':
+    test()
