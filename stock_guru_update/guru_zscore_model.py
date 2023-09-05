@@ -1,5 +1,5 @@
 
-'''
+"""
 When Altman Z-Score is LESS THAN 1.8, it is in Distress Zones.
 When Altman Z-Score is between 1.8 and 3, it is in Grey Zones.
 When Altman Z-Score GREATER THAN 3, it is in Safe Zones.
@@ -9,7 +9,7 @@ https://www.gurufocus.com/term/zscore/NVDA/Altman-Z-Score/
 Morgan Stanley zscore is None, need further investigate
 
 
-'''
+"""
 
 
 # STANDARD LIBRARIES
@@ -36,10 +36,10 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_zscore(symbol: str) -> Optional[float]:
-    '''
+    """
 
     Morgan Stanley zscore is None, need further investigate
-    '''
+    """
     zscore_url: str = f'https://www.gurufocus.com/term/zscore/{symbol}/Altman-Z-Score/'
     zscore_soup: BeautifulSoup = get_html_soup(zscore_url)
     zscore_soup_items: ResultSet = zscore_soup.find_all('meta', attrs={'name': 'description'})
@@ -54,7 +54,7 @@ def get_guru_zscore(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_zscore(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_zscore > get_guru_zscore'''
+    """DEPENDS: try_get_guru_zscore > get_guru_zscore"""
     zscore: Optional[float] = get_guru_zscore(symbol)
     proxy['zscore'] = zscore if zscore is not None else None
     return proxy

@@ -22,7 +22,7 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_interest(symbol: str) -> Optional[float]:
-    '''    '''
+    """    """
     interest_url: str = f'https://www.gurufocus.com/term/InterestExpense/{symbol}/Interest-Expense/'
     interest_soup: BeautifulSoup = get_html_soup(interest_url)
     interest_soup_items: ResultSet = interest_soup.find_all('meta', attrs={'name': 'description'})
@@ -39,7 +39,7 @@ def get_guru_interest(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_interest > get_guru_interest'''
+    """DEPENDS: try_get_guru_interest > get_guru_interest"""
     interest: Optional[float]  = get_guru_interest(symbol)
     proxy['interest'] = interest if interest is not None else None
 

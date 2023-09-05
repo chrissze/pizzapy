@@ -1,4 +1,4 @@
-'''
+"""
 * INDEPENDENT MODULE *
 
 USED BY: 
@@ -11,7 +11,7 @@ This module contains variables and dictionaries only, line below is for copy and
     
 I cannot place postgres execution functions in this module, as it will led to circular imports.
 
-'''
+"""
 
 # STANDARD LIB
 import sys; sys.path.append('..')
@@ -19,7 +19,7 @@ import json
 from typing import Any, Dict
 
 
-stock_guru_create_table_command: str = '''
+stock_guru_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_guru (
     guru_id BIGSERIAL, 
     t   TIMESTAMP,                    
@@ -63,10 +63,10 @@ stock_guru_create_table_command: str = '''
     wealth_pc   FLOAT8,  
     PRIMARY KEY (symbol)
     )
-    '''
+    """
 
 
-stock_zacks_create_table_command: str = '''
+stock_zacks_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_zacks ( 
     zacks_id  BIGSERIAL, 
     t   TIMESTAMP,                    
@@ -95,11 +95,11 @@ stock_zacks_create_table_command: str = '''
     chg1y   FLOAT8,
     PRIMARY KEY (symbol)
     )
-    '''
+    """
 
 
 # yahoo
-stock_price_create_table_command: str = '''
+stock_price_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_price (
     price_id  BIGSERIAL, 
     t   TIMESTAMP,                    
@@ -113,10 +113,10 @@ stock_price_create_table_command: str = '''
     vol BIGINT,    
     PRIMARY KEY (symbol, td) 
     );
-    '''
+    """
 
 # from stock_price
-stock_technical_create_table_command: str = '''
+stock_technical_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_tech (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
@@ -129,12 +129,12 @@ stock_technical_create_table_command: str = '''
     p200  FLOAT8,        
     PRIMARY KEY (symbol, td) 
     );
-    '''
+    """
 
 
 
 # nasdaq or barchart
-stock_option_create_table_command: str = '''
+stock_option_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_option (
     option_id  BIGSERIAL, 
     t   TIMESTAMP,                    
@@ -151,7 +151,7 @@ stock_option_create_table_command: str = '''
     putpc   FLOAT8,    
     PRIMARY KEY (symbol, td) 
     )
-    '''
+    """
 
 
 
@@ -159,7 +159,7 @@ stock_option_create_table_command: str = '''
 
 
 #ino
-futures_option_create_table_command: str = '''CREATE TABLE IF NOT EXISTS futures_option (
+futures_option_create_table_command: str = """CREATE TABLE IF NOT EXISTS futures_option (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        
@@ -176,7 +176,7 @@ futures_option_create_table_command: str = '''CREATE TABLE IF NOT EXISTS futures
     putpc   FLOAT8,    
     PRIMARY KEY (symbol, td)
     );
-    '''
+    """
 
 
 

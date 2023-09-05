@@ -1,4 +1,4 @@
-'''
+"""
 This module's function are mainly called by terminal_scripts/postgres_operation_script.py.
 
 Prerequites of Postgres Server connection:
@@ -11,7 +11,7 @@ SQL commands format in execute_pandas_read() and execute_psycopg_command():
 
     (2) Need to have conn.commit() in psycopg execute() function.
     
-'''
+"""
 
 # STANDARD LIB
 import sys; sys.path.append('..')
@@ -30,22 +30,22 @@ from database_update.postgres_connection_model import execute_pandas_read, execu
 
         
 def show_databases() -> DataFrame:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: execute_pandas_read()
     I can delete a database in psql, no need to create drop_database
     because there should be a few databases only.
-    '''
+    """
     cmd: str = "SELECT datname FROM pg_database WHERE datistemplate = false"
     df: DataFrame = execute_pandas_read(cmd)
     return df
 
 
 def create_new_postgres_db() -> None:
-    '''
+    """
     DEPENDS ON: show_databases()
     IMPORTS: subprocess
-    '''
+    """
     print('\nCurrent available databases in Postgresql: \n')
     print(show_databases())
     initial_reply = input(f'\n\nDo you want to create a new database in Postgresql (y/N)? ')
@@ -66,7 +66,7 @@ def create_new_postgres_db() -> None:
 
 
 def show_table(table_name: str) -> DataFrame:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: execute_pandas_read() 
     CALLED BY: loop_show_table()
@@ -75,17 +75,17 @@ def show_table(table_name: str) -> DataFrame:
     full_cmd: str = f"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
 
     empty tables without any column will have empty dataframe result.
-    '''
+    """
     cmd: str = f"SELECT column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
     df: DataFrame = execute_pandas_read(cmd)
     return df
 
 
 def show_tables() -> DataFrame:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: execute_pandas_read()
-    '''
+    """
     cmd = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
     df: DataFrame = execute_pandas_read(cmd)
     return df
@@ -95,10 +95,10 @@ def show_tables() -> DataFrame:
 
 
 def loop_show_table() -> None:
-    '''
+    """
     DEPENDS ON: show_tables(), show_table()
     IMPORTS: db_table_command_dict
-    '''
+    """
     while True:
         print()
         print(show_tables())
@@ -111,13 +111,13 @@ def loop_show_table() -> None:
 
 
 def show_table_rows(table_name: str, limit_rows: int) -> DataFrame:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: execute_pandas_read() 
     CALLED BY: loop_show_table_rows()
 
     empty tables without any column will have empty dataframe result.
-    '''
+    """
     cmd: str = f"SELECT * FROM {table_name} LMIIT {limit_rows};"
     df: DataFrame = execute_pandas_read(cmd)
     return df
@@ -125,11 +125,11 @@ def show_table_rows(table_name: str, limit_rows: int) -> DataFrame:
 
 
 def loop_show_table_rows() -> None:
-    '''
+    """
     DEPENDS ON: show_table_rows()
     IMPORTS: execute_pandas_read() 
 
-    '''
+    """
     while True: 
         print(show_tables())
         print()
@@ -146,11 +146,11 @@ def loop_show_table_rows() -> None:
 
 
 def loop_execute_sql() -> None:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: execute_psycopg_command() 
     sample cmd: INSERT INTO domain5 (domain) VALUES ('eee.com')
-    '''
+    """
     while True: 
         print()
         cmd: str = input('Input a SQL COMMAND to execute (0 to cancel): ')
@@ -168,10 +168,10 @@ def loop_execute_sql() -> None:
 
 
 def create_table(table_name:str) -> None:
-    '''
+    """
     DEPENDS ON: show_table(), show_tables()
     IMPORTS: db_table_command_dict, execute_psycopg_command()
-    '''
+    """
     if table_name in db_table_command_dict:
         cmd: str = db_table_command_dict[table_name].get('command')
         execute_psycopg_command(cmd)
@@ -196,10 +196,10 @@ def create_table(table_name:str) -> None:
 
 
 def loop_drop_table():
-    '''
+    """
     DEPENDS ON: show_tables()
     IMPORTS:  db_table_command_dict, execute_psycopg_command()
-    '''
+    """
     while True:
         print('\nLatest available tables in Postgresql database: \n')
         print(show_tables())

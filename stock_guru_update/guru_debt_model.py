@@ -23,7 +23,7 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 def get_guru_debt_per_share(symbol: str) -> Optional[float]:
 
-    ''' 
+    """ 
     REQUIRES: pandas
 
     TTWO debt is 0.00 with tables, ttwo's debt is really 0.00
@@ -33,7 +33,7 @@ def get_guru_debt_per_share(symbol: str) -> Optional[float]:
         will divert to
         https://www.gurufocus.com/term/Total_Debt_Per_Share/NVDA/Total-Debt-per-Share/NVDA
 
-    '''
+    """
     debt_url: str = f'https://www.gurufocus.com/term/Total_Debt_Per_Share/{symbol}/Total-Debt-per-Share'
     debt_dfs: List[DataFrame] = get_html_dataframes(debt_url)
     debt_str: Any = '' if len(debt_dfs) < 3 or debt_dfs[2].empty else debt_dfs[2].iloc[-1, -1] # can be str or float64 type
@@ -44,10 +44,10 @@ def get_guru_debt_per_share(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''
+    """
     DEPENDS: try_get_guru_debt_per_share > get_guru_debt_per_share
     try_get_guru_debt_per_share() can be changed to get_guru_debt_per_share()
-    '''
+    """
     debt_per_share: Optional[float]  = get_guru_debt_per_share(symbol)
     proxy['debt_per_share'] = debt_per_share if debt_per_share is not None else None
 

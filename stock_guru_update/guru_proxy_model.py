@@ -31,9 +31,9 @@ from stock_guru_update.guru_zscore_model import proxy_guru_zscore
 
 
 def proxy_guru_process(symbol: str) -> DictProxy:
-    '''
+    """
     DEPENDS: get_trading_day_utc, proxy_price_cap, proxy_guru_book_value TO proxy_guru_zscore
-    '''
+    """
     SYMBOL: str = symbol.upper()
     manager: SyncManager = Manager()
     proxy: DictProxy = manager.dict()
@@ -99,9 +99,9 @@ def proxy_guru_process(symbol: str) -> DictProxy:
 
 
 def get_guru_wealth_pc(proxy: DictProxy) -> Optional[float]:
-    '''
+    """
     wealth_pc is the sum of NET CAPITAL + TANGIBLE BOOK VALUE + NEXT 5 YEARS EARNINGS, in percentage of market capitalization.
-    '''
+    """
     wealth_keys: List[str] = ['cap', 'price', 'earn_pc', 'net_capital_pc', 'book_value_pc']
     valid_keys: bool = all(key in proxy for key in wealth_keys)    
     valid_values: bool = all(value is not None for key, value in proxy.items() if key in wealth_keys) if valid_keys else False
@@ -110,9 +110,9 @@ def get_guru_wealth_pc(proxy: DictProxy) -> Optional[float]:
 
 
 def proxy_guru_wealth(symbol: str) -> DictProxy:
-    '''
+    """
     DEPENDS: proxy_guru_process, get_guru_wealth_pc
-    '''
+    """
     proxy: DictProxy = proxy_guru_process(symbol)
     wealth_pc: Optional[float] = get_guru_wealth_pc(proxy)
     proxy['wealth_pc'] = wealth_pc if wealth_pc is not None else None

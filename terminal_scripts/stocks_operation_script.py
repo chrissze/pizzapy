@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-'''
+"""
 This script must be run in Virtual Environment so that the required packages are available.
 
 The postgres server settings is in /etc/config.json in local computer.
-'''
+"""
 
 # STANDARD LIBS
 import sys; sys.path.append('..')

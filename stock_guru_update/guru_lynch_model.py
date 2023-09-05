@@ -19,7 +19,7 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_lynch(symbol: str) -> Optional[float]:
-    '''Lynch Value is Peter Lynch's estimation of fair price'''
+    """Lynch Value is Peter Lynch's estimation of fair price"""
     lynch_url: str = f'https://www.gurufocus.com/term/lynchvalue/{symbol}/Peter-Lynch-Fair-Value/'
     soup: BeautifulSoup = get_html_soup(lynch_url)
     soup_items: ResultSet = soup.find_all('meta', attrs={'name': 'description'})
@@ -33,14 +33,14 @@ def get_guru_lynch(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_lynch(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_lynch > get_guru_lynch
+    """DEPENDS: try_get_guru_lynch > get_guru_lynch
     
     lynch is Peter Lynch's fair price.
 
     lynchmove is the expected movement in percentage, 20.0 means expecting to have 20% price increase; -30 means expecting to have 20% price drop.
     
     try_get_guru_lynch() below can be changed to get_guru_lynch()
-    '''
+    """
     lynch: Optional[float]  = get_guru_lynch(symbol)   
     proxy['lynch'] = lynch if lynch is not None else None
 

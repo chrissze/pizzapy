@@ -19,7 +19,7 @@ from dimsumpy.web.crawler import get_html_soup
 
 
 def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
-    '''
+    """
     * INDEPENDENT *
 
     IMPORTS: json, beautifulsoup4, batterypy, dimsumpy
@@ -27,7 +27,7 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
     I can use this function to display the marketcap dictionary in formatted string:
         json_cap_pretty: str = json.dumps(json_cap, indent=2)
 
-    '''
+    """
     barchart_url: str = f'https://www.barchart.com/stocks/quotes/{symbol}'
     barchart_soup: BeautifulSoup = get_html_soup(barchart_url)
     # soup.find function below is safe, it will return None if it cannot find the target.
@@ -44,9 +44,9 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
 
 
 def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
-    '''
+    """
     DEPENDS ON: get_barchart_price_cap() 
-    '''
+    """
     try:
         price, cap = get_barchart_price_cap(symbol)
         return price, cap
@@ -59,10 +59,10 @@ def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
 
 
 def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''
+    """
     DEPENDS ON: try_get_price_cap()
     I write `is not None` for testing below since price, cap might be 0, which is a false value.
-    '''
+    """
     price, cap = try_get_price_cap(symbol)    
     proxy['price'] = price if price is not None else None
     proxy['cap'] = cap if cap is not None else None

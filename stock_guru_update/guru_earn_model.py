@@ -27,12 +27,12 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_earn_per_share(symbol: str, d: DictProxy={}) -> Optional[float]:
-    '''
+    """
     REQUIRES: beautifulsoup4
     
     https://www.gurufocus.com/term/eps_nri/NVDA/EPS-without-NRI/
     
-    '''
+    """
     earn_url: str = f'https://www.gurufocus.com/term/eps_nri/{symbol}/EPS-without-NRI/'
     earn_soup: BeautifulSoup = get_html_soup(earn_url)
     earn_soup_items: ResultSet = earn_soup.find_all('meta', attrs={'name': 'description'})
@@ -46,7 +46,7 @@ def get_guru_earn_per_share(symbol: str, d: DictProxy={}) -> Optional[float]:
 
 
 def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_earn_per_share > get_guru_earn_per_share'''
+    """DEPENDS: try_get_guru_earn_per_share > get_guru_earn_per_share"""
     earn_per_share: Optional[float]  = get_guru_earn_per_share(symbol)
     proxy['earn_per_share'] = earn_per_share if earn_per_share is not None else None
     

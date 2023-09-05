@@ -1,7 +1,7 @@
-'''
+"""
     https://www.gurufocus.com/term/rank_balancesheet/NVDA/Financial-Strength/
 
-'''
+"""
 
 
 # STANDARD LIBRARIES
@@ -27,9 +27,9 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_strength(symbol: str) -> Optional[float]:
-    '''
+    """
 
-    '''
+    """
     strength_url: str = f'https://www.gurufocus.com/term/rank_balancesheet/{symbol}/Financial-Strength/'
     strength_soup: BeautifulSoup = get_html_soup(strength_url)
     strength_soup_items: ResultSet = strength_soup.find_all('meta', attrs={'name': 'description'})
@@ -46,7 +46,7 @@ def get_guru_strength(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_strength > get_guru_strength'''
+    """DEPENDS: try_get_guru_strength > get_guru_strength"""
     strength: Optional[float] = get_guru_strength(symbol)
     proxy['strength'] = strength if strength is not None else None
     return proxy

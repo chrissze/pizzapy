@@ -1,12 +1,12 @@
 
-'''
+"""
 NVIDA has 1, 3, 5, 10 years average growth rates. 
 https://www.gurufocus.com/term/per+share+rev/NVDA/Revenue-per-Share/
 
 COINBASE has only 1 and 3 years average grow rates (last update: 2023)
 https://www.gurufocus.com/term/per+share+rev/COIN/Revenue-per-Share/
 
-'''
+"""
 
 
 # STANDARD LIBRARIES
@@ -32,9 +32,9 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
-    '''
+    """
     returns Revenue Per Share
-    '''
+    """
     revenue_url: str = f'https://www.gurufocus.com/term/per+share+rev/{symbol}/Revenue-per-Share/'
     revenue_soup: BeautifulSoup = get_html_soup(revenue_url)
     soup_items: ResultSet = revenue_soup.find_all('meta', attrs={'name': 'description'})
@@ -48,7 +48,7 @@ def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_revenue > get_guru_revenue'''
+    """DEPENDS: try_get_guru_revenue > get_guru_revenue"""
     revenue_per_share: Optional[float] = get_guru_revenue_per_share(symbol)   
     proxy['revenue_per_share'] = revenue_per_share if revenue_per_share is not None else None
     
@@ -58,9 +58,9 @@ def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
-    '''    
+    """    
     returns Revenue Growths in years
-    '''
+    """
     revenue_url: str = f'https://www.gurufocus.com/term/per+share+rev/{symbol}/Revenue-per-Share/'
     html_text: str = get_html_text(revenue_url)
     # the + sign matches multiple occurrence of the same character, such as <<, >>, %%%, commonly use when there are spaces.
@@ -84,7 +84,7 @@ def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[flo
 
 
 def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_revenue_growths'''
+    """DEPENDS: try_get_guru_revenue_growths"""
     growth1y, growth3y, growth5y, growth10y = get_guru_revenue_growths(symbol)
     proxy['growth1y'] = growth1y if growth1y is not None else None
     proxy['growth3y'] = growth3y if growth3y is not None else None

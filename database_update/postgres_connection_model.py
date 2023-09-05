@@ -1,10 +1,10 @@
-'''
+"""
     
 I can only put some postgres make connection functions for other functions to import.
 
 I cannot place postgres execution functions in this module, as it will led to circular imports.
 
-'''
+"""
 
 
 # STANDARD LIB
@@ -21,10 +21,10 @@ from sqlalchemy.engine.base import Engine
 
 
 def make_psycopg_connection() -> Connection:
-    '''
+    """
     DEPENDS: json, /etc/config.json FILE
     DO NOT put with open config.json at the global scope, other it will run everytime we import this module
-    '''
+    """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
     pg_db: str = config.get('POSTGRES_DB')
@@ -36,16 +36,16 @@ def make_psycopg_connection() -> Connection:
 
 
 def make_psycopg_cursor() -> Cursor: 
-    '''
+    """
     DEPENDS: make_postgres_connection()
     If I want to return a Cursor, the make_connection function cannot be put into a with clause
-    '''
+    """
     return make_psycopg_connection().cursor()
 
 
 
 def execute_psycopg_command(cmd: str) -> None: 
-    '''
+    """
     DEPENDS: make_psycopg_connection()
 
     I must include conn.commit(), otherwise the cmd will not be executed.
@@ -60,18 +60,18 @@ def execute_psycopg_command(cmd: str) -> None:
 
     compare with - pandas.read_sql(sql=cmd, con=make_postgres_connection())
     pandas.read_sql returns a DataFrame which contains results.
-    '''
+    """
     with make_psycopg_connection() as conn:
         conn.execute(cmd)
         conn.commit()
         
 
 def make_sqlalchemy_engine() -> Engine:
-    '''
+    """
     DEPENDS: sqlalchemy, json, FILE /etc/config.json
     DO NOT put with open config.json at the global scope, other it will run everytime we import this module
     used in pandas - read_sql() ; echo='debug' is for verbose debugging; echo=None to surpress verbose terminal info.
-    '''
+    """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
     pg_user: str = config.get('POSTGRES_USER')
@@ -85,12 +85,12 @@ def make_sqlalchemy_engine() -> Engine:
 
 
 def execute_pandas_read(cmd: str) -> DataFrame:
-    '''
+    """
     psycopg Connection can be used in pandas.read_sql, it will have warnings in the terminal when I run it.
     pandas recommend SQLAlchemy connection
 
     we do not need to add semicolon to the end of the sql command used in read_sql
-    '''
+    """
     dataframe: DataFrame = pandas.read_sql(sql=cmd, con=make_sqlalchemy_engine())
     return dataframe
 

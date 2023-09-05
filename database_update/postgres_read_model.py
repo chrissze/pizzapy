@@ -1,7 +1,7 @@
-'''
+"""
 This is a common module for guru_stock, zacks, stock_option
 
-'''
+"""
 
 # STANDARD LIB
 import sys; sys.path.append('..')
@@ -22,7 +22,7 @@ from database_update.postgres_connection_model import execute_pandas_read, execu
     
 
 def get_column_from_table(column: str, table: str) -> List[Any]:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: pandas, execute_pandas_read()
     USED BY:
@@ -30,7 +30,7 @@ def get_column_from_table(column: str, table: str) -> List[Any]:
     I can use this function to get a list of symbols that is present a particular table. 
 
     get_column_from_table(column='symbol', table='stock_guru')
-    '''
+    """
     cmd: str = f'SELECT {column} FROM {table} ORDER BY {column}'
     df: DataFrame = execute_pandas_read(cmd)  
     # the df shape is like (500, 1), one column only. 
@@ -42,7 +42,7 @@ def get_column_from_table(column: str, table: str) -> List[Any]:
 
 
 def get_symbol_row_result(symbol: str, table: str ) -> Series:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: pandas, execute_pandas_read()
     
@@ -58,7 +58,7 @@ def get_symbol_row_result(symbol: str, table: str ) -> Series:
     No need to uppercase symbol, it will be changed in later function.
 
     This function will be a common function for guru, zacks, option, technical, in both terminal and GUI.
-    '''    
+    """    
     cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
     df: DataFrame = execute_pandas_read(cmd)
     first_row: Series = Series() if df.empty else df.iloc[0]
@@ -67,14 +67,14 @@ def get_symbol_row_result(symbol: str, table: str ) -> Series:
 
 
 def view_symbol_row_terminal(symbol: str, table: str) -> None:
-    '''
+    """
     DEPENDS ON: get_symbol_row_result()
     USED BY:  guru_operation_script.py
     This function will be a common function for guru, zacks, option, technical in terminal scripts.
 
     exapmle:
         view_symbol_row_terminal('amd', 'stock_guru')
-    '''
+    """
     SYMBOL: str = symbol.upper()
     vertical_result: Series = get_symbol_row_result(symbol=SYMBOL, table=table)
     if not vertical_result.empty:

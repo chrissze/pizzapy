@@ -1,6 +1,6 @@
-'''
+"""
 
-'''
+"""
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
@@ -24,10 +24,10 @@ from database_update.postgres_read_model import view_symbol_row_terminal
 
 
 def browse_guru_loop() -> None:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: all_stocks, view_symbol_row_terminal()
-    '''
+    """
     while True:
         symbol: str = input('\n\nWhich symbol do you want to check (input * before the symbol to update, input 0 to quit)? ')
         SYMBOL: str = symbol.upper()
@@ -47,10 +47,10 @@ def browse_guru_loop() -> None:
 
 
 def update_guru_loop() -> None:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: all_stocks, view_symbol_row_terminal()
-    '''
+    """
     while True:
         symbol: str = input('\n\nWhich symbol do you want to UPDATE (input 0 to quit)? ')
         SYMBOL: str = symbol.upper()
@@ -68,10 +68,10 @@ def update_guru_loop() -> None:
 
 
 def update_guru_list(symbol_list: List[str]) -> None:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: upsert_gurus_by_terminal()
-    '''
+    """
     number_of_stocks: int = len(symbol_list)
 
     reply: str = input(f'\n\nAre you really want to UPDATE {number_of_stocks} stocks to stock_guru table (yes/no)? ')
@@ -87,7 +87,7 @@ def update_guru_list(symbol_list: List[str]) -> None:
 
 
 
-guru_menu_text: str = '''\n\n
+guru_menu_text: str = """\n\n
         Which action do you want to do? 
                     
         Single stock operations:        
@@ -102,7 +102,7 @@ guru_menu_text: str = '''\n\n
 
         
         0)  quit
-        Choose your action: '''
+        Choose your action: """
 
 
 

@@ -1,4 +1,4 @@
-'''
+"""
 In order for this script to works, the following must be satisfied:
     (1) each module in a subfolder must have sys.path.append('..')
 
@@ -6,7 +6,7 @@ In order for this script to works, the following must be satisfied:
     see database_update/postgres_execution_model.py
 
     
-'''
+"""
 
 
 import subprocess

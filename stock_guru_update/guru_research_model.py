@@ -1,10 +1,10 @@
 
-'''
+"""
 
 https://www.gurufocus.com/term/RD/INTC/Research-&-Development
 
 
-'''
+"""
 
 
 # STANDARD LIBRARIES
@@ -31,9 +31,9 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_research(symbol: str) -> Optional[float]:
-    '''
+    """
     Research & Development expense
-    '''
+    """
     research_url: str = f'https://www.gurufocus.com/term/RD/{symbol}/Research-&-Development/'
     research_soup: BeautifulSoup = get_html_soup(research_url)
     research_soup_items: ResultSet = research_soup.find_all('meta', attrs={'name': 'description'})
@@ -50,7 +50,7 @@ def get_guru_research(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_research(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''DEPENDS: try_get_guru_research > get_guru_research'''
+    """DEPENDS: try_get_guru_research > get_guru_research"""
     research: Optional[float] = get_guru_research(symbol)
     proxy['research'] = research if research is not None else None
     

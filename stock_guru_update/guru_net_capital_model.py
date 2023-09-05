@@ -21,7 +21,7 @@ from stock_general_update.price_cap_model import proxy_price_cap
 
 
 def get_guru_net_capital(symbol: str) -> Optional[float]:
-    '''net_capital here is (cash equivalent + Receivable * certain percentage + inventory * percentage - total debt)'''
+    """net_capital here is (cash equivalent + Receivable * certain percentage + inventory * percentage - total debt)"""
     net_capital_url: str = f'https://www.gurufocus.com/term/NCAV/{symbol}/Net-Net-Working-Capital/'
     net_capital_dfs: List[DataFrame] = get_html_dataframes(net_capital_url)
     # net_capital_value can be str or float64 type
@@ -33,10 +33,10 @@ def get_guru_net_capital(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_net_capital(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    '''
+    """
     DEPENDS: try_get_guru_net_capital > get_guru_net_capital
     try_get_guru_net_capital() can be changed to get_guru_net_capital()
-    '''
+    """
     net_capital: Optional[float] = get_guru_net_capital(symbol)
     proxy['net_capital'] = net_capital if net_capital is not None else None
 

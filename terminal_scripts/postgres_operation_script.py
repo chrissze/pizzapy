@@ -1,7 +1,7 @@
 
-'''
+"""
 
-'''
+"""
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
@@ -12,7 +12,7 @@ from typing import Any, Dict, List
 from database_update.postgres_execution_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
 
 
-postgres_menu_text: str = '''\n
+postgres_menu_text: str = """\n
     Which action do you want to do? 
         1) show_databases()   
         2) create_new_postgres_db()
@@ -31,7 +31,7 @@ postgres_menu_text: str = '''\n
         16) create_table('futures_option')
         
         0) quit
-    Choose your action: '''
+    Choose your action: """
 
 
 actions_dict: Dict[str, Any] = {
@@ -54,9 +54,9 @@ actions_dict: Dict[str, Any] = {
 
 
 def manage_database(): 
-    '''
+    """
     DEPENDS ON: postgres_menu_text, actions_dict
-    '''
+    """
     while True:
         ans: str = input(postgres_menu_text)
         if ans in actions_dict:

@@ -23,7 +23,7 @@ from database_update.postgres_connection_model import make_psycopg_connection
 
 
 def upsert_guru_by_proxy(proxy: DictProxy) -> str:
-    '''
+    """
     * INDEPENDENT *
     IMPORTS: dimsumpy(upsert_psycopg), db_table_command_dict, make_psycopg_connection()
     USED BY: upsert_guru()
@@ -35,7 +35,7 @@ def upsert_guru_by_proxy(proxy: DictProxy) -> str:
     Make sure the DictProxy parameter is valid before running this upsert function.
 
     upsert_psycopg returns the query_and_values string as a result.
-    '''
+    """
     table_name: str = 'stock_guru'
     pk_list: List[str] = db_table_command_dict[table_name].get('primary_key_list')
     query_result: str = upsert_psycopg(dict=proxy, table=table_name, primary_key_list=pk_list, connection=make_psycopg_connection())
@@ -43,12 +43,12 @@ def upsert_guru_by_proxy(proxy: DictProxy) -> str:
 
 
 def upsert_guru(symbol: str) -> str:
-    '''
+    """
     DEPENDS ON: upsert_guru_by_proxy
     IMPORTS: proxy_guru_wealth()
-
+    USED BY: upsert_gurus_by_terminal()
     I could wrap this function into try_str(upsert, symbol).
-    '''
+    """
     proxy: DictProxy = proxy_guru_wealth(symbol)
     valid_data: bool = proxy.get('wealth_pc') is not None
 
@@ -62,7 +62,7 @@ def upsert_guru(symbol: str) -> str:
 
 
 def upsert_gurus_by_terminal(symbols: List[str]) -> None:
-    '''
+    """
     DEPENDS ON: upsert_guru
 
     Since I have used multiprocess process in each upsert_guru call, 
@@ -71,7 +71,7 @@ def upsert_gurus_by_terminal(symbols: List[str]) -> None:
     I can add try block by:
         upsert_result: str = try_str(upsert_guru, symbol)
 
-    '''
+    """
     for symbol in symbols:
         upsert_result: str = upsert_guru(symbol)
         print(upsert_result)

@@ -143,7 +143,7 @@ def tradingcharts_oi(s: str, d: DictProxy={}) -> Optional[float] :
 
 
 def ycharts_oi(s: str,  d: DictProxy={}) -> Optional[float] :
-    '''return the open interest in no. of contract '''
+    """return the open interest in no. of contract """
 
     headers: CaseInsensitiveDict = requests.utils.default_headers()
     headers['User-Agent']: str = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
@@ -239,11 +239,11 @@ def ino_op_test() -> None:
 
 
 def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], Optional[float]]:
-    '''
+    """
     example: ino_op('CL')
     return callmoney, putmoney, price
     6J got some invalid data with expiration dates missing
-    '''
+    """
 
     headers = {
         'Host': 'quote.ino.com',
@@ -321,12 +321,12 @@ def ino_op(s: str,  d: DictProxy={}) -> Tuple[Optional[float], Optional[float], 
     finally:  # To make sure processes are closed in the end, even if errors happen
         pool.close()
 
-'''
+"""
 	dfObj.drop( dfObj[ dfObj['Age'] == 30 ].index , inplace=True)
 # delete all rows with column 'Age' has value 30 to 40 
 indexNames = df[ df['Expiration'] < date.today() ].index
 df.drop(indexNames , inplace=True)
-'''
+"""
 
 
 
