@@ -86,7 +86,13 @@ SECTION: requirements.txt
         # DOCS: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
         # the BeautifulSoup (ver3) package is the old libray
 
-    
+
+    black
+        # black
+        # will install black(program)
+        # version 23.7 in 2023 SEP
+        # This program can pretty format database_update/generated_stock_list.py
+
     html5lib
         # html5lib
         # no need to specify version

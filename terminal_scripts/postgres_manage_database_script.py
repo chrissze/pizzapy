@@ -1,6 +1,8 @@
 
 """
 
+USED BY: terminal_scripts/postgres_manage_database_script.py
+
 """
 
 # STANDARD LIBS
@@ -9,7 +11,7 @@ import subprocess
 from typing import Any, Dict, List
 
 # PROGRAM MODULES
-from database_update.postgres_execution_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
+from database_update.postgres_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
 
 
 postgres_menu_text: str = """\n
@@ -53,7 +55,7 @@ actions_dict: Dict[str, Any] = {
     }
 
 
-def manage_database(): 
+def manage_postgres_database(): 
     """
     DEPENDS ON: postgres_menu_text, actions_dict
     """
@@ -70,5 +72,5 @@ def manage_database():
 
 
 if __name__ == '__main__':
-    manage_database()
+    manage_postgres_database()
 

@@ -117,7 +117,7 @@ guru_actions_dict: Dict[str, Any] = {
 
 
 
-def manage_stock_guru():
+def operate_stock_guru():
     while True:
         ans = input(guru_menu_text)
         if ans in guru_actions_dict:
@@ -132,7 +132,7 @@ def manage_stock_guru():
 
 
 if __name__ == '__main__':
-    manage_stock_guru()
+    operate_stock_guru()
 
 
 

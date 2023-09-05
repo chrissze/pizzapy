@@ -56,7 +56,7 @@ def upsert_guru(symbol: str) -> str:
         upsert_result: str = upsert_guru_by_proxy(proxy)
         return upsert_result
     else:
-        return f'{symbol} ProxyDict missed wealth_pc'
+        return f'{symbol} DictProxy missed wealth_pc'
 
 
 

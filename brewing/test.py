@@ -21,7 +21,11 @@ from stock_guru_update.guru_proxy_model import proxy_guru_wealth
 
 
 
-if __name__ == '__main__':
-    df = Series()
 
-    print(df)
+if __name__ == '__main__':
+    x = None
+    print(type(x))
+    if x:    
+        print(f'{x} is truthy')
+    else:
+        print(f'{x} is falsy')
