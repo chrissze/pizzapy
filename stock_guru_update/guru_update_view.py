@@ -52,7 +52,6 @@ class Row1:
 
         parent.b_list_option = QPushButton('Update Option')
         parent.b_list_option.setAccessibleName('b_list_option')
-
         
         parent.hbox1 = QHBoxLayout()
         parent.hbox1.addWidget(parent.combo)
@@ -83,6 +82,7 @@ class Row3:
     def __init__(self, parent):
         parent.browser = QTextBrowser()
         parent.browser.setMaximumHeight(400)
+
         parent.hbox3 = QHBoxLayout()
         parent.hbox3.addWidget(parent.browser)
 
@@ -95,7 +95,6 @@ class Row4:
 
         parent.b_clear.clicked.connect(parent.clear_browser)
         parent.b_quit.clicked.connect(parent.close)
-
 
         parent.hbox4 = QHBoxLayout()
         parent.hbox4.addWidget(parent.pbar)
@@ -112,7 +111,7 @@ class DailyGuruWin(QWidget):
         super().__init__()
         self.setWindowTitle('Daily Guru Update')
         self.setGeometry(50, 50, 900, 600)
-        self.row1 = Row1(self)  
+        self.row1 = Row1(self)     # Initialized Row1 widgets
         self.row2 = Row2(self)  
         self.row3 = Row3(self)  
         self.row4 = Row4(self)  
@@ -121,7 +120,7 @@ class DailyGuruWin(QWidget):
     def initui(self) -> None:
         
         mainbox = QVBoxLayout(self) # self here represents the parent container of mainbox
-        mainbox.addLayout(self.hbox1)
+        mainbox.addLayout(self.hbox1)  # hbox1 is defined in Row1 class
         mainbox.addLayout(self.hbox2)
         mainbox.addLayout(self.hbox3)
         mainbox.addLayout(self.hbox4)

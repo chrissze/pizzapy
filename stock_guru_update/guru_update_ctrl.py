@@ -1,20 +1,23 @@
+"""
 
+"""
+# STANDARD LIBS
 import sys; sys.path.append('..')
-
-from dimsumpy.qt5.decorators import confirmation_self
-
 from typing import Any, Dict, Generator, Optional
 
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import QThread, QCoreApplication
 
+# THIRD PARTY LIBS
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QThread, QCoreApplication
+
+# CUSTOM LIBS
 from batterypy.string.read import is_intable, int0, float0
+from dimsumpy.qt.decorators import confirmation_self
 
-from stock_core_update.core_update_view import DailyGuruWin
-from shared_model.st_data_model import stock_list_dict
-from stock_core_update.guru_model import guru_upsert_1s
-from stock_core_update.zacks_model import zacks_upsert_1s
-from stock_core_update.option_model import option_upsert_1s
+# PROGRAM MODULES
+from stock_guru_update.guru_update_view import DailyGuruWin
+from database_update.stock_list_model import stock_list_dict
+from stock_guru_update.guru_update_database_model import upsert_guru
 
 
 class DailyGuruDialog(DailyGuruWin):
@@ -45,7 +48,7 @@ class DailyGuruDialog(DailyGuruWin):
         stockgen = (x for x in stocklist)
         for count, symbol in enumerate(stockgen, start=1):
             QCoreApplication.processEvents()   # update the GUI
-            s = guru_upsert_1s(symbol)
+            s = upsert_guru(symbol)
             msg = f'{count} / {self.l} {s}'
             self.pbar.setValue(count)
             self.browser.append(msg)
@@ -69,7 +72,7 @@ class DailyGuruDialog(DailyGuruWin):
         self.pbar.setRange(0, self.l)
         stockgen = (x for x in stocklist)
         for count, symbol in enumerate(stockgen, start=1):
-            s = zacks_upsert_1s(symbol)
+            s = upsert_guru(symbol)
             msg = f'{count} / {self.l} {s}'
             self.pbar.setValue(count)
             self.browser.append(msg)
@@ -93,7 +96,7 @@ class DailyGuruDialog(DailyGuruWin):
         self.pbar.setRange(0, self.l)
         stockgen = (x for x in stocklist)
         for count, symbol in enumerate(stockgen, start=1):
-            s = option_upsert_1s(symbol)
+            s = upsert_guru(symbol)
             msg = f'{count} / {self.l} {s}'
             self.pbar.setValue(count)
             self.browser.append(msg)
@@ -106,7 +109,7 @@ def main() -> None:
     app = QApplication(sys.argv)
     w = DailyGuruDialog()
     w.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':

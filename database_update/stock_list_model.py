@@ -26,9 +26,22 @@ import requests
 from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 
 # PROGRAM MODULES
-from database_update.generated_stock_list import nasdaq_listed_stocks, nasdaq_traded_stocks 
+from database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks, option_traded_stocks, sp_500_stocks, sp_nasdaq_stocks
 
+# need to comment out all_stocks when I use code to generate 
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
+
+stock_list_dict: Dict[str, List[str]] = {
+    f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
+    f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
+    f'S&P 500 + Nasdqa 100 ({len(sp_nasdaq_stocks)})': sp_nasdaq_stocks,
+    f'Option Stocks ({len(option_traded_stocks)})': option_traded_stocks,
+    f'Nasdaq Listed ({len(nasdaq_listed_stocks)})': nasdaq_listed_stocks,
+    f'Nasdaq Traded ({len(nasdaq_traded_stocks)})': nasdaq_traded_stocks,
+    f'All Stocks ({len(all_stocks)})': all_stocks,
+}
+
+
 
 
 def get_sp_500() -> List[str]:
@@ -141,13 +154,25 @@ def get_option_traded() -> List[str]:
 
 def prepare_stock_list_file_content() -> str:
     """
-    DEPENDS ON: get_nasdaq_listed(), get_nasdaq_traded(), get_option_traded()
+    DEPENDS ON: get_sp_500(), get_sp_nasdaq(), get_nasdaq_100(),  get_nasdaq_listed(), get_nasdaq_traded(), get_option_traded()
     IMPORTS: datetime
     USED BY: generate_stock_list_module() 
     """
     current_time: datetime = datetime.now().replace(second=0, microsecond=0)
     file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_module() """'
     file_import: str = 'from typing import List'
+
+    sp_500: List[str] = get_sp_500()
+    sp_500_comment: str = f'# {len(sp_500)}'
+    sp_500_variable: str = f'sp_500_stocks: List[str] = {sp_500}'
+
+    nasdaq_100: List[str] = get_nasdaq_100()
+    nasdaq_100_comment: str = f'# {len(nasdaq_100)}'
+    nasdaq_100_variable: str = f'nasdaq_100_stocks: List[str] = {nasdaq_100}'
+
+    sp_nasdaq: List[str] = get_sp_nasdaq()
+    sp_nasdaq_comment: str = f'# {len(sp_nasdaq)}'
+    sp_nasdaq_variable: str = f'sp_nasdaq_stocks: List[str] = {sp_nasdaq}'
 
     nasdaq_listed: List[str] = get_nasdaq_listed()
     nasdaq_listed_comment: str = f'# {len(nasdaq_listed)}'
@@ -164,10 +189,22 @@ def prepare_stock_list_file_content() -> str:
     content: str = f'''
 {file_comment}\n\n
 {file_import}\n\n
+
+{sp_500_comment}
+{sp_500_variable}\n\n
+
+{nasdaq_100_comment}
+{nasdaq_100_variable}\n\n
+
+{sp_nasdaq_comment}
+{sp_nasdaq_variable}\n\n
+
 {nasdaq_listed_comment}
 {nasdaq_listed_variable}\n\n
+
 {nasdaq_traded_comment}
 {nasdaq_traded_variable}\n\n
+
 {option_traded_comment}
 {option_traded_variable}\n\n
 '''
@@ -178,7 +215,7 @@ def prepare_stock_list_file_content() -> str:
 def generate_stock_list_module() -> None:
     """
     DEPENDS ON: prepare_stock_list_file_content()
-    execution time: 2.5 minutes due to get_option_traded()
+    execution time: 4 minutes due to get_option_traded() and black command
     When I re-run this file, it will overwrite the original content
     """
     filename = 'generated_stock_list.py'
@@ -196,16 +233,20 @@ def generate_stock_list_module() -> None:
 
 
 
-def test() -> None:
+def test_generated_stock_list_module() -> None:
     def run() -> None:
-        x =  generate_stock_list_module()
-        print(x)
+        reply: str = input('Do you want to generate stock list module (yes/no)?')
+        if reply == 'yes': 
+            x =  generate_stock_list_module()
+            print(x)
 
     seconds = timeit(run, number=1)
     print(seconds)
     print(f'{__file__} DONE')
     
 
+def test() -> None:
+    print('test')
 
 if __name__ == '__main__':
     test()
