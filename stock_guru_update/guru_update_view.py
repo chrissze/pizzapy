@@ -19,11 +19,10 @@ from typing import Tuple
 
 
 # THIRD PARTY LIBS
-from PySide6.QtCore import QCoreApplication
-from PySide6.QtGui import QCloseEvent
+
 
 from PySide6.QtWidgets import (QApplication, QComboBox,
-                               QHBoxLayout, QLabel, QLineEdit, QMessageBox, QProgressBar, QPushButton,
+                               QHBoxLayout, QLabel, QLineEdit, QProgressBar, QPushButton,
                                QTextBrowser, QVBoxLayout, QWidget)
 
 # PROGRAM MODULES
@@ -93,8 +92,6 @@ class Row4:
         parent.b_clear = QPushButton('Clear Browser')
         parent.b_quit = QPushButton('Quit')
 
-        parent.b_clear.clicked.connect(parent.clear_browser)
-        parent.b_quit.clicked.connect(parent.close)
 
         parent.hbox4 = QHBoxLayout()
         parent.hbox4.addWidget(parent.pbar)
@@ -108,45 +105,22 @@ class DailyGuruWin(QWidget):
 
     """
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__()  # initialize all QWidget() variables and methods
         self.setWindowTitle('Daily Guru Update')
         self.setGeometry(50, 50, 900, 600)
-        self.row1 = Row1(self)     # Initialized Row1 widgets
-        self.row2 = Row2(self)  
-        self.row3 = Row3(self)  
-        self.row4 = Row4(self)  
+        Row1(self)     # Initialized Row1 widgets
+        Row2(self)  
+        Row3(self)  
+        Row4(self)  
         self.initui() # initui() draws the layout
 
     def initui(self) -> None:
         
-        mainbox = QVBoxLayout(self) # self here represents the parent container of mainbox
+        mainbox = QVBoxLayout(self) # self instance here represents the parent container of mainbox
         mainbox.addLayout(self.hbox1)  # hbox1 is defined in Row1 class
         mainbox.addLayout(self.hbox2)
         mainbox.addLayout(self.hbox3)
         mainbox.addLayout(self.hbox4)
-
-
-    def get_le_symbol(self) -> str:
-        """ Used by child classes  """
-        symbol = self.le.text()
-        return symbol
-
-    def clear_browser(self) -> None:
-        self.browser.setText('')
-        self.browser.clear()
-        QCoreApplication.processEvents()
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """
-        This special named 'closeEvent' method overrides default close() method.
-        This methed is called when we call self.close() or users click the X button.
-        """
-        reply: QMessageBox.StandardButton = QMessageBox.question(
-            self, 'Confirmation', 'Quit Now?', QMessageBox.Yes | QMessageBox.Cancel)
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
 
 
 def main() -> None:

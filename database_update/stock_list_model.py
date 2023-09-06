@@ -32,8 +32,8 @@ from database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_liste
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
 
 stock_list_dict: Dict[str, List[str]] = {
-    f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
     f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
+    f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
     f'S&P 500 + Nasdqa 100 ({len(sp_nasdaq_stocks)})': sp_nasdaq_stocks,
     f'Option Stocks ({len(option_traded_stocks)})': option_traded_stocks,
     f'Nasdaq Listed ({len(nasdaq_listed_stocks)})': nasdaq_listed_stocks,
