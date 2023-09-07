@@ -7,7 +7,7 @@ Core Update Controller further works:
     update button function option
     update button function zacks
 
-    
+I should use some default properties of the SortFilterProxyModel to toggle the filter mode
 """
 
 

@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Set, Union
 
 # THIRD PARTY LIBS
 import pandas as pd
-from PySide6.QtCore import (QModelIndex, QRegularExpression ,QSortFilterProxyModel)
+from PySide6.QtCore import (Qt, QModelIndex, QRegularExpression ,QSortFilterProxyModel)
 
 # CUSTOM LIBS
 from batterypy.string.read import is_floatable, readf
@@ -23,12 +23,13 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
     This is for Pyside6
     """
     def __init__(self, filter_mode) -> None:
-        super().__init__(self, filter_mode)
+        super().__init__()
         self.filters: Dict[Union[int, str], QRegularExpression] = {}
+        self.filter_mode = filter_mode
 
     def setFilterByColumn(self, regex: QRegularExpression, column: int) -> None:
-        sender = self.sender().accessibleName()
-        print(sender)
+        
+        
         if regex.isValid():
             self.filters[column] = regex  # use int as dictionary key
         else:
@@ -41,9 +42,10 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         """
         for key, regex in self.filters.items():
             
-            if regex.isValid() and filter_mode == 'lower_limit':
+            if regex.isValid() and self.sortCaseSensitivity() == Qt.CaseSensitive:
                 print('regex is Valid')
-                print(sender)
+                #print(str(self.sortCaseSensitivity ))
+                
                 ix: QModelIndex = self.sourceModel().index(source_row, key, source_parent)
                 if ix.isValid():
                     celltext: str = self.sourceModel().data(ix)
@@ -55,6 +57,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
                         return False
             else:
                 print('regex is NOT Valid')
+                #print(str(self.sortCaseSensitivity ))
                 ix: QModelIndex = self.sourceModel().index(source_row, int(key), source_parent)
                 if ix.isValid():
                     celltext: str = self.sourceModel().data(ix)

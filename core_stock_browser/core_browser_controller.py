@@ -32,6 +32,7 @@ class CoreBrowserController(CoreBrowserView):
         self.b_list_option.clicked.connect(self.load_table)
         self.b_le_option.clicked.connect(self.load_table)
 
+        self.filter_mode = 'lower_limit'
     def load_table(self) -> None:
         self.clear()
         sender: str = self.sender().accessibleName()
@@ -73,9 +74,9 @@ class CoreBrowserController(CoreBrowserView):
         print(q)
         df: DataFrame = execute_pandas_read(q)
         model: DataFrameModel = DataFrameModel(df)
-        proxy: MySortFilterProxyModel = MySortFilterProxyModel(self)
-        proxy.setSourceModel(model)
-        self.pandasTv.setModel(proxy)
+        self.proxy: MySortFilterProxyModel = MySortFilterProxyModel(self.filter_mode)
+        self.proxy.setSourceModel(model)
+        self.pandasTv.setModel(self.proxy)
 
         grid: QGridLayout = QGridLayout()   # If the Grid was created in the view, it will get deleted
         checkboxes: List[QCheckBox] = [QCheckBox(x) for x in df.columns]
@@ -86,10 +87,8 @@ class CoreBrowserController(CoreBrowserView):
             le1.setAccessibleName('lower_limit')
             le2: QLineEdit = QLineEdit()
             le2.setAccessibleName('upper_limit')
-            le1.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
-                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col))
-            le2.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
-                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col))
+            le1.textChanged.connect(lambda text, col=count: self.on_text_lower(text, col))
+            le2.textChanged.connect(lambda text, col=count: self.on_text_changed(text, col))
 
             grid.addWidget(checkbox, count, 0)
             grid.addWidget(le1, count, 1)
@@ -104,6 +103,16 @@ class CoreBrowserController(CoreBrowserView):
         else:
             self.pandasTv.setColumnHidden(index, True)
 
+
+    def on_text_lower(self, text, col):
+        self.proxy.setSortCaseSensitivity(Qt.CaseSensitive)
+        self.proxy.setFilterByColumn(
+                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
+
+    def on_text_changed(self, text, col):
+        self.proxy.setSortCaseSensitivity(Qt.CaseInsensitive)
+        self.proxy.setFilterByColumn(
+                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
 
 def main() -> None:
     app: QApplication = QApplication(sys.argv)
