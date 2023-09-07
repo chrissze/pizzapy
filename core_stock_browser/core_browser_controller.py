@@ -83,7 +83,9 @@ class CoreBrowserController(CoreBrowserView):
             checkbox.setChecked(True)
             checkbox.stateChanged.connect(partial(self.display_column, index=count))
             le1: QLineEdit = QLineEdit()
+            le1.setAccessibleName('lower_limit')
             le2: QLineEdit = QLineEdit()
+            le2.setAccessibleName('upper_limit')
             le1.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
                 QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col))
             le2.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
@@ -97,7 +99,7 @@ class CoreBrowserController(CoreBrowserView):
         self.dockwin.setLayout(grid)
 
     def display_column(self, state: int, index: int) -> None:
-        if state == Qt.Checked:
+        if state == 2:
             self.pandasTv.setColumnHidden(index, False)
         else:
             self.pandasTv.setColumnHidden(index, True)
