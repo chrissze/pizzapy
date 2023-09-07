@@ -1,9 +1,20 @@
 """
 
+
+Core Update Controller further works:
+    import upsert_option
+    import upsert_zacks
+    update button function option
+    update button function zacks
+
+    
 """
+
+
+
 # STANDARD LIBS
 import sys; sys.path.append('..')
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 
 # THIRD PARTY LIBS
@@ -18,9 +29,9 @@ from dimsumpy.qt.decorators import confirmation_self
 
 
 # PROGRAM MODULES
-from stock_guru_update.guru_update_view import DailyGuruWin
+from core_stock_update.core_update_view import CoreUpdateView
 from database_update.stock_list_model import stock_list_dict
-from stock_guru_update.guru_update_database_model import upsert_guru
+from guru_stock_update.guru_update_database_model import upsert_guru
 
 
 
@@ -32,7 +43,7 @@ def closeEvent(self, event: QCloseEvent) -> None:
     This methed is called when we call self.close() or users click the X button.
     """
     reply: QMessageBox.StandardButton = QMessageBox.question(
-        self, 'Confirmation', 'Quit Now?', QMessageBox.Yes | QMessageBox.Cancel)
+        self, 'Confirmation', 'Do you want to QUIT now?', QMessageBox.Yes | QMessageBox.Cancel)
     if reply == QMessageBox.Yes:
         event.accept()
     else:
@@ -45,18 +56,18 @@ def closeEvent(self, event: QCloseEvent) -> None:
 def update_core(self, func) -> None:    
     """
     IMPORTS: QCoreApplication, func(upsert_guru)
-    USED BY: DailyGuruDialog
+    USED BY: CoreUpdateController
     """
-    stockstr = self.le.text()
-    stocklist = stockstr.split()
+    update_stocks_lineedit_string: str = self.update_stocks_lineedit.text()
+    stock_list: List[str] = update_stocks_lineedit_string.split()
 
-    self.l = len(stocklist)
-    self.pbar.setRange(0, self.l)
-    stockgen = (x for x in stocklist)
+    stock_list_length = len(stock_list)
+    self.progressbar.setRange(0, stock_list_length)
+    stockgen = (x for x in stock_list)
     for count, symbol in enumerate(stockgen, start=1):
         s = func(symbol)
-        msg = f'{count} / {self.l} {s}'
-        self.pbar.setValue(count)
+        msg = f'{count} / {stock_list_length} {s}'
+        self.progressbar.setValue(count)
         self.browser.append(msg)
         self.browser.repaint()
         QCoreApplication.processEvents()   # update the GUI
@@ -69,30 +80,28 @@ def update_core(self, func) -> None:
 @confirmation_self
 def update_core_list(self, func) -> None:
     """
-    IMPORTS: QCoreApplication, func(upsert_guru)
-    USED BY: DailyGuruDialog
+    IMPORTS: QCoreApplication, func(upsert_guru), batterypy(int0)
+    USED BY: CoreUpdateController
+
+    self.combobox_string, self.full_stock_list, self.full_list_length are defined in self.stock_list_comboxbox_changed() in core_update_view.py
     """
-    list_start: int = int0(self.le_list_start.text())
-    stockstr = self.combo.currentText()
-    stocklist = stock_list_dict.get(stockstr)[list_start:]
+    list_start: int = int0(self.stock_list_starting_number_lineedit.text()) - 1
+    valid_starting_number: bool = list_start < self.full_list_length and list_start >= 0
+    stock_working_list = stock_list_dict.get(self.combobox_string)[list_start:] if valid_starting_number else self.full_stock_list
     QCoreApplication.processEvents()  # update the GUI
 
-    self.l = len(stocklist)
-    self.pbar.setRange(0, self.l)
-    stockgen = (x for x in stocklist)
+    self.stock_working_list_length = len(stock_working_list)
+    self.progressbar.setRange(0, self.stock_working_list_length)
+    stockgen = (x for x in stock_working_list)
     for count, symbol in enumerate(stockgen, start=1):
         QCoreApplication.processEvents()   # update the GUI
         s = func(symbol)
-        msg = f'{count} / {self.l} {s}'
-        self.pbar.setValue(count)
+        msg = f'{count} / {self.stock_working_list_length} {s}'
+        self.progressbar.setValue(count)
         self.browser.append(msg)
         self.browser.repaint()
         QCoreApplication.processEvents()   # update the GUI
         print(msg)
-
-
-
-
 
 
 
@@ -108,19 +117,17 @@ class MakeButtonConnects:
     Although it is also valid to write a pair of empty parenthesis.
     """
     def __init__(self, parent) -> None:
-        parent.b_list_guru.clicked.connect(parent.update_guru_list)
-        parent.b_list_zacks.clicked.connect(parent.update_zacks_list)
-        parent.b_list_option.clicked.connect(parent.update_option_list)
-        parent.b_le_guru.clicked.connect(parent.update_guru)
-        parent.b_le_zacks.clicked.connect(parent.update_zacks)
-        parent.b_le_option.clicked.connect(parent.update_option)
+        parent.update_guru_list_button.clicked.connect(parent.update_guru_list)
+        parent.update_zacks_list_button.clicked.connect(parent.update_zacks_list)
+        parent.update_option_list_button.clicked.connect(parent.update_option_list)
+        parent.update_guru_button.clicked.connect(parent.update_guru)
+        parent.update_zacks_button.clicked.connect(parent.update_zacks)
+        parent.update_option_button.clicked.connect(parent.update_option)
+        parent.clear_button.clicked.connect(parent.browser.clear)
+        parent.quit_button.clicked.connect(parent.close)
+        
 
-        parent.b_clear.clicked.connect(parent.browser.clear)
-        parent.b_quit.clicked.connect(parent.close)
-
-
-
-class DailyGuruDialog(DailyGuruWin):
+class CoreUpdateController(CoreUpdateView):
     """
     DEPENDS ON: MakeButtonConnects class, closeEvent(),  update_core_list(), update_core()
     IMPORTS: DailyGuruWin, upsert_guru
@@ -153,10 +160,9 @@ class DailyGuruDialog(DailyGuruWin):
     
 
 
-
 def main() -> None:
     app = QApplication(sys.argv)
-    win = DailyGuruDialog()
+    win = CoreUpdateController()
     win.show()
     sys.exit(app.exec())
 

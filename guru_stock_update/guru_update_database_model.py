@@ -1,3 +1,12 @@
+"""
+
+USED BY: 
+    terminal_scripts/guru_operation_script.py, 
+    core_stock_update/core_update_controller.py
+
+    
+"""
+
 # STANDARD LIBS
 import sys; sys.path.append('..')
 
@@ -14,7 +23,7 @@ from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg, execute_psycopg
 
 # PROGRAM MODULES
-from stock_guru_update.guru_proxy_model import proxy_guru_wealth
+from guru_stock_update.guru_proxy_model import proxy_guru_wealth
 from database_update.postgres_command_model import db_table_command_dict
 from database_update.postgres_connection_model import make_psycopg_connection
 
@@ -42,11 +51,12 @@ def upsert_guru_by_proxy(proxy: DictProxy) -> str:
     return query_result
 
 
+
 def upsert_guru(symbol: str) -> str:
     """
     DEPENDS ON: upsert_guru_by_proxy
     IMPORTS: proxy_guru_wealth()
-    USED BY: upsert_gurus_by_terminal()
+    USED BY: upsert_gurus_by_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert, symbol).
     """
     proxy: DictProxy = proxy_guru_wealth(symbol)

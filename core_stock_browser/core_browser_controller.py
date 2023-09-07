@@ -1,19 +1,27 @@
-import sys; sys.path.append('..')
 
-from dimsumpy.qt5.dataframemodel import DataFrameModel
+# STANDARD LIBS
+import sys; sys.path.append('..')
 from functools import partial
+
+# THIRD PARTY LIBS
 import pandas
 from pandas.core.frame import DataFrame
-from PySide2.QtWidgets import QApplication, QCheckBox ,QGridLayout, QLineEdit ,QWidget
-from PySide2.QtCore import Qt, QRegExp
+from PySide6.QtWidgets import QApplication, QCheckBox ,QGridLayout, QLineEdit ,QWidget
+from PySide6.QtCore import Qt, QRegularExpression
 
-from shared_model.sql_model import cnx
-from shared_model.st_data_model import MySortFilterProxyModel, stock_list_dict
-from stock_core_browser.core_browser_view import GuruBrowserWin
+# CUSTOM LIBS
+from dimsumpy.qt.dataframemodel import DataFrameModel
+
+# PROGRAM MODULES
+from database_update.stock_list_model import stock_list_dict
+from database_update.postgres_connection_model import execute_pandas_read
+
+from general_update.gui_model import MySortFilterProxyModel 
+from core_stock_browser.core_browser_view import CoreBrowserView
 from typing import Any, List, Tuple
 
 
-class GuruBrowserDialog(GuruBrowserWin):
+class CoreBrowserController(CoreBrowserView):
     def __init__(self) -> None:
         super().__init__()
         self.b_list_guru.clicked.connect(self.load_table)
@@ -28,12 +36,12 @@ class GuruBrowserDialog(GuruBrowserWin):
         self.clear()
         sender: str = self.sender().accessibleName()
         if sender == 'b_list_guru':
-            tablename: str = 'usstock_g'
+            tablename: str = 'stock_guru'
             stockstr: str = self.combo.currentText()
             stocklist: List[str] = stock_list_dict.get(stockstr)
             stockliststr: str = str(tuple(stocklist))
         elif sender == 'b_le_guru':
-            tablename: str = 'usstock_g'
+            tablename: str = 'stock_guru'
             stockstr: str = self.le.text().upper()
             stocklist: List[str] = stockstr.split()
             stockliststr: str = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
@@ -60,10 +68,10 @@ class GuruBrowserDialog(GuruBrowserWin):
             stocklist: List[str] = stockstr.split()
             stockliststr: str = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
 
-        q_clause: str = '' if not stocklist else ' WHERE symbol IN ' + stockliststr  # prevent empty LineEdit
-        q: str = 'SELECT * FROM ' + tablename + q_clause
+        q_clause: str = '' if not stocklist else f' WHERE symbol IN {stockliststr} '  # prevent empty LineEdit
+        q: str = f'SELECT * FROM {tablename} {q_clause}'
         print(q)
-        df: DataFrame = pandas.read_sql(sql=q, con=cnx)
+        df: DataFrame = execute_pandas_read(q)
         model: DataFrameModel = DataFrameModel(df)
         proxy: MySortFilterProxyModel = MySortFilterProxyModel(self)
         proxy.setSourceModel(model)
@@ -77,9 +85,9 @@ class GuruBrowserDialog(GuruBrowserWin):
             le1: QLineEdit = QLineEdit()
             le2: QLineEdit = QLineEdit()
             le1.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
-                QRegExp(text, Qt.CaseInsensitive, QRegExp.RegExp), col))
+                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col))
             le2.textChanged.connect(lambda text, col=count: proxy.setFilterByColumn(
-                QRegExp(text, Qt.CaseInsensitive, QRegExp.FixedString), col))
+                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col))
 
             grid.addWidget(checkbox, count, 0)
             grid.addWidget(le1, count, 1)
@@ -97,9 +105,9 @@ class GuruBrowserDialog(GuruBrowserWin):
 
 def main() -> None:
     app: QApplication = QApplication(sys.argv)
-    w: GuruBrowserDialog = GuruBrowserDialog()
-    w.show()
-    sys.exit(app.exec_())
+    win: CoreBrowserController = CoreBrowserController()
+    win.show()
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':

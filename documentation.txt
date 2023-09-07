@@ -193,7 +193,7 @@ SECTION: TIMER
 
 
 ==========================
-PACKAGE: stock_guru_update
+PACKAGE: guru_stock_update
 ==========================
 
 [ price_cap_model.py ]
@@ -245,7 +245,7 @@ PACKAGE: stock_guru_update
 
 
 ===========================
-PACKAGE: stock_zacks_update
+PACKAGE: zacks_stock_update
 ===========================
 
 [ zacks_update_database_model.py ]
@@ -266,7 +266,7 @@ PACKAGE: stock_zacks_update
 
 
 ============================
-PACKAGE: stock_option_update
+PACKAGE: option_stock_update
 ============================
 
 [ option_update_database_model.py ]

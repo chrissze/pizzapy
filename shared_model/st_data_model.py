@@ -1,20 +1,23 @@
 import sys;sys.path.append('..')
+from datetime import date
+import io
+from typing import Any, Dict, List, Set, Union
+import urllib.request as request
+
+
+
 
 from bs4 import BeautifulSoup, ResultSet
 
 
-import urllib.request as request
 from batterypy.string.read import is_floatable, readf
-from datetime import date
 
-import io
 import pandas as pd
 from pandas.core.frame import DataFrame
 from PySide2.QtCore import (QDate, QDateTime ,
                             QModelIndex, QRegExp ,QSortFilterProxyModel, Qt)
 import requests
 from requests.models import Response
-from typing import Any, Dict, List, Set, Union
 from shared_model.stock_list import russell_2000_stocks
 
 from shared_model.sp_500_stocks import sp_500_stocks

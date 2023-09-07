@@ -10,11 +10,11 @@ from PySide2.QtCore import QThread, QCoreApplication
 
 from batterypy.string.read import is_intable, int0, float0
 
-from stock_core_update.core_update_view import DailyGuruWin
+from core_stock_update.core_update_view import DailyGuruWin
 from shared_model.st_data_model import stock_list_dict
-from stock_core_update.guru_model import guru_upsert_1s
-from stock_core_update.zacks_model import zacks_upsert_1s
-from stock_core_update.option_model import option_upsert_1s
+from core_stock_update.guru_model import guru_upsert_1s
+from core_stock_update.zacks_model import zacks_upsert_1s
+from core_stock_update.option_model import option_upsert_1s
 
 
 class DailyGuruDialog(DailyGuruWin):

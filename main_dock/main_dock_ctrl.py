@@ -8,7 +8,7 @@ from futures_browser.fut_browser_ctrl import FutBrowserDialog
 from main_dock.main_dock_view import MainDockWin
 
 from PySide2.QtWidgets import QApplication, QWidget
-from stock_core_update.core_update_ctrl import DailyGuruDialog
+from core_stock_update.core_update_ctrl import DailyGuruDialog
 from stock_core_browser.core_browser_ctrl import GuruBrowserDialog
 
 from stock_price_browser.price_browser_ctrl import StockPriceBrowserDialog

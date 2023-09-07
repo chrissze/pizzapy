@@ -26,7 +26,7 @@ from dimsumpy.web.crawler import get_html_soup
 
 
 # PROGRAM MODULES
-from stock_general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import proxy_price_cap
 
 
 

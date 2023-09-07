@@ -2,7 +2,7 @@
 *** INDEPENDENT MODULE ***
 
 IMPORTED BY: 
-    stock_guru_update/
+    guru_stock_update/
 
 """
 

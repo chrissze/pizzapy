@@ -28,7 +28,7 @@ import requests
 from requests.models import Response
 from shared_model.sql_model import cnx, db_dict  # the postgres server must running
 
-from stock_core_update.guru_model import bar_cap
+from core_stock_update.guru_model import bar_cap
 from time import sleep
 from timeit import default_timer
 from typing import Any, List, Optional, Tuple, Union

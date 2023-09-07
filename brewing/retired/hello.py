@@ -14,7 +14,7 @@ For more details, please visit https://support.apple.com/kb/HT208050.
 /Users/chris/github/pizzapy
 
 __init__.py		main.py			stock_core_browser
-brewing			main_dock		stock_core_update
+brewing			main_dock		core_stock_update
 documentation.txt	main_script.py		stock_price_browser
 futures_browser		requirements.txt	stock_price_update
 futures_update		shared_model		venv

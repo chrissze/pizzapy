@@ -26,7 +26,7 @@ from dimsumpy.database.postgres import upsert_many_psycopg, make_upsert_psycopg_
 
 # PROGRAM MODULES
 from database_update.postgres_connection_model import make_psycopg_connection
-from stock_guru_update.guru_proxy_model import proxy_guru_wealth
+from guru_stock_update.guru_proxy_model import proxy_guru_wealth
 
 
 def make_query() -> str:

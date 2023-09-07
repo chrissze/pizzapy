@@ -2,7 +2,7 @@
 * INDEPENDENT MODULE *
 
 USED BY: 
-    stock_guru_update/
+    guru_stock_update/
 
 This module contains variables and dictionaries only, line below is for copy and paste:
 

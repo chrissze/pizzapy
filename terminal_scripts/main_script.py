@@ -19,9 +19,9 @@ from shared_model.fut_data_model import all_fut, fut_dict
 from shared_model.sql_model import cnx, create_db, create_table, db_dict, show_single_table, drop_table, show_databases, \
     show_tables, get_con, cnx, cnx2, postgres_engine
 from shared_model.st_data_model import all_stocks, stock_list_dict
-from stock_core_update.guru_model import guru_upsert_1s
-from stock_core_update.option_model import option_upsert_1s
-from stock_core_update.zacks_model import zacks_upsert_1s
+from core_stock_update.guru_model import guru_upsert_1s
+from core_stock_update.option_model import option_upsert_1s
+from core_stock_update.zacks_model import zacks_upsert_1s
 from stock_price_update.st_price_update_model import ya_px_upsert_1s
 
 
