@@ -33,6 +33,9 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         self.filters: Dict[Union[int, str], QRegExp] = {}
 
     def setFilterByColumn(self, regex: QRegExp, column: int) -> None:
+        """
+        regex.patternSyntax() returns the syntax enum used by the regular expression. The default is QRegExp.PatternSyntax.RegExp .
+        """
         if regex.patternSyntax() == QRegExp.PatternSyntax.RegExp:
             self.filters[column]: QRegExp = regex
         else:
@@ -40,6 +43,9 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         self.invalidateFilter()
 
     def filterAcceptsRow(self, source_row: int, source_parent: QModelIndex) -> bool:
+        """
+        regex.indexIn attempts to find a match in str from position offset (0 by default). If offset is -1, the search starts at the last character; if -2, at the next to last character; etc. Returns the position of the first match, or -1 if there was no match. regex.indexIn might be related to string comparison
+        """
         for key, regex in self.filters.items():
             if regex.patternSyntax() == QRegExp.PatternSyntax.RegExp:
                 ix: QModelIndex = self.sourceModel().index(source_row, key, source_parent)

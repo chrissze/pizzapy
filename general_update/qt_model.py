@@ -47,10 +47,13 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         'key, regex' is the key value pairs in self.filters dictionary, that defined earlier.
         
         True means SHOWING
+
+        when the regex_text or cell_text is not floatable, the filter will change to string comparison.
+        regex_text == cell_text is for symbol string comparison, if I want to get rid of of a particular symbol, just input the symbol in the lineedit
         """
         for key, regex in self.filters.items():
 
-            regex_text: str = regex.pattern()
+            regex_text: str = regex.pattern().upper()  # convert regex_text to upper for symbol mapping
             if regex.isValid():
                 # self is the ProxyModel instance
                 model_index: QModelIndex = self.sourceModel().index(source_row, key, source_parent) 
@@ -58,7 +61,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
 
                 if model_index.isValid():
                     result: bool = float(regex_text) > float(cell_text) if is_floatable(cell_text) \
-                        and is_floatable(regex_text) else False
+                        and is_floatable(regex_text) else regex_text == cell_text
                         # above line end need to be False, so lineedit text deletion will restore rows.
                     if result:
                         return False
@@ -69,9 +72,10 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
                 cell_text: str = self.sourceModel().data(model_index)
 
                 if model_index.isValid():
-                    result: bool = readf(regex_text[1:]) < float(cell_text) if is_floatable(cell_text) and is_floatable(regex_text[1:]) else False
+                    result: bool = readf(regex_text[1:]) < float(cell_text) if is_floatable(cell_text) and is_floatable(regex_text[1:]) else regex_text[1:] == cell_text
                     if result:
                         return False
+                    
 
         return True   # The row is shown by default value True.
 
