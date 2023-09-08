@@ -14,7 +14,7 @@ import pandas as pd
 from PySide6.QtCore import (Qt, QModelIndex, QRegularExpression ,QSortFilterProxyModel)
 
 # CUSTOM LIBS
-from batterypy.string.read import is_floatable, readf
+from batterypy.string.read import is_floatable, readf, float0
 
 
 
@@ -25,7 +25,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
     def __init__(self, filter_mode) -> None:
         super().__init__()
         self.filters: Dict[Union[int, str], QRegularExpression] = {}
-        self.filter_mode = filter_mode
+
 
     def setFilterByColumn(self, regex: QRegularExpression, column: int) -> None:
         
@@ -42,30 +42,46 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         """
         for key, regex in self.filters.items():
             
-            if regex.isValid() and self.sortCaseSensitivity() == Qt.CaseSensitive:
+            if regex.isValid():
                 print('regex is Valid')
-                #print(str(self.sortCaseSensitivity ))
+                regextext: str = regex.pattern()
+                celltext: str = self.sourceModel().data(ix)
                 
-                ix: QModelIndex = self.sourceModel().index(source_row, key, source_parent)
-                if ix.isValid():
-                    celltext: str = self.sourceModel().data(ix)
-                    regextext: str = regex.pattern()
+                
+                ix: QModelIndex = self.sourceModel().index(source_row, key, source_parent) # self is the ProxyModel instance
+                if ix.isValid() and is_floatable(regextext):
+                    print(f'ix {ix} is_valid')
+                    print(f'celltext is {celltext}')
+
+                    print(f'regextext is {regextext}\n\n')
                     result: bool = float(regextext) > float(celltext) if is_floatable(celltext) \
                         and is_floatable(regextext) else False #regex.indexIn(celltext)
                         # above line end need to be False, so lineedit text deletion will restore rows.
                     if result:
                         return False
+                else:
+                    result: bool = regextext == celltext
+                    print(f'ix {ix} is_not_valid')
             else:
                 print('regex is NOT Valid')
-                #print(str(self.sortCaseSensitivity ))
+                regextext: str = regex.pattern()
+                celltext: str = self.sourceModel().data(ix)
+
                 ix: QModelIndex = self.sourceModel().index(source_row, int(key), source_parent)
-                if ix.isValid():
-                    celltext: str = self.sourceModel().data(ix)
-                    regextext: str = regex.pattern()
-                    result: bool = float(regextext) < float(celltext) if is_floatable(celltext) \
-                        and is_floatable(regextext) else False # regex.indexIn(celltext)
+                if ix.isValid() and is_floatable(regextext[1:]):
+                    print(f'ix {ix} is_valid')
+                    print(f'celltext is {celltext}')
+                    print(f'NOT valid regextext is {regextext}')
+                    print(f'regextext {regextext[1:]} is_floatable: {is_floatable(regextext[1:])}\n\n')
+                    result: bool = readf(regextext[1:]) < float(celltext) if is_floatable(celltext) and is_floatable(regextext[1:]) else False # regex.indexIn(celltext)
+                    print(result)
                     if result:
                         return False
+                else:
+                    result: bool = regextext[1:] == celltext
+                    print(f'ix {ix} is_not_valid or {regextext[1:]} not_floatable')
+
+
         return True
 
     def lessThan(self, left: QModelIndex, right: QModelIndex) -> bool:

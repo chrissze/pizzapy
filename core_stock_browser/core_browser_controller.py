@@ -16,7 +16,7 @@ from dimsumpy.qt.dataframemodel import DataFrameModel
 from database_update.stock_list_model import stock_list_dict
 from database_update.postgres_connection_model import execute_pandas_read
 
-from general_update.gui_model import MySortFilterProxyModel 
+from general_update.qt_model import MySortFilterProxyModel 
 from core_stock_browser.core_browser_view import CoreBrowserView
 from typing import Any, List, Tuple
 
@@ -105,14 +105,13 @@ class CoreBrowserController(CoreBrowserView):
 
 
     def on_text_lower(self, text, col):
-        self.proxy.setSortCaseSensitivity(Qt.CaseSensitive)
         self.proxy.setFilterByColumn(
                 QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
 
     def on_text_changed(self, text, col):
-        self.proxy.setSortCaseSensitivity(Qt.CaseInsensitive)
+        dollar_text:str = '+' + text
         self.proxy.setFilterByColumn(
-                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
+                QRegularExpression(dollar_text, QRegularExpression.CaseInsensitiveOption), col)
 
 def main() -> None:
     app: QApplication = QApplication(sys.argv)
