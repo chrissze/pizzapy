@@ -47,7 +47,7 @@ class DailyStockWin(QWidget):
         self.b_techs.setAccessibleName('b_techs')
 
         self.le = QLineEdit()
-        self.lb_le = QLabel('Separate symbols by space')
+        self.symbols_label = QLabel('Separate symbols by space')
         self.b_price1s = QPushButton('Update Y! 1s')
         self.b_price1s.setAccessibleName('b_price1s')
         self.b_tech1s = QPushButton('Update Technical 1s')
@@ -87,7 +87,7 @@ class DailyStockWin(QWidget):
         grid2.addWidget(self.b_techs,  0, 3)
 
         grid2.addWidget(self.le,       1, 0)
-        grid2.addWidget(self.lb_le,    1, 1)
+        grid2.addWidget(self.symbols_label,    1, 1)
         grid2.addWidget(self.b_price1s,1, 2)
         grid2.addWidget(self.b_tech1s, 1, 3)
 

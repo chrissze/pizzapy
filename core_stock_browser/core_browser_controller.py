@@ -23,138 +23,135 @@ from typing import Any, List, Tuple
 
 
 
-def load_tableview(self, df: DataFrame) -> None:
+
+def make_dataframe(self) -> None:
+    """
+        DEPENDS ON: 
+        IMPORTS: pandas, execute_pandas_read()
+        USED BY: load_stock_table(), load_stock_list_table()
+        self.df needs to be in self to share its value so that it can be accessed by load_tableview() and load_grid()
+
+    """
+    self.clear()
+    self.symbols_tuple_str = str(tuple(self.symbols_list))  # for single tuple
+    self.table_name = self.table_list_combobox.currentText()
+    query_clause: str = '' if not self.symbols_list else f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
+    cmd: str = f'SELECT * FROM {self.table_name} {query_clause}'
+    self.df = execute_pandas_read(cmd)
+
+
+
+def make_tableview(self) -> None:
     """
         IMPORTS: pandas, dimsumpy(DataFrameModel), MySortFilterProxyModel
-        USED BY: load_stock_list_table()
+        USED BY: load_stock_table(), load_stock_list_table()
     """
-   
-    model: DataFrameModel = DataFrameModel(df)
-    self.proxy: MySortFilterProxyModel = MySortFilterProxyModel()
-    self.proxy.setSourceModel(model)
-    self.pandasTv.setModel(self.proxy)
+    dataframe_model: DataFrameModel = DataFrameModel(self.df)
+    self.sort_filter_model = MySortFilterProxyModel()
+    self.sort_filter_model.setSourceModel(dataframe_model)
+    self.pandas_tableview.setModel(self.sort_filter_model)
 
 
 
-def load_grid(self, df: DataFrame) -> None:
+def make_grid(self) -> None:
     """
-        DEPENDS ON: self.on_checkbox_changed()
+        DEPENDS ON: self.on_checkbox_changed(), self.on_text_changed_floor(), self.on_text_changed_ceiling()
         IMPORTS: pandas
-        USED BY: load_stock_list_table()
+        USED BY: load_stock_table(), load_stock_list_table()
     """
     grid: QGridLayout = QGridLayout()   # If the Grid was created in the view, it will get deleted
-    checkboxes: List[QCheckBox] = [QCheckBox(x) for x in df.columns]
-    for count, checkbox in enumerate(checkboxes):
+    dock_checkboxes: List[QCheckBox] = [QCheckBox(x) for x in self.df.columns]
+    for count, checkbox in enumerate(dock_checkboxes):
         checkbox.setChecked(True)
         checkbox.stateChanged.connect(partial(self.on_checkbox_changed, index=count))
-        le1: QLineEdit = QLineEdit()
-        le2: QLineEdit = QLineEdit()
-        le1.textChanged.connect(lambda text, col=count: self.on_text_lower(text, col))
-        le2.textChanged.connect(lambda text, col=count: self.on_text_changed(text, col))
+        floor_lineedit: QLineEdit = QLineEdit()
+        ceiling_lineedit: QLineEdit = QLineEdit()
+        floor_lineedit.textChanged.connect(lambda text, col=count: self.on_text_changed_floor(text, col))
+        ceiling_lineedit.textChanged.connect(lambda text, col=count: self.on_text_changed_ceiling(text, col))
 
         grid.addWidget(checkbox, count, 0)
-        grid.addWidget(le1, count, 1)
-        grid.addWidget(le2, count, 2)
-
+        grid.addWidget(floor_lineedit, count, 1)
+        grid.addWidget(ceiling_lineedit, count, 2)
     QWidget().setLayout(self.dockwin.layout()) # get rid of the default layout
     self.dockwin.setLayout(grid)
 
 
 
-def load_stock_table(self, tablename: str) -> None:
+
+
+
+def load_stock_table(self) -> None:
     """
-    DEPENDS ON: load_tableview(), load_grid()
-    IMPORTS:  execute_pandas_read(), pandas
+        DEPENDS ON: make_dataframe(), make_tableview(), make_grid()
+        USED BY: CoreBrowserController
+        self.symbols_list needs to have self to share its value so that it can be accessed by make_dataframe()
+    """
+    symbols_str: str = self.symbols_lineedit.text().upper()
+    self.symbols_list: List[str] = symbols_str.split()
+    make_dataframe(self)
+    make_tableview(self)
+    make_grid(self)   
+
+
+def load_list_table(self) -> None:
+    """
+    DEPENDS ON: make_dataframe(), make_tableview(), make_grid()
+    IMPORTS: stock_list_dict
     USED BY: CoreBrowserController
     """
-    self.clear()
-    stockstr: str = self.le.text().upper()
-    stocklist: List[str] = stockstr.split()
-    stockliststr: str = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
-
-    q_clause: str = '' if not stocklist else f' WHERE symbol IN {stockliststr} '  # prevent empty LineEdit
-    cmd: str = f'SELECT * FROM {tablename} {q_clause}'
-    df: DataFrame = execute_pandas_read(cmd)
-    load_tableview(self, df)
-    load_grid(self, df)   
-
-
-def load_stock_list_table(self, tablename: str) -> None:
-    """
-    DEPENDS ON: load_tableview(), load_grid()
-    IMPORTS:  execute_pandas_read(), pandas
-    USED BY: CoreBrowserController
-    """
-    self.clear()
-    stockstr: str = self.combo.currentText()
-    stocklist: List[str] = stock_list_dict.get(stockstr)
-    stockliststr: str = str(tuple(stocklist))
-
-    q_clause: str = '' if not stocklist else f' WHERE symbol IN {stockliststr} '  # prevent empty LineEdit
-    q: str = f'SELECT * FROM {tablename} {q_clause}'
-    df: DataFrame = execute_pandas_read(q)
-    load_tableview(self, df)
-    load_grid(self, df)    
+    list_name_str: str = self.stock_list_combobox.currentText()
+    self.symbols_list: List[str] = stock_list_dict.get(list_name_str)
+    make_dataframe(self)
+    make_tableview(self)
+    make_grid(self)    
 
 
 
 class MakeConnects:
+    """self in this class is the instance of the calling class CoreBrowserController"""
     def __init__(ego, self) -> None:
-        super().__init__()
-        self.b_list_guru.clicked.connect(self.load_guru_list_table)
-        self.b_list_zacks.clicked.connect(self.load_zacks_list_table)
-        self.b_list_option.clicked.connect(self.load_option_list_table)
-
-        self.b_le_guru.clicked.connect(self.load_guru_table)
-        self.b_le_zacks.clicked.connect(self.load_zacks_table)
-        self.b_le_option.clicked.connect(self.load_option_table)
-
+        self.load_list_button.clicked.connect(self.load_list_table)
+        self.load_symbols_button.clicked.connect(self.load_stock_table)
 
 
 
 class CoreBrowserController(CoreBrowserView):
     """
-    DEPENDS ON: MakeConnects, load_stock_list_table(),  load_stock_table()
+    DEPENDS ON: MakeConnects, load_stock_list_table(), load_stock_table()
+    IMPORTS: CoreBrowserView
+
+    wrapper methods like self.load_list_table are necessary redundancies. I cannot skip them and directly call outer functions.
+    
+    super().__init__() is called because this class has a base class CoreBrowserView.
     """
     def __init__(self) -> None:
         super().__init__()
-
         MakeConnects(self)
 
-    def load_guru_list_table(self) -> None:
-        return load_stock_list_table(self, 'stock_guru')
+    def load_list_table(self) -> None:
+        return load_list_table(self)
 
-    def load_zacks_list_table(self) -> None:
-        return load_stock_list_table(self, 'stock_guru')
-
-    def load_option_list_table(self) -> None:
-        return load_stock_list_table(self, 'stock_guru')
-
-    def load_guru_table(self) -> None:
-        return load_stock_table(self, 'stock_guru')
-
-    def load_zacks_table(self) -> None:
-        return load_stock_table(self, 'stock_guru')
-
-    def load_option_table(self) -> None:
-        return load_stock_table(self, 'stock_guru')
-
+    def load_stock_table(self) -> None:
+        return load_stock_table(self)
 
     def on_checkbox_changed(self, value: int, index: int) -> None:
-        if value == 2:
-            self.pandasTv.setColumnHidden(index, False)
+        """ USED BY: make_grid() """
+        if value == 2:    # value is 2 for checked state
+            self.pandas_tableview.setColumnHidden(index, False)
         else:
-            self.pandasTv.setColumnHidden(index, True)
+            self.pandas_tableview.setColumnHidden(index, True)
 
+    def on_text_changed_floor(self, text, col):
+        """ USED BY: make_grid() """
+        self.sort_filter_model.setFilterByColumn(
+            QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
 
-    def on_text_lower(self, text, col):
-        self.proxy.setFilterByColumn(
-                QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
-
-    def on_text_changed(self, text, col):
+    def on_text_changed_ceiling(self, text, col):
+        """ USED BY: make_grid() """
         revised_text:str = f'+{text}'
-        self.proxy.setFilterByColumn(
-                QRegularExpression(revised_text, QRegularExpression.CaseInsensitiveOption), col)
+        self.sort_filter_model.setFilterByColumn(
+            QRegularExpression(revised_text, QRegularExpression.CaseInsensitiveOption), col)
+
 
 def main() -> None:
     app: QApplication = QApplication(sys.argv)

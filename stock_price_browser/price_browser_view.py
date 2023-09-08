@@ -98,7 +98,7 @@ class StockPriceBrowserWin(QMainWindow):
         self.b_list_option = QPushButton('Load Option DB')
         self.b_list_option.setAccessibleName('b_list_option')
 
-        self.lb_le = QLabel('Stocks (divided by space):')
+        self.symbols_label = QLabel('Stocks (divided by space):')
         self.le = QLineEdit()
         self.b_le_price = QPushButton('Le Price')
         self.b_le_price.setAccessibleName('b_le_price')
@@ -107,9 +107,9 @@ class StockPriceBrowserWin(QMainWindow):
         self.b_le_option = QPushButton('Le Option')
         self.b_le_option.setAccessibleName('b_le_option')
 
-        self.pandasTv = QTableView(self)
-        self.pandasTv.setSortingEnabled(True)
-        self.pandasTv.setAlternatingRowColors(True)
+        self.pandas_tableview = QTableView(self)
+        self.pandas_tableview.setSortingEnabled(True)
+        self.pandas_tableview.setAlternatingRowColors(True)
 
 
         mainbox = QVBoxLayout(self.central)
@@ -139,13 +139,13 @@ class StockPriceBrowserWin(QMainWindow):
         hbox1.addWidget(self.b_list_2)
         hbox1.addWidget(self.b_list_option)
 
-        hbox2.addWidget(self.lb_le)
+        hbox2.addWidget(self.symbols_label)
         hbox2.addWidget(self.le)
         hbox2.addWidget(self.b_le_price)
         hbox2.addWidget(self.b_le_2)
         hbox2.addWidget(self.b_le_option)
 
-        hbox3.addWidget(self.pandasTv)
+        hbox3.addWidget(self.pandas_tableview)
 
         self.b_reset1.clicked.connect(self.calendar_reset)
         self.b_reset2.clicked.connect(self.calendar_reset)
@@ -230,7 +230,7 @@ class StockPriceBrowserWin(QMainWindow):
             event.ignore()
 
     def clear(self) -> None:
-        self.pandasTv.setModel(None)
+        self.pandas_tableview.setModel(None)
         QWidget().setLayout(self.dockwin.layout()) # re-assign the existing layout
         self.dockwinbox = QVBoxLayout(self.dockwin)
 

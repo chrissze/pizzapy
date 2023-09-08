@@ -66,8 +66,8 @@ class CustomSortFilterProxyModel(QSortFilterProxyModel):
 class GuruBrowserDialog(GuruBrowserWin):
     def __init__(self) -> None:
         super().__init__()
-        self.b_list_guru.clicked.connect(self.load_table)
-        self.b_le_guru.clicked.connect(self.load_table)
+        self.load_list_button.clicked.connect(self.load_table)
+        self.load_symbols_button.clicked.connect(self.load_table)
 
         self.b_list_zacks.clicked.connect(self.load_table)
         self.b_le_zacks.clicked.connect(self.load_table)
@@ -75,12 +75,12 @@ class GuruBrowserDialog(GuruBrowserWin):
     def load_table(self) -> None:
         self.clear()
         sender = self.sender().accessibleName()
-        if sender == 'b_list_guru':
+        if sender == 'load_list_button':
             tablename = 'usstock_g'
             stockstr = self.combo.currentText()
             stocklist = getstocks(stockstr)
             stockliststr = str(tuple(stocklist))
-        elif sender == 'b_le_guru':
+        elif sender == 'load_symbols_button':
             tablename = 'usstock_g'
             stockstr = self.le.text()
             stocklist = stockstr.split()
@@ -101,10 +101,10 @@ class GuruBrowserDialog(GuruBrowserWin):
         q = 'SELECT * FROM ' + tablename + q_clause
         df = pd.read_sql(sql=q, con=postgres_engine)
         model = DataFrameModel(df)
-        self.proxy = CustomSortFilterProxyModel()
-        self.proxy.setSourceModel(model)
-        self.pandasTv.setModel(self.proxy)
-        self.pandasTv.model().addFilterFunction(
+        self.sort_filter_model = CustomSortFilterProxyModel()
+        self.sort_filter_model.setSourceModel(model)
+        self.pandas_tableview.setModel(self.sort_filter_model)
+        self.pandas_tableview.model().addFilterFunction(
             'allcolumns',
             lambda r, s: (True in [s in str(col).lower()
                                    for col in r]))
@@ -119,9 +119,9 @@ class GuruBrowserDialog(GuruBrowserWin):
     def display_column(self, state, index=None) -> None:
         #print(self, checkbox, state)
         if state == Qt.Checked:
-            self.pandasTv.setColumnHidden(index, False)
+            self.pandas_tableview.setColumnHidden(index, False)
         else:
-            self.pandasTv.setColumnHidden(index, True)
+            self.pandas_tableview.setColumnHidden(index, True)
 
 
 def main() -> None:

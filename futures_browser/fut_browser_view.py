@@ -72,9 +72,9 @@ class FutBrowserWin(QMainWindow):
         self.b_single_option: QPushButton = QPushButton('Load single Option')
         self.b_single_option.setAccessibleName('b_single_option')
 
-        self.pandasTv: QTableView = QTableView(self)
-        self.pandasTv.setSortingEnabled(True)
-        self.pandasTv.setAlternatingRowColors(True)
+        self.pandas_tableview: QTableView = QTableView(self)
+        self.pandas_tableview.setSortingEnabled(True)
+        self.pandas_tableview.setAlternatingRowColors(True)
 
         self.statusBar().showMessage('Ready')
         self.initui()
@@ -92,10 +92,10 @@ class FutBrowserWin(QMainWindow):
         hbox1.addWidget(self.b_list_option)
         hbox2.addWidget(self.combo_individual)
         hbox2.addWidget(self.b_single_option)
-        hbox3.addWidget(self.pandasTv)
+        hbox3.addWidget(self.pandas_tableview)
 
     def clear(self) -> None:
-        self.pandasTv.setModel(None)
+        self.pandas_tableview.setModel(None)
         QWidget().setLayout(self.dockwin.layout()) # re-assign the existing layout
 
     def closeEvent(self, event: QCloseEvent) -> None:

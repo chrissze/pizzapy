@@ -28,11 +28,11 @@ def browse_guru_loop() -> None:
             revised_symbol = SYMBOL[1:]
             upsert_result: str = upsert_guru(revised_symbol)
             print(upsert_result)
-            view_symbol_row_terminal(symbol=revised_symbol, table='stock_guru')
+            view_symbol_row_terminal(symbol=revised_symbol, table='guru_stock')
         elif symbol == '0':
             break
         elif SYMBOL in all_stocks:
-            view_symbol_row_terminal(symbol=SYMBOL, table='stock_guru')
+            view_symbol_row_terminal(symbol=SYMBOL, table='guru_stock')
         else:
             print('you have entered an invalid symbol')
 
@@ -51,7 +51,7 @@ def update_guru_loop() -> None:
             upsert_result: str = upsert_guru(SYMBOL)
             print(upsert_result)
             print('\n\n\n')
-            view_symbol_row_terminal(symbol=SYMBOL, table='stock_guru')
+            view_symbol_row_terminal(symbol=SYMBOL, table='guru_stock')
         elif symbol == '0':
             break
         else:
@@ -67,7 +67,7 @@ def update_guru_list(symbol_list: List[str]) -> None:
     """
     number_of_stocks: int = len(symbol_list)
 
-    reply: str = input(f'\n\nAre you really want to UPDATE {number_of_stocks} stocks to stock_guru table (yes/no)? ')
+    reply: str = input(f'\n\nAre you really want to UPDATE {number_of_stocks} stocks to guru_stock table (yes/no)? ')
     REPLY: str = reply.upper()
     if REPLY == 'YES':
         upsert_gurus_by_terminal(symbol_list)

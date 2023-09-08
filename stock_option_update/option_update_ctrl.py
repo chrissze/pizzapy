@@ -21,8 +21,8 @@ class DailyGuruDialog(DailyGuruWin):
     def __init__(self) -> None:
         super().__init__()
         #self.threads: Dict[float, CustomThread] = {}
-        self.b_list_guru.clicked.connect(self.guru_func)
-        self.b_le_guru.clicked.connect(self.guru_func)
+        self.load_list_button.clicked.connect(self.guru_func)
+        self.load_symbols_button.clicked.connect(self.guru_func)
         self.b_list_zacks.clicked.connect(self.zacks_func)
         self.b_le_zacks.clicked.connect(self.zacks_func)
         self.b_list_option.clicked.connect(self.option_func)
@@ -32,10 +32,10 @@ class DailyGuruDialog(DailyGuruWin):
     def guru_func(self) -> None:
         list_start: int = int0(self.le_list_start.text())
         sender = self.sender().accessibleName()
-        if sender == 'b_list_guru':
+        if sender == 'load_list_button':
             stockstr = self.combo.currentText()
             stocklist = stock_list_dict.get(stockstr)[list_start:]
-        elif sender == 'b_le_guru':
+        elif sender == 'load_symbols_button':
             stockstr = self.get_le_symbol()
             stocklist = stockstr.split()
         QCoreApplication.processEvents()  # update the GUI

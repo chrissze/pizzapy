@@ -25,8 +25,8 @@ postgres_menu_text: str = """\n
 
         9) Run a custom SQL command - loop_execute_sql()
         10) Print content of /etc/config.json            
-        11) create_table('stock_guru')
-        12) create_table('stock_zacks')
+        11) create_table('guru_stock')
+        12) create_table('zacks_stock')
         13) create_table('stock_option')
         14) create_table('stock_price')
         15) create_table('stock_technical')
@@ -46,8 +46,8 @@ actions_dict: Dict[str, Any] = {
 
     '9': lambda: loop_execute_sql(),
     '10': lambda: subprocess.run('cat /etc/config.json', stdin=True, shell=True),                             
-    '11': lambda: create_table('stock_guru'),
-    '12': lambda: create_table('stock_zacks'),
+    '11': lambda: create_table('guru_stock'),
+    '12': lambda: create_table('zacks_stock'),
     '13': lambda: create_table('stock_option'),
     '14': lambda: create_table('stock_price'),
     '15': lambda: create_table('stock_technical'),

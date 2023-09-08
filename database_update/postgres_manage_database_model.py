@@ -24,7 +24,7 @@ import pandas
 from pandas.core.frame import DataFrame
 
 # PROGRAM MODULES
-from database_update.postgres_command_model import db_table_command_dict
+from database_update.postgres_command_model import table_list_dict
 
 from database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
@@ -97,7 +97,7 @@ def show_tables() -> DataFrame:
 def loop_show_table() -> None:
     """
     DEPENDS ON: show_tables(), show_table()
-    IMPORTS: db_table_command_dict
+    IMPORTS: table_list_dict
     """
     while True:
         print()
@@ -170,10 +170,10 @@ def loop_execute_sql() -> None:
 def create_table(table_name:str) -> None:
     """
     DEPENDS ON: show_table(), show_tables()
-    IMPORTS: db_table_command_dict, execute_psycopg_command()
+    IMPORTS: table_list_dict, execute_psycopg_command()
     """
-    if table_name in db_table_command_dict:
-        cmd: str = db_table_command_dict[table_name].get('command')
+    if table_name in table_list_dict:
+        cmd: str = table_list_dict[table_name].get('command')
         execute_psycopg_command(cmd)
         print(f"\nTable {table_name} columns: \n")
         print(show_table(table_name))
@@ -181,7 +181,7 @@ def create_table(table_name:str) -> None:
         print(show_tables())
     
     elif table_name:
-        reply = input(f"\nYour input '{table_name}' is not in db_table_command_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
+        reply = input(f"\nYour input '{table_name}' is not in table_list_dict, do you want to create a new table '{table_name}' with a single 'id' column (y/N)?")
 
         if reply == 'y':
             cmd: str = f'CREATE TABLE IF NOT EXISTS {table_name} ( id BIGSERIAL, PRIMARY KEY (id) );'
@@ -198,7 +198,7 @@ def create_table(table_name:str) -> None:
 def loop_drop_table():
     """
     DEPENDS ON: show_tables()
-    IMPORTS:  db_table_command_dict, execute_psycopg_command()
+    IMPORTS:  table_list_dict, execute_psycopg_command()
     """
     while True:
         print('\nLatest available tables in Postgresql database: \n')
@@ -207,8 +207,8 @@ def loop_drop_table():
         drop_table_cmd: str = f'DROP TABLE IF EXISTS {table_name}'
         if table_name == '0':
             break
-        elif table_name in db_table_command_dict:
-            reply = input(f"\nYou are going to DROP TABLE '{table_name}', it is a CRITICAL TABLE in db_table_command_dict, do you really want to drop this table (y/N)?")
+        elif table_name in table_list_dict:
+            reply = input(f"\nYou are going to DROP TABLE '{table_name}', it is a CRITICAL TABLE in table_list_dict, do you really want to drop this table (y/N)?")
             if reply == 'y':
                 execute_psycopg_command(drop_table_cmd)
         elif table_name:

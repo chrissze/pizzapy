@@ -24,7 +24,7 @@ from dimsumpy.database.postgres import upsert_psycopg, execute_psycopg
 
 # PROGRAM MODULES
 from guru_stock_update.guru_proxy_model import proxy_guru_wealth
-from database_update.postgres_command_model import db_table_command_dict
+from database_update.postgres_command_model import table_list_dict
 from database_update.postgres_connection_model import make_psycopg_connection
 
 
@@ -34,7 +34,7 @@ from database_update.postgres_connection_model import make_psycopg_connection
 def upsert_guru_by_proxy(proxy: DictProxy) -> str:
     """
     * INDEPENDENT *
-    IMPORTS: dimsumpy(upsert_psycopg), db_table_command_dict, make_psycopg_connection()
+    IMPORTS: dimsumpy(upsert_psycopg), table_list_dict, make_psycopg_connection()
     USED BY: upsert_guru()
     
     This function already commits the upsert action. 
@@ -45,8 +45,8 @@ def upsert_guru_by_proxy(proxy: DictProxy) -> str:
 
     upsert_psycopg returns the query_and_values string as a result.
     """
-    table_name: str = 'stock_guru'
-    pk_list: List[str] = db_table_command_dict[table_name].get('primary_key_list')
+    table_name: str = 'guru_stock'
+    pk_list: List[str] = table_list_dict[table_name].get('primary_key_list')
     query_result: str = upsert_psycopg(dict=proxy, table=table_name, primary_key_list=pk_list, connection=make_psycopg_connection())
     return query_result
 

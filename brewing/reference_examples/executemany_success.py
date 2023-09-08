@@ -33,7 +33,7 @@ def make_query() -> str:
     dict1 = proxy_guru_wealth('KO')
 
     pk_list = ['symbol']
-    sql: str = make_upsert_psycopg_query('stock_guru', columns=dict1.keys(), primary_key_list=pk_list)
+    sql: str = make_upsert_psycopg_query('guru_stock', columns=dict1.keys(), primary_key_list=pk_list)
     return sql
 
 
@@ -74,7 +74,7 @@ def upsert_dicts_example() -> None:
     """
     dicts = make_dicts()
     pk_list = ['symbol']
-    upsert_many_psycopg(dicts, 'stock_guru', pk_list, connection=make_psycopg_connection())
+    upsert_many_psycopg(dicts, 'guru_stock', pk_list, connection=make_psycopg_connection())
 
 if __name__ == '__main__':
     upsert_dicts_example()

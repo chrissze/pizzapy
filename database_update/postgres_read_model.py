@@ -29,7 +29,7 @@ def get_column_from_table(column: str, table: str) -> List[Any]:
 
     I can use this function to get a list of symbols that is present a particular table. 
 
-    get_column_from_table(column='symbol', table='stock_guru')
+    get_column_from_table(column='symbol', table='guru_stock')
     """
     cmd: str = f'SELECT {column} FROM {table} ORDER BY {column}'
     df: DataFrame = execute_pandas_read(cmd)  
@@ -73,7 +73,7 @@ def view_symbol_row_terminal(symbol: str, table: str) -> None:
     This function will be a common function for guru, zacks, option, technical in terminal scripts.
 
     exapmle:
-        view_symbol_row_terminal('amd', 'stock_guru')
+        view_symbol_row_terminal('amd', 'guru_stock')
     """
     SYMBOL: str = symbol.upper()
     vertical_result: Series = get_symbol_row_result(symbol=SYMBOL, table=table)
@@ -85,7 +85,7 @@ def view_symbol_row_terminal(symbol: str, table: str) -> None:
 
 
 def test() -> None:
-    view_symbol_row_terminal('amd', 'stock_guru')
+    view_symbol_row_terminal('amd', 'guru_stock')
 
 
 if __name__ == '__main__':

@@ -14,53 +14,43 @@ from PySide6.QtWidgets import (QApplication, QCheckBox,  QComboBox, QDockWidget,
 
 # PROGRAM MODULES
 from database_update.stock_list_model import stock_list_dict
+from database_update.postgres_command_model import table_list_dict
 
 
 
 
-
-class StockListRow:
+class TableListRow:
     def __init__(ego, self) -> None:
-        self.combo = QComboBox()
-        self.combo.addItems(stock_list_dict.keys())
-        self.b_list_guru = QPushButton('Load G-core DB')
-        self.b_list_guru.setAccessibleName('b_list_guru')
-        self.b_list_zacks = QPushButton('Load Z-core DB')
-        self.b_list_zacks.setAccessibleName('b_list_zacks')
-        self.b_list_option = QPushButton('Load Option DB')
-        self.b_list_option.setAccessibleName('b_list_option')
+        self.table_list_combobox = QComboBox()
+        self.table_list_combobox.addItems(table_list_dict.keys())
+        self.stock_list_combobox = QComboBox()
+        self.stock_list_combobox.addItems(stock_list_dict.keys())
+        self.load_list_button = QPushButton('Load List')
         
-        self.stock_list_hbox: QHBoxLayout = QHBoxLayout()
-        self.mainbox.addLayout(self.stock_list_hbox)
-        self.stock_list_hbox.addWidget(self.combo)
-        self.stock_list_hbox.addWidget(self.b_list_guru)
-        self.stock_list_hbox.addWidget(self.b_list_zacks)
-        self.stock_list_hbox.addWidget(self.b_list_option)
+        self.table_list_hbox = QHBoxLayout()
+        self.mainbox.addLayout(self.table_list_hbox)
+        self.table_list_hbox.addWidget(self.table_list_combobox)
+        self.table_list_hbox.addWidget(self.stock_list_combobox)
+        self.table_list_hbox.addWidget(self.load_list_button)
 
 
-
-class StocksRow:
+class SymbolsRow:
     def __init__(ego, self):
         """
             'ego' is the instance of the current class StocksRow, 'self' is the instance of the calling class.
         """
 
-        self.lb_le: QLabel = QLabel('Stocks (divided by space):')
-        self.le: QLineEdit = QLineEdit()
-        self.b_le_guru: QPushButton = QPushButton('Load G-core')
-        self.b_le_guru.setAccessibleName('b_le_guru')
-        self.b_le_zacks: QPushButton = QPushButton('Load Z-core')
-        self.b_le_zacks.setAccessibleName('b_le_zacks')
-        self.b_le_option: QPushButton = QPushButton('Load Option')
-        self.b_le_option.setAccessibleName('b_le_option')
+        self.table_name: str = self.table_list_combobox.currentText()
+        self.symbols_label: QLabel = QLabel(f'SYMBOLS (divided by space):')
+        self.symbols_lineedit: QLineEdit = QLineEdit()
+        self.load_symbols_button: QPushButton = QPushButton('Load SYMBOLS')
+        self.load_symbols_button.setAccessibleName('load_symbols_button')
 
         self.stocks_hbox: QHBoxLayout = QHBoxLayout()
         self.mainbox.addLayout(self.stocks_hbox)
-        self.stocks_hbox.addWidget(self.lb_le)
-        self.stocks_hbox.addWidget(self.le)
-        self.stocks_hbox.addWidget(self.b_le_guru)
-        self.stocks_hbox.addWidget(self.b_le_zacks)
-        self.stocks_hbox.addWidget(self.b_le_option)
+        self.stocks_hbox.addWidget(self.symbols_label)
+        self.stocks_hbox.addWidget(self.symbols_lineedit)
+        self.stocks_hbox.addWidget(self.load_symbols_button)
 
 
 
@@ -70,12 +60,14 @@ class TableRow:
         """
             'ego' is the instance of the current class, 'self' is the instance of the calling class.
         """
-        self.pandasTv: QTableView = QTableView(self)
-        self.pandasTv.setSortingEnabled(True)
-        self.pandasTv.setAlternatingRowColors(True)
+        self.pandas_tableview: QTableView = QTableView(self)
+        self.pandas_tableview.setSortingEnabled(True)
+        self.pandas_tableview.setAlternatingRowColors(True)
         self.table_hbox: QHBoxLayout = QHBoxLayout()
         self.mainbox.addLayout(self.table_hbox)
-        self.table_hbox.addWidget(self.pandasTv)
+        self.table_hbox.addWidget(self.pandas_tableview)
+
+
 
 
 
@@ -134,8 +126,10 @@ class MakeDock:
     def __init__(ego, self):
         """
             'ego' is the instance of the current class, 'self' is the instance of the calling class.
+            self.dock is the parent container of self.dockwin
         """
         self.dock: QDockWidget = QDockWidget('Columns      LowerLimit    UpperLimit', self)
+        self.dock.setFixedWidth(300) # resize method does not work, alternatively I can use setFixedSize
         self.dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         self.dockwin: QWidget = QWidget(self)
@@ -146,10 +140,14 @@ class MakeDock:
 
 
 class CoreBrowserView(QMainWindow):
+    """
+    super().__init__() is called because this class has a base class QMainWindow.
+    
+    """
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle('Core Browser')
-        self.setGeometry(50, 50, 800, 800)
+        self.resize(1000, 800)
 
         MakeActions(self)
         MakeMenuBar(self)  # MakeMenuBar must be placed after MakeActions
@@ -163,10 +161,9 @@ class CoreBrowserView(QMainWindow):
         self.central: QWidget = QWidget()  
         self.setCentralWidget(self.central)
         self.mainbox: QVBoxLayout = QVBoxLayout(self.central) 
-        StockListRow(self)  # Rows must be placed after mainbox creation
-        StocksRow(self)
         TableRow(self)
-
+        TableListRow(self)  # Rows must be placed after mainbox creation
+        SymbolsRow(self)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         reply: QMessageBox.StandardButton = QMessageBox.question(self, 'Confirmation', 'Quit Now?', QMessageBox.Yes | QMessageBox.Cancel)
@@ -176,7 +173,7 @@ class CoreBrowserView(QMainWindow):
             event.ignore()
 
     def clear(self) -> None:
-        self.pandasTv.setModel(None)
+        self.pandas_tableview.setModel(None)
         QWidget().setLayout(self.dockwin.layout()) # re-assign the existing layout
 
 

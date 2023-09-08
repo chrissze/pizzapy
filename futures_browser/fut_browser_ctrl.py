@@ -44,7 +44,7 @@ class FutBrowserDialog(FutBrowserWin):
         model: DataFrameModel = DataFrameModel(df)
         proxy: MySortFilterProxyModel = MySortFilterProxyModel(self)
         proxy.setSourceModel(model)
-        self.pandasTv.setModel(proxy)
+        self.pandas_tableview.setModel(proxy)
 
         grid: QGridLayout = QGridLayout()   # If the Grid was created in the view, it will get deleted
         checkboxes: List[QCheckBox] = [QCheckBox(x) for x in df.columns]
@@ -67,9 +67,9 @@ class FutBrowserDialog(FutBrowserWin):
 
     def display_column(self, state: int, index: int) -> None:  # state: checked 2 ; unchecked 0
         if state == Qt.Checked:
-            self.pandasTv.setColumnHidden(index, False)
+            self.pandas_tableview.setColumnHidden(index, False)
         else:
-            self.pandasTv.setColumnHidden(index, True)
+            self.pandas_tableview.setColumnHidden(index, True)
 
 
 def main() -> None:

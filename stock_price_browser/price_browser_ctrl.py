@@ -78,9 +78,9 @@ class StockPriceBrowserDialog(StockPriceBrowserWin):
         print(q)
         df = pd.read_sql(sql=q, con=postgres_engine)
         model = DataFrameModel(df)
-        proxy = MySortFilterProxyModel()  # by use proxy instead of self.proxy, the sorting is faster
+        proxy = MySortFilterProxyModel()  # by use proxy instead of self.sort_filter_model, the sorting is faster
         proxy.setSourceModel(model)
-        self.pandasTv.setModel(proxy)
+        self.pandas_tableview.setModel(proxy)
 
         grid = QGridLayout()   # If the Grid was created in the view, and this file __init__, it will get deleted
         checkboxes = [QCheckBox(x) for x in df.columns]
@@ -103,9 +103,9 @@ class StockPriceBrowserDialog(StockPriceBrowserWin):
 
     def display_column(self, state, index=None) -> None:
         if state == Qt.Checked:
-            self.pandasTv.setColumnHidden(index, False)
+            self.pandas_tableview.setColumnHidden(index, False)
         else:
-            self.pandasTv.setColumnHidden(index, True)
+            self.pandas_tableview.setColumnHidden(index, True)
 
 
 def main() -> None:

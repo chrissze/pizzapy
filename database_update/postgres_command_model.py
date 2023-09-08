@@ -6,7 +6,7 @@ USED BY:
 
 This module contains variables and dictionaries only, line below is for copy and paste:
 
-                stock_guru_create_table_command, stock_zacks_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command,  db_table_command_dict
+                guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command,  table_list_dict
 
     
 I cannot place postgres execution functions in this module, as it will led to circular imports.
@@ -19,8 +19,8 @@ import json
 from typing import Any, Dict
 
 
-stock_guru_create_table_command: str = """
-    CREATE TABLE IF NOT EXISTS stock_guru (
+guru_stock_create_table_command: str = """
+    CREATE TABLE IF NOT EXISTS guru_stock (
     guru_id BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE,              
@@ -66,8 +66,8 @@ stock_guru_create_table_command: str = """
     """
 
 
-stock_zacks_create_table_command: str = """
-    CREATE TABLE IF NOT EXISTS stock_zacks ( 
+zacks_stock_create_table_command: str = """
+    CREATE TABLE IF NOT EXISTS zacks_stock ( 
     zacks_id  BIGSERIAL, 
     t   TIMESTAMP,                    
     td   DATE,        
@@ -183,9 +183,9 @@ futures_option_create_table_command: str = """CREATE TABLE IF NOT EXISTS futures
 
 # This dictionary can be used to compose upsert commands
 # option, price and technicals are from yahoo
-db_table_command_dict: Dict[str, Any] = {
-    'stock_guru': {'primary_key_list': ['symbol'], 'command': stock_guru_create_table_command},
-    'stock_zacks': {'primary_key_list': ['symbol'], 'command': stock_zacks_create_table_command},
+table_list_dict: Dict[str, Any] = {
+    'guru_stock': {'primary_key_list': ['symbol'], 'command': guru_stock_create_table_command},
+    'zacks_stock': {'primary_key_list': ['symbol'], 'command': zacks_stock_create_table_command},
     'stock_option': {'primary_key_list': ['symbol', 'td'], 'command': stock_option_create_table_command},
     'stock_price': {'primary_key_list': ['symbol', 'td'], 'command': stock_price_create_table_command},
     'stock_technical': {'primary_key_list': ['symbol', 'td'], 'command': stock_technical_create_table_command},
