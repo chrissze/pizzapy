@@ -6,7 +6,7 @@ USED BY:
 
 This module contains variables and dictionaries only, line below is for copy and paste:
 
-                guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command,  table_list_dict
+                guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command
 
     
 I cannot place postgres execution functions in this module, as it will led to circular imports.

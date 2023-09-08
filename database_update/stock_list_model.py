@@ -28,6 +28,10 @@ from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 # PROGRAM MODULES
 from database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks, option_traded_stocks, sp_500_stocks, sp_nasdaq_stocks
 
+
+from database_update.postgres_command_model import guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command
+
+from guru_stock_update.guru_update_database_model import upsert_guru
 # need to comment out all_stocks when I use code to generate 
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
 
@@ -39,6 +43,18 @@ stock_list_dict: Dict[str, List[str]] = {
     f'Nasdaq Listed ({len(nasdaq_listed_stocks)})': nasdaq_listed_stocks,
     f'Nasdaq Traded ({len(nasdaq_traded_stocks)})': nasdaq_traded_stocks,
     f'All Stocks ({len(all_stocks)})': all_stocks,
+}
+
+
+# This dictionary can be used to compose upsert commands
+# option, price and technicals are from yahoo
+table_function_dict: Dict[str, Any] = {
+    'guru_stock': upsert_guru ,
+    'zacks_stock': upsert_guru,
+    'stock_option': upsert_guru,
+    'stock_price': upsert_guru,
+    'stock_technical': upsert_guru,
+    'futures_option': upsert_guru ,
 }
 
 
