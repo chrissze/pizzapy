@@ -45,42 +45,39 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
             if regex.isValid():
                 print('regex is Valid')
                 regextext: str = regex.pattern()
-                celltext: str = self.sourceModel().data(ix)
-                
-                
                 ix: QModelIndex = self.sourceModel().index(source_row, key, source_parent) # self is the ProxyModel instance
-                if ix.isValid() and is_floatable(regextext):
-                    print(f'ix {ix} is_valid')
-                    print(f'celltext is {celltext}')
+                celltext: str = self.sourceModel().data(ix)
+                print(f'celltext is {celltext}')
+                print(f'regextext is {regextext}')
+                
+                
+                if ix.isValid() and is_floatable(celltext):
+                    print(f'ix {ix} is_valid ')
 
-                    print(f'regextext is {regextext}\n\n')
                     result: bool = float(regextext) > float(celltext) if is_floatable(celltext) \
                         and is_floatable(regextext) else False #regex.indexIn(celltext)
                         # above line end need to be False, so lineedit text deletion will restore rows.
+                    print(f'result 60 is {result} \n\n')
                     if result:
                         return False
-                else:
-                    result: bool = regextext == celltext
-                    print(f'ix {ix} is_not_valid')
+                    
             else:
                 print('regex is NOT Valid')
                 regextext: str = regex.pattern()
-                celltext: str = self.sourceModel().data(ix)
-
+                print(f'regextext is {regextext}')
                 ix: QModelIndex = self.sourceModel().index(source_row, int(key), source_parent)
-                if ix.isValid() and is_floatable(regextext[1:]):
+                celltext: str = self.sourceModel().data(ix)
+                print(f'celltext is {celltext}')
+
+                if ix.isValid() and is_floatable(celltext):
                     print(f'ix {ix} is_valid')
-                    print(f'celltext is {celltext}')
-                    print(f'NOT valid regextext is {regextext}')
-                    print(f'regextext {regextext[1:]} is_floatable: {is_floatable(regextext[1:])}\n\n')
+                    print(f'regextext {regextext[1:]} is_floatable: {is_floatable(regextext[1:])}')
                     result: bool = readf(regextext[1:]) < float(celltext) if is_floatable(celltext) and is_floatable(regextext[1:]) else False # regex.indexIn(celltext)
-                    print(result)
+                    print(f'result 82 is {result} \n\n')
                     if result:
                         return False
-                else:
-                    result: bool = regextext[1:] == celltext
-                    print(f'ix {ix} is_not_valid or {regextext[1:]} not_floatable')
-
+                
+                    
 
         return True
 
