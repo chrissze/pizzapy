@@ -108,7 +108,7 @@ def update_core_list(self, func) -> None:
 
 
 
-class MakeButtonConnects:
+class MakeConnects:
     """
     Buttons' connect functions can only connect to a function with one implicit self argument, 
     however, I can connect it to a wrapper method like below and which points to a function with more arguments.
@@ -129,13 +129,13 @@ class MakeButtonConnects:
 
 class CoreUpdateController(CoreUpdateView):
     """
-    DEPENDS ON: MakeButtonConnects class, closeEvent(),  update_core_list(), update_core()
+    DEPENDS ON: MakeConnects class, closeEvent(),  update_core_list(), update_core()
     IMPORTS: DailyGuruWin, upsert_guru
     """
     def __init__(self) -> None:
         super().__init__() # initialize all DailyGuruWin() variables and methods
         #self.threads: Dict[float, CustomThread] = {}
-        MakeButtonConnects(self)
+        MakeConnects(self)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         return closeEvent(self, event)
