@@ -26,12 +26,10 @@ from typing import Any, List, Tuple
 
 def make_dataframe(self) -> None:
     """
-        DEPENDS ON: self.symbols_list (property), self.table_list_combobox
+        DEPENDS ON: 
         IMPORTS: pandas, execute_pandas_read()
         USED BY: load_stock_table(), load_stock_list_table()
         self.df needs to be in self to share its value so that it can be accessed by load_tableview() and load_grid()
-
-        Needs self.symbols_list in load_stock_table() and load_stock_list_table().
 
     """
     self.clear()
@@ -45,11 +43,8 @@ def make_dataframe(self) -> None:
 
 def make_tableview(self) -> None:
     """
-        DEPENDS ON: make_dataframe()
         IMPORTS: pandas, dimsumpy(DataFrameModel), MySortFilterProxyModel
         USED BY: load_stock_table(), load_stock_list_table()
-
-        This function needs make_dataframe() to prepare self.df property.
     """
     dataframe_model: DataFrameModel = DataFrameModel(self.df)
     self.sort_filter_model = MySortFilterProxyModel()
@@ -60,11 +55,9 @@ def make_tableview(self) -> None:
 
 def make_grid(self) -> None:
     """
-        DEPENDS ON: make_dataframe(), self.on_checkbox_changed(), self.on_text_changed_floor(), self.on_text_changed_ceiling()
+        DEPENDS ON: self.on_checkbox_changed(), self.on_text_changed_floor(), self.on_text_changed_ceiling()
         IMPORTS: pandas
         USED BY: load_stock_table(), load_stock_list_table()
-
-        This function needs make_dataframe() to prepare self.df property.
     """
     grid: QGridLayout = QGridLayout()   # If the Grid was created in the view, it will get deleted
     dock_checkboxes: List[QCheckBox] = [QCheckBox(x) for x in self.df.columns]
@@ -149,24 +142,15 @@ class CoreBrowserController(CoreBrowserView):
             self.pandas_tableview.setColumnHidden(index, True)
 
     def on_text_changed_floor(self, text, col):
-        """ 
-        USED BY: make_grid()
-        I deliberately add CaseInsensitiveOption to the floor filter's QRegualarExpression, so that I can have two streams in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
-
-        the floor_lineedit is for input a number so as to filter out all numbers below that threshold. For example, I want to get rid of all stocks that have a earn_pc lower that 5%, I can input 5 to floor_lineedit.
-
-        In string columns like 'symbol', when the symbol is matched, the row will be hidden. 
-        """
+        """ USED BY: make_grid() """
         self.sort_filter_model.setFilterByColumn(
             QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
 
     def on_text_changed_ceiling(self, text, col):
-        """ 
-        USED BY: make_grid() 
-        As this method's Regular Expression does not have CaseInsensitiveOption, so it will fall into the else-clause in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
-        """
+        """ USED BY: make_grid() """
+        revised_text:str = f'+{text}'
         self.sort_filter_model.setFilterByColumn(
-            QRegularExpression(text), col)
+            QRegularExpression(revised_text, QRegularExpression.CaseInsensitiveOption), col)
 
 
 def main() -> None:
