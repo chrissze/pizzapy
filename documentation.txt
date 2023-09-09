@@ -199,23 +199,23 @@ PACKAGE: guru_stock_update
 [ price_cap_model.py ]
     * INDEPENDENT *
 
-    EXPORTS: proxy_price_cap()
+    EXPORTS: make_price_cap_proxy()
 
-    This module DOES NOT depend on other program modules. It provides proxy_price_cap() to other modules to fetch current price and market cap.
+    This module DOES NOT depend on other program modules. It provides make_price_cap_proxy() to other modules to fetch current price and market cap.
 
 
 [ guru_proxy_model.py ]
     DEPENDS ON: price_cap_model.py
 
-    EXPORTS: proxy_guru_wealth()
+    EXPORTS: make_guru_proxy()
 
     guru_proxy_model.py module depends on price_cap_model.py to get current stock price and market cap.
 
     This module get all data from gurufocus and calculate the wealth percentage. The proxy dictionary is for database upsert in guru_database_model.py module.
 
-    proxy_guru_process() will return a proxy dictionary containing all GURU WEB core data.
+    process_guru() will return a proxy dictionary containing all GURU WEB core data.
 
-    proxy_guru_wealth() is the most import function, which returns a proxy dictionary containing all GURU data and wealth_pc. 
+    make_guru_proxy() is the most import function, which returns a proxy dictionary containing all GURU data and wealth_pc. 
 
     Try or not try? child functions such proxy_guru_book_value() does not use try block,
     similar child functions are used in the last chain function in guru_proxy_model.py,
@@ -229,7 +229,7 @@ PACKAGE: guru_stock_update
 
     This module is for database upsert, it gets data from guru_proxy_model.py module.
 
-    I use wealth_pc variable from proxy_guru_wealth() to determine whether I will do the upsert in guru_database_model.py module. 
+    I use wealth_pc variable from make_guru_proxy() to determine whether I will do the upsert in guru_database_model.py module. 
 
 [ guru_update_view.py ]
     DEPENDS ON: 

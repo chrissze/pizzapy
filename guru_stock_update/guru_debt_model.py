@@ -18,7 +18,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
-from general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import make_price_cap_proxy
 
 
 def get_guru_debt_per_share(symbol: str) -> Optional[float]:

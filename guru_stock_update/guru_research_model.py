@@ -26,7 +26,7 @@ from dimsumpy.web.crawler import get_html_soup
 
 
 # PROGRAM MODULES
-from general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import make_price_cap_proxy
 
 
 
@@ -63,7 +63,7 @@ def proxy_guru_research(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 if __name__ == '__main__':
     stock = input('which stock do you want to check research? ')
-    proxy = proxy_price_cap(stock)
+    proxy = make_price_cap_proxy(stock)
     x = proxy_guru_research(stock, proxy=proxy)
     print(x)
     

@@ -15,7 +15,7 @@ from batterypy.time.cal import get_trading_day_utc
 
 
 # PROGRAM MODULES
-from general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import make_price_cap_proxy
 from guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
 from guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
 from guru_stock_update.guru_earn_model import proxy_guru_earn
@@ -30,9 +30,9 @@ from guru_stock_update.guru_zscore_model import proxy_guru_zscore
 
 
 
-def proxy_guru_process(symbol: str) -> DictProxy:
+def process_guru(symbol: str) -> DictProxy:
     """
-    DEPENDS: get_trading_day_utc, proxy_price_cap, proxy_guru_book_value TO proxy_guru_zscore
+    DEPENDS: get_trading_day_utc, make_price_cap_proxy, proxy_guru_book_value TO proxy_guru_zscore
     """
     SYMBOL: str = symbol.upper()
     manager: SyncManager = Manager()
@@ -42,7 +42,7 @@ def proxy_guru_process(symbol: str) -> DictProxy:
     proxy['td'] = get_trading_day_utc()
     proxy['t'] = datetime.now().replace(microsecond=0)
     try:
-        proxy_price_cap(SYMBOL, proxy)
+        make_price_cap_proxy(SYMBOL, proxy)
         p1 = Process(target=proxy_guru_book_value, args=(SYMBOL, proxy))
         p2 = Process(target=proxy_guru_debt, args=(SYMBOL, proxy))
         p3 = Process(target=proxy_guru_earn, args=(SYMBOL, proxy))
@@ -109,11 +109,11 @@ def get_guru_wealth_pc(proxy: DictProxy) -> Optional[float]:
     return wealth_pc
 
 
-def proxy_guru_wealth(symbol: str) -> DictProxy:
+def make_guru_proxy(symbol: str) -> DictProxy:
     """
-    DEPENDS: proxy_guru_process, get_guru_wealth_pc
+    DEPENDS: process_guru(), get_guru_wealth_pc()
     """
-    proxy: DictProxy = proxy_guru_process(symbol)
+    proxy: DictProxy = process_guru(symbol)
     wealth_pc: Optional[float] = get_guru_wealth_pc(proxy)
     proxy['wealth_pc'] = wealth_pc if wealth_pc is not None else None
     return proxy
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     stock = input('which stock do you want to check? ')
     
-    x = proxy_guru_wealth(stock)
+    x = make_guru_proxy(stock)
     
     print(x)
 

@@ -5,8 +5,9 @@ import sys; sys.path.append('..')
 from datetime import datetime
 from itertools import dropwhile
 
-from multiprocessing.managers import DictProxy
-from multiprocessing import Pool
+from multiprocessing import Manager, Pool, Process
+from multiprocessing.managers import DictProxy, SyncManager
+
 import os
 from typing import Any, List, Optional, Tuple, Union
 
@@ -17,18 +18,22 @@ from pandas import DataFrame
 
 # CUSTOM LIBS
 from batterypy.string.read import float0
+from batterypy.time.cal import get_trading_day_utc
 from dimsumpy.web.crawler import get_html_dataframes, get_html_text
 
 
+
 # PROGRAM MODULES
-from general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import make_price_cap_proxy
 
 
 
 
 def calculate_premiums(call_df: DataFrame, put_df: DataFrame) -> Tuple[float, float, float, float]:
     """
-    call_premium and put_premium are already account for 100 shares multiplication.
+        * INDEPENDENT *
+        USED BY: calculate_page_premiums()    
+        call_premium and put_premium are already account for 100 shares multiplication.
     """
     call_df.columns = ['Contract', 'LTD', 'Strike', 'Last', 'Bid',
                         'Ask', 'Chg', 'PercentChg', 'Volume', 'OI', 'Vol']
@@ -54,7 +59,7 @@ def calculate_page_premiums(page: str) -> Tuple[float, float, float, float]:
     """
     DEPENDS ON: calculate_premiums()
     IMPORTS: get_html_dataframes(), pandas
-    USED BY: 
+    USED BY: get_total_premiums()
     https://finance.yahoo.com/quote/AMD/options?date=1695945600
     """
     page_dfs: List[DataFrame] = get_html_dataframes(page)
@@ -71,6 +76,10 @@ def calculate_page_premiums(page: str) -> Tuple[float, float, float, float]:
 
 
 def prepare_urls(symbol: str) -> List[str]:
+    """
+        IMPORTS: get_html_text()
+        USED BY: get_total_premiums()
+    """
     option_url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
     html_text: str = get_html_text(option_url)
     raw_string_list: List[str] = html_text.split('"')
@@ -83,7 +92,11 @@ def prepare_urls(symbol: str) -> List[str]:
 
 def get_total_premiums(symbol: str) -> Tuple[float, float, float, float]:
     """
-        DEPENDS ON: calculate_page_premiums()
+        DEPENDS ON: calculate_page_premiums(), prepare_urls()
+        IMPORTS: multiprocessing(Pool), os
+        USED BY: make_initial_option_proxy()
+        
+        This function runs in PARALLEL
     """
     expiry_urls = prepare_urls(symbol)
     cpu_count: int = min(os.cpu_count(), 8)                  
@@ -99,8 +112,11 @@ def get_total_premiums(symbol: str) -> Tuple[float, float, float, float]:
 
 
 
-def proxy_option(symbol: str, proxy: DictProxy={}) -> DictProxy:
+def make_initial_option_proxy(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
+        DEPENDS ON: get_total_premiums()
+        USED BY: make_option_proxy()
+        Optionally rely on make_price_cap_proxy() to create a DictProxy in make_option_proxy()
     """
     call_money, put_money, call_oi, put_oi = get_total_premiums(symbol)
     
@@ -124,11 +140,28 @@ def proxy_option(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
+def make_option_proxy(symbol: str) -> DictProxy:
+    """
+        DEPENDS ON: make_initial_option_proxy()
+        IMPORTS: make_price_cap_proxy()
+    """
+    SYMBOL: str = symbol.upper()
+    manager: SyncManager = Manager()
+    proxy: DictProxy = manager.dict()
 
-def test_proxy_option() -> None:
+    proxy['symbol'] = SYMBOL
+    proxy['td'] = get_trading_day_utc()
+    proxy['t'] = datetime.now().replace(second=0, microsecond=0)
+    make_price_cap_proxy(SYMBOL, proxy)
+    make_initial_option_proxy(symbol, proxy)
+    return proxy
+
+
+
+def test_process_option() -> None:
     symbol = input('What SYMBOL do you want to input? ')
-    price_cap_proxy: DictProxy = proxy_price_cap(symbol)
-    option_proxy: DictProxy = proxy_option(symbol, price_cap_proxy)
+    
+    option_proxy: DictProxy = make_option_proxy(symbol)
     print(option_proxy)    
 
 

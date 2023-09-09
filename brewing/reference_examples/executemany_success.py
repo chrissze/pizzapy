@@ -26,11 +26,11 @@ from dimsumpy.database.postgres import upsert_many_psycopg, make_upsert_psycopg_
 
 # PROGRAM MODULES
 from database_update.postgres_connection_model import make_psycopg_connection
-from guru_stock_update.guru_proxy_model import proxy_guru_wealth
+from guru_stock_update.guru_proxy_model import make_guru_proxy
 
 
 def make_query() -> str:
-    dict1 = proxy_guru_wealth('KO')
+    dict1 = make_guru_proxy('KO')
 
     pk_list = ['symbol']
     sql: str = make_upsert_psycopg_query('guru_stock', columns=dict1.keys(), primary_key_list=pk_list)
@@ -39,8 +39,8 @@ def make_query() -> str:
 
 
 def make_values() -> List[List]:
-    dict1 = proxy_guru_wealth('KO')
-    dict2 = proxy_guru_wealth('MS')
+    dict1 = make_guru_proxy('KO')
+    dict2 = make_guru_proxy('MS')
 
     value1 = dict1.values()    # List
     value2 = dict2.values()
@@ -57,8 +57,8 @@ def upsert_many_example() -> None:
 
 
 def make_dicts() -> List[Dict]:
-    dict1 = proxy_guru_wealth('KO')
-    dict2 = proxy_guru_wealth('MS')
+    dict1 = make_guru_proxy('KO')
+    dict2 = make_guru_proxy('MS')
     return [dict1, dict2]
 
 

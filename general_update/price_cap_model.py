@@ -58,14 +58,14 @@ def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
         return None, None
 
 
-def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
+def make_price_cap_proxy(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
     DEPENDS ON: try_get_price_cap()
     I write `is not None` for testing below since price, cap might be 0, which is a false value.
     """
-    price, cap = try_get_price_cap(symbol)    
-    proxy['price'] = price if price is not None else None
-    proxy['cap'] = cap if cap is not None else None
+    price, cap = get_barchart_price_cap(symbol)    
+    proxy['price'] = price if price > 0 else None
+    proxy['cap'] = cap if cap > 0 else None
     proxy['cap_str'] = formatlarge(cap) if cap is not None else None
     return proxy
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     s = input('which str to you want to input? ')
 
-    x = proxy_price_cap(s) 
+    x = make_price_cap_proxy(s) 
     print(x)
 
 

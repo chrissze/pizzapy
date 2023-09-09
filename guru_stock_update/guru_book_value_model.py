@@ -25,7 +25,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
-from general_update.price_cap_model import proxy_price_cap
+from general_update.price_cap_model import make_price_cap_proxy
 
 
 
@@ -63,7 +63,7 @@ def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 def test_proxy_guru_book_value() -> None:    
     stock = input('which stock do you want to check book_value? ')
-    proxy = proxy_price_cap(stock)
+    proxy = make_price_cap_proxy(stock)
     x = proxy_guru_book_value(stock, proxy=proxy)
     print(x)
 

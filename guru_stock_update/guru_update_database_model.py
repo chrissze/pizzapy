@@ -23,7 +23,7 @@ from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg, execute_psycopg
 
 # PROGRAM MODULES
-from guru_stock_update.guru_proxy_model import proxy_guru_wealth
+from guru_stock_update.guru_proxy_model import make_guru_proxy
 from database_update.postgres_command_model import table_list_dict
 from database_update.postgres_connection_model import make_psycopg_connection
 
@@ -55,11 +55,11 @@ def upsert_guru_by_proxy(proxy: DictProxy) -> str:
 def upsert_guru(symbol: str) -> str:
     """
     DEPENDS ON: upsert_guru_by_proxy
-    IMPORTS: proxy_guru_wealth()
+    IMPORTS: make_guru_proxy()
     USED BY: upsert_gurus_by_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert, symbol).
     """
-    proxy: DictProxy = proxy_guru_wealth(symbol)
+    proxy: DictProxy = make_guru_proxy(symbol)
     valid_data: bool = proxy.get('wealth_pc') is not None
 
     if valid_data:
