@@ -102,7 +102,7 @@ def loop_show_table() -> None:
     while True:
         print()
         print(show_tables())
-        table_name: str = input('\nInput a table name to show table columns (0 to quit): ')
+        table_name: str = input('\nInput a TABLE NAME to show table columns (0 to quit): ')
         if table_name == '0':
             break
         else:
@@ -203,7 +203,7 @@ def loop_drop_table():
     while True:
         print('\nLatest available tables in Postgresql database: \n')
         print(show_tables())
-        table_name: str = input("\nWhich table do you want to DROP? input the table name or '0' to cancel: ")
+        table_name: str = input("\nWhich table do you want to DROP? Input the TABLE NAME or '0' to cancel: ")
         drop_table_cmd: str = f'DROP TABLE IF EXISTS {table_name}'
         if table_name == '0':
             break
@@ -219,14 +219,11 @@ def loop_drop_table():
 
 
 def test() -> None:
-    cmd1 = 'SELECT now()'
-    cmd2 = 'SELECT 2+2'
-    cmd3 = 'SELECT version()'
 
-    #s: str = input("\nWhich string do you want to input? ")
-    x = loop_drop_table()
+
+    s: str = input("\nWhich string do you want to input? ")
+    x = s
     print(x)
-
     print(f'{__file__} done')
 
 
