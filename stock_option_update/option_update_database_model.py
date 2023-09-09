@@ -189,6 +189,7 @@ def yahoo_calc(page: str) -> Tuple[float, float, float, float]:
 
 
 
+
 if __name__ == '__main__':
     op_yahoo('NVDA')
     print("Time lapsed: ", default_timer())

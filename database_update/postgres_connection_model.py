@@ -10,7 +10,7 @@ I cannot place postgres execution functions in this module, as it will led to ci
 # STANDARD LIB
 import sys; sys.path.append('..')
 import json
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 # THIRD PARTY LIB
 import pandas
@@ -18,6 +18,10 @@ from pandas.core.frame import DataFrame
 from psycopg import connect, Connection, Cursor
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
+import requests
+from requests.models import Response
+
+
 
 
 def make_psycopg_connection() -> Connection:
@@ -96,12 +100,13 @@ def execute_pandas_read(cmd: str) -> DataFrame:
 
 
 
+
 if __name__ == '__main__':
 
     cmd1 = 'SELECT now()'
     cmd2 = 'SELECT 2+2'
     cmd3 = 'SELECT version()'
     s = input('What string do you want to input? ')
-    x = execute_psycopg_command(s)
+    x = get_html_dataframes(s)
     print(x)
     print('done')

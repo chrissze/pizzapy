@@ -52,10 +52,10 @@ def proxy_guru_book_value(symbol: str, proxy: DictProxy={}) -> DictProxy:
     No need to use try block, as the last chaining function used this function will have tried.  
     """
     book_value: Optional[float] = get_guru_book_value(symbol)
-    proxy['book_value'] = book_value if book_value is not None else None
+    proxy['book_value'] = book_value
 
-    book_value_pc: Optional[float] = None if ('price' not in proxy or book_value is None) else round((book_value / proxy['price'] * 100.0), 2)
-    proxy['book_value_pc'] = book_value_pc if book_value_pc is not None else None
+    book_value_pc: Optional[float] = round((book_value / proxy['price'] * 100.0), 2) if (proxy.get('price') and book_value) else None
+    proxy['book_value_pc'] = book_value_pc
     return proxy
 
 

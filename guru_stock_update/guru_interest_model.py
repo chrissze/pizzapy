@@ -41,11 +41,10 @@ def get_guru_interest(symbol: str) -> Optional[float]:
 def proxy_guru_interest(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """DEPENDS: try_get_guru_interest > get_guru_interest"""
     interest: Optional[float]  = get_guru_interest(symbol)
-    proxy['interest'] = interest if interest is not None else None
-
-    interest_pc: Optional[float] = None if ('cap' not in proxy or interest is None) \
-        else round((interest / proxy['cap'] * 100.0), 4)
-    proxy['interest_pc'] = interest_pc if interest_pc is not None else None
+    proxy['interest'] = interest
+    
+    interest_pc: Optional[float] = round((interest / proxy['cap'] * 100.0), 4) if (proxy.get('cap') and interest) else None
+    proxy['interest_pc'] = interest_pc
     return proxy
 
 

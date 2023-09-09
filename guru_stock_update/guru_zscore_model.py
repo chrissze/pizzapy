@@ -54,9 +54,9 @@ def get_guru_zscore(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_zscore(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    """DEPENDS: try_get_guru_zscore > get_guru_zscore"""
+    """DEPENDS ON: get_guru_zscore"""
     zscore: Optional[float] = get_guru_zscore(symbol)
-    proxy['zscore'] = zscore if zscore is not None else None
+    proxy['zscore'] = zscore
     return proxy
 
 

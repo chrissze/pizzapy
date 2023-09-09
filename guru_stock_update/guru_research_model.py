@@ -52,10 +52,10 @@ def get_guru_research(symbol: str) -> Optional[float]:
 def proxy_guru_research(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """DEPENDS: try_get_guru_research > get_guru_research"""
     research: Optional[float] = get_guru_research(symbol)
-    proxy['research'] = research if research is not None else None
+    proxy['research'] = research
     
-    research_pc: Optional[float] = None if ('cap' not in proxy or research is None) else round((research / proxy['cap'] * 100.0), 2)
-    proxy['research_pc'] = research_pc if research_pc is not None else None
+    research_pc: Optional[float] = round((research / proxy['cap'] * 100.0), 2) if (proxy.get('cap') and research) else None
+    proxy['research_pc'] = research_pc
     return proxy
 
 
