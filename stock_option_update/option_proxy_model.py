@@ -128,7 +128,7 @@ def proxy_option(symbol: str, proxy: DictProxy={}) -> DictProxy:
 def test_proxy_option() -> None:
     symbol = input('What SYMBOL do you want to input? ')
     price_cap_proxy: DictProxy = proxy_price_cap(symbol)
-    option_proxy: DictProxy = proxy_option(symbol, {})
+    option_proxy: DictProxy = proxy_option(symbol, price_cap_proxy)
     print(option_proxy)    
 
 

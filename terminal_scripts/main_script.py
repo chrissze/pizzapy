@@ -365,7 +365,7 @@ def browse_single_fut_option_1d() -> None:
 
 def browse_all_fut_option_1d() -> None:
     td: date = get_trading_day_utc()
-    cols = 'td, symbol, px, capstr, callratio, putratio, callpc, putpc'
+    cols = 'td, symbol, px, cap_str, callratio, putratio, callpc, putpc'
     print(td)
     sql: str = f"SELECT {cols} FROM fut_option WHERE td = '{td}' ORDER BY t DESC;"
     df: DataFrame = pd.read_sql(sql, con=cnx)

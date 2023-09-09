@@ -202,7 +202,7 @@ def ino_ratio(s: str, d: DictProxy={}) -> Dict[str, Any]:
 
         if {'callmoney', 'putmoney', 'oi', 'px'}.issubset(d):
             d['cap']: float = round((d['px'] * d['oi'] * lot), 0)
-            d['capstr']: str = formatlarge(d['cap'])
+            d['cap_str']: str = formatlarge(d['cap'])
             totalmoney: float = d['callmoney'] + d['putmoney']
             d['callratio']: float = round((d['callmoney'] / totalmoney * 100.0), 1)
             d['putratio']: float = round((d['putmoney'] / totalmoney * 100.0), 1)

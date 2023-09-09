@@ -66,7 +66,7 @@ def proxy_price_cap(symbol: str, proxy: DictProxy={}) -> DictProxy:
     price, cap = try_get_price_cap(symbol)    
     proxy['price'] = price if price is not None else None
     proxy['cap'] = cap if cap is not None else None
-    proxy['capstr'] = formatlarge(cap) if cap is not None else None
+    proxy['cap_str'] = formatlarge(cap) if cap is not None else None
     return proxy
 
 

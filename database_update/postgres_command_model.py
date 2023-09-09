@@ -28,7 +28,7 @@ guru_stock_create_table_command: str = """
     
     price   FLOAT8,
     cap   FLOAT8,    
-    capstr   VARCHAR(15),
+    cap_str   VARCHAR(15),
 
     book_value   FLOAT8,    
     book_value_pc   FLOAT8,    
@@ -140,15 +140,17 @@ stock_option_create_table_command: str = """
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        
     symbol   VARCHAR(10) NOT NULL,         
-    capstr   VARCHAR(15),         
+    cap_str   VARCHAR(15),         
     cap   FLOAT8,    
-    px   FLOAT8,    
-    callmoney   FLOAT8,    
-    putmoney   FLOAT8,  
-    callratio   FLOAT8,    
-    putratio   FLOAT8,    
-    callpc   FLOAT8,    
-    putpc   FLOAT8,    
+    price   FLOAT8,    
+    call_money   FLOAT8,    
+    put_money   FLOAT8,  
+    call_oi   FLOAT8,  
+    put_oi   FLOAT8,  
+    call_ratio   FLOAT8,    
+    put_ratio   FLOAT8,    
+    call_pc   FLOAT8,    
+    put_pc   FLOAT8,    
     PRIMARY KEY (symbol, td) 
     )
     """
@@ -164,7 +166,7 @@ futures_option_create_table_command: str = """CREATE TABLE IF NOT EXISTS futures
     t   TIMESTAMP,                    
     td   DATE  NOT NULL,        
     symbol   VARCHAR(10) NOT NULL,         
-    capstr   VARCHAR(15),         
+    cap_str   VARCHAR(15),         
     cap   FLOAT8,    
     oi   FLOAT8,    
     px   FLOAT8,    
