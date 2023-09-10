@@ -13,47 +13,31 @@ https://doc.qt.io/qtforpython-6/PySide6/QtCore/QRegularExpression.html#PySide6.Q
 
 
 # THIRD PARTY LIBS
+import pandas
 
 from PySide6.QtCore import Qt, QThread, QCoreApplication, QDateTime ,QRegularExpression ,QSortFilterProxyModel
 
 
 
-
-myopt = QRegularExpression.CaseInsensitiveOption | QRegularExpression.MultilineOption
-
-r1 = QRegularExpression('123', QRegularExpression.CaseInsensitiveOption)
-r2 = QRegularExpression('123', QRegularExpression.MultilineOption)
-r3 = QRegularExpression('123', myopt )
-
-case_insensitive_enum = QRegularExpression.CaseInsensitiveOption.value
-verbose_case_insensitive_enum = QRegularExpression.PatternOption.CaseInsensitiveOption.value
-
-enum1 = r1.patternOptions().value        # 1
-enum2 = r2.patternOptions().value        # 4
-enum3 = r3.patternOptions().value        # 5
-
-def test_enum() -> None:
-    print(enum1)
-    print(enum2)
-    print(enum3)
+def format_int_with_commas(x):
+    """
+    Formats an integer with commas as thousand separators.
+    """
+    return f"{x:,}"
 
 
-def test_pattern_options() -> None:
-    print(r1.patternOptions())
-    print(r2.patternOptions())
-    print(r3.patternOptions())
+# Create a sample DataFrame
 
+def test() -> None:
+    df = pandas.DataFrame({
+        'A': [1000, 2000000, 300000000],
+        'B': [4000, 5000000, 600000000],
+        'C': [7000, 8000000, 900000000]
+    })
+    df = df.applymap(format_int_with_commas)
 
-def test_equality() -> None:
-    if  r3.patternOptions() == QRegularExpression.MultilineOption:
-        print('they are equal')
-    else:
-        print('they are NOT equal')
-
+    print(df)
 
 if __name__ == '__main__':
-    test_enum()
-    test_pattern_options()
-    test_equality()
-
+    test()
     

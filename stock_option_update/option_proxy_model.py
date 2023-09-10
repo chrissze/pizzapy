@@ -158,22 +158,13 @@ def make_option_proxy(symbol: str) -> DictProxy:
 
 
 
-def test_process_option() -> None:
+def test_make_option_proxy() -> None:
     symbol = input('What SYMBOL do you want to input? ')
     
     option_proxy: DictProxy = make_option_proxy(symbol)
     print(option_proxy)    
 
 
-def test_yahoo_calc() -> None:
-    """
-    https://finance.yahoo.com/quote/AMD/options?date=1695945600
-    """
-    url = input('What string do you want to input? ')
-    x = calculate_option_page(url)
-    print(x)
-    print('done')
-
 
 if __name__ == '__main__':
-    test_proxy_option()
+    test_make_option_proxy()

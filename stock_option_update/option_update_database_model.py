@@ -36,7 +36,10 @@ def upsert_option_by_proxy(proxy: DictProxy) -> str:
     IMPORTS: dimsumpy(upsert_psycopg), table_list_dict, make_psycopg_connection()
     USED BY: upsert_option()
     
-    This function already commits the upsert action. 
+    This function will not test whether the input DictProxy contains valid data, 
+    I will use upsert_option to validate the proxy and call this function.
+
+    This function commits the upsert action. 
     For successful execution, it will return the query string.
     For failed execution, it will return the error message as a string 
 
@@ -53,45 +56,44 @@ def upsert_option_by_proxy(proxy: DictProxy) -> str:
 
 def upsert_option(symbol: str) -> str:
     """
-    DEPENDS ON: upsert_option_by_proxy
-    IMPORTS: 
+    DEPENDS ON: upsert_option_by_proxy()
+    IMPORTS: make_option_proxy()
     USED BY: upsert_options_by_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert_option, symbol).
     """
     proxy: DictProxy = make_option_proxy(symbol)
-    valid_data: bool = proxy.get('wealth_pc') is not None
+    valid_data: bool = proxy.get('call_pc') is not None
 
     if valid_data:
-        upsert_result: str = upsert_guru_by_proxy(proxy)
+        upsert_result: str = upsert_option_by_proxy(proxy)
         return upsert_result
     else:
-        return f'{symbol} DictProxy missed wealth_pc'
+        return f'{symbol} DictProxy data is not valid'
 
 
 
-
-def upsert_gurus_by_terminal(symbols: List[str]) -> None:
+def upsert_options_by_terminal(symbols: List[str]) -> None:
     """
-    DEPENDS ON: upsert_guru
+    DEPENDS ON: upsert_option()
 
-    Since I have used multiprocess process in each upsert_guru call, 
-    I might not further used pool.map() or pool.map_async() to speed up.    
+    Since I have used multiprocess process in previous chain function, 
+    I might not further used pool.map() or pool.map_async() to speed up this function.    
 
     I can add try block by:
-        upsert_result: str = try_str(upsert_guru, symbol)
+        upsert_result: str = try_str(upsert_option, symbol)
 
     """
     for symbol in symbols:
-        upsert_result: str = upsert_guru(symbol)
+        upsert_result: str = upsert_option(symbol)
         print(upsert_result)
 
 
 
-def test_upsert_gurus_by_terminal() -> None:
+def test_upsert_options_by_terminal() -> None:
     start = default_timer()
     xs = ['MCD', 'GS', 'MS']
-    upsert_gurus_by_terminal(xs)
-    print(default_timer() - start, ' seconds elapsed.')  # 27 seconds
+    upsert_options_by_terminal(xs)
+    print(default_timer() - start, ' seconds elapsed.')
     
 
 
@@ -100,6 +102,6 @@ def test_upsert_gurus_by_terminal() -> None:
 
 
 if __name__ == '__main__':
-    test_upsert_gurus_by_terminal()
+    test_upsert_options_by_terminal()
 
 

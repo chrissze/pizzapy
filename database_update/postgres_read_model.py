@@ -13,6 +13,9 @@ from typing import Any, Dict, List, Union
 import pandas
 from pandas import DataFrame, Series
 
+# CUSTOM LIBS
+from batterypy.string.read import format_number_with_commas
+
 # PROGRAM MODULES
 
 from database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
@@ -45,12 +48,12 @@ def get_symbol_row_result(symbol: str, table: str ) -> Series:
     """
     * INDEPENDENT *
     IMPORTS: pandas, execute_pandas_read()
-    
+    USED BY: view_vertical()    
     
     Note:
     (1) the table name MUST be available in the database, otherwise there will be exception.
     (2) The symbol can be non-exist in the table, the result will be just an empty Series for non-exist symbol. So I do not need to test if the symbol's row is present.
-    (3) The targeted table MUST have a t column.
+    (3) The targeted table MUST have a t column, so the result will be the latest row.
 
     When I call this function, I might put table as keyword argument,
     so I put it on the second place.
@@ -66,26 +69,53 @@ def get_symbol_row_result(symbol: str, table: str ) -> Series:
     
 
 
-def view_symbol_row_terminal(symbol: str, table: str) -> None:
+def view_vertical(symbol: str, table: str) -> DataFrame:
     """
     DEPENDS ON: get_symbol_row_result()
-    USED BY:  guru_operation_script.py
+    IMPORTS: batterypy(format_number_with_commas)
+    USED BY:  view_vertical_terminal()
+    
+    This function will be a common function for guru, zacks, option, technical in terminal scripts.
+
+    There will a '0' at the top of the returning DataFrame, it just mean there is no DataFrame name.
+    
+    I need to_frame() to convert the Series to a DataFrame, 
+    so that I can use DataFrame's applymap() method.
+    exapmle:
+        view_vertical('amd', 'guru_stock')
+    """
+    SYMBOL: str = symbol.upper()
+    series_result: Series = get_symbol_row_result(symbol=SYMBOL, table=table)
+    if not series_result.empty:
+        commas_df: DataFrame = series_result.to_frame().applymap(format_number_with_commas)
+        return commas_df
+    else:
+        return DataFrame()
+
+
+
+def view_vertical_terminal(symbol: str, table: str) -> None:
+    """
+    DEPENDS ON: view_vertical()
+    USED BY:  guru_operation_script.py, option_operation_script.py, 
     This function will be a common function for guru, zacks, option, technical in terminal scripts.
 
     exapmle:
-        view_symbol_row_terminal('amd', 'guru_stock')
+        view_vertical_terminal('amd', 'guru_stock')
     """
-    SYMBOL: str = symbol.upper()
-    vertical_result: Series = get_symbol_row_result(symbol=SYMBOL, table=table)
-    if not vertical_result.empty:
-        print(vertical_result)
+    commas_df: DataFrame = view_vertical(symbol, table)
+    if not commas_df.empty:
+        print(commas_df)
     else:
-        print(f'{SYMBOL} is not in {table}')
+        print(f'{symbol} is not in {table}')
+
+
 
 
 
 def test() -> None:
-    view_symbol_row_terminal('amd', 'guru_stock')
+    symbol:str = input('Which SYMBOL do you want to input? ')
+    view_vertical_terminal(symbol, 'stock_option')
 
 
 if __name__ == '__main__':
