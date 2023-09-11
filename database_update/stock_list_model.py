@@ -1,8 +1,8 @@
 """
 *** INDEPENDENT MODULE ***
 
-IMPORTED BY: 
-    guru_stock_update/
+USED BY: 
+    core_stock_update/
 
 """
 
@@ -32,6 +32,13 @@ from database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_liste
 from database_update.postgres_command_model import guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command
 
 from guru_stock_update.guru_update_database_model import upsert_guru
+from stock_option_update.option_update_database_model import upsert_option
+
+
+
+
+
+
 # need to comment out all_stocks when I use code to generate 
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
 
@@ -51,7 +58,7 @@ stock_list_dict: Dict[str, List[str]] = {
 table_function_dict: Dict[str, Any] = {
     'guru_stock': upsert_guru ,
     'zacks_stock': upsert_guru,
-    'stock_option': upsert_guru,
+    'stock_option': upsert_option,
     'stock_price': upsert_guru,
     'stock_technical': upsert_guru,
     'futures_option': upsert_guru ,
