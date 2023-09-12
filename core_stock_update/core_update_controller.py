@@ -2,12 +2,9 @@
 
 
 Core Update Controller further works:
-    import upsert_option
-    import upsert_zacks
-    update button function option
-    update button function zacks
 
-I should use some default properties of the SortFilterProxyModel to toggle the filter mode
+
+
 """
 
 
@@ -24,15 +21,14 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 
 # CUSTOM LIBS
+from batterypy.control.trys import try_str
 from batterypy.string.read import is_intable, int0, float0
 from dimsumpy.qt.decorators import confirmation_self
 
 
 # PROGRAM MODULES
 from core_stock_update.core_update_view import CoreUpdateView
-#from database_update.postgres_command_model import table_list_dict
 from database_update.stock_list_model import stock_list_dict, table_function_dict
-#from guru_stock_update.guru_update_database_model import upsert_guru
 
 
 
@@ -68,7 +64,7 @@ def update_core(self) -> None:
     func = table_function_dict.get(self.table_name)   
     # self.table_name is defined in core_update_view.py
     for count, symbol in enumerate(stockgen, start=1):
-        s = func(symbol)
+        s = try_str(func, symbol)
         msg = f'{count} / {stock_list_length} {s}'
         self.progressbar.setValue(count)
         self.progress_label.setText(f'{count} / {stock_list_length} {symbol}          ')
@@ -101,7 +97,7 @@ def update_core_list(self) -> None:
     # self.table_name is defined in core_update_view.py
     for count, symbol in enumerate(stockgen, start=1):
         QCoreApplication.processEvents()   # update the GUI
-        s = func(symbol)
+        s = try_str(func, symbol)
         msg = f'{count} / {self.stock_working_list_length} {s}'
         self.progressbar.setValue(count)
         self.progress_label.setText(f'{count} / {self.stock_working_list_length} {symbol}          ')

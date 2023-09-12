@@ -84,7 +84,7 @@ def upsert_gurus_by_terminal(symbols: List[str]) -> None:
 
     """
     for symbol in symbols:
-        upsert_result: str = upsert_guru(symbol)
+        upsert_result: str = try_str(upsert_guru, symbol)
         print(upsert_result)
 
 

@@ -19,6 +19,7 @@ from typing import Any, List, Optional, Tuple, Union
 # THIRD PARTY LIBS
 
 # CUSTOM LIBS
+from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg
 
 # PROGRAM MODULES
@@ -85,7 +86,7 @@ def upsert_options_by_terminal(symbols: List[str]) -> None:
 
     """
     for symbol in symbols:
-        upsert_result: str = upsert_option(symbol)
+        upsert_result: str = try_str(upsert_option, symbol)
         print(upsert_result)
 
 

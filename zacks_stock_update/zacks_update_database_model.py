@@ -19,7 +19,9 @@ from typing import Any, List, Optional, Tuple, Union
 # THIRD PARTY LIBS
 
 # CUSTOM LIBS
+from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg
+
 
 # PROGRAM MODULES
 from zacks_stock_update.zacks_proxy_model import make_zacks_proxy
@@ -87,7 +89,7 @@ def upsert_zackses_by_terminal(symbols: List[str]) -> None:
 
     """
     for symbol in symbols:
-        upsert_result: str = upsert_zacks(symbol)
+        upsert_result: str = try_str(upsert_zacks, symbol)
         print(upsert_result)
 
 
