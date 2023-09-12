@@ -15,7 +15,7 @@ from batterypy.time.cal import get_trading_day_utc
 
 
 # PROGRAM MODULES
-from general_update.general_model import make_price_cap_proxy
+from general_update.general_model import initialize_proxy, make_price_cap_proxy
 from guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
 from guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
 from guru_stock_update.guru_earn_model import proxy_guru_earn
@@ -30,71 +30,60 @@ from guru_stock_update.guru_zscore_model import proxy_guru_zscore
 
 
 
-def process_guru(symbol: str) -> DictProxy:
+def process_guru(SYMBOL: str) -> DictProxy:
     """
-    DEPENDS: get_trading_day_utc, make_price_cap_proxy, proxy_guru_book_value TO proxy_guru_zscore
+    IMPORTS: initialize_proxy(), make_price_cap_proxy(), proxy_guru_book_value() TO proxy_guru_zscore()
     """
-    SYMBOL: str = symbol.upper()
-    manager: SyncManager = Manager()
-    proxy: DictProxy = manager.dict()
+    proxy: DictProxy = initialize_proxy(SYMBOL)
+    make_price_cap_proxy(SYMBOL, proxy)
+    p1 = Process(target=proxy_guru_book_value, args=(SYMBOL, proxy))
+    p2 = Process(target=proxy_guru_debt, args=(SYMBOL, proxy))
+    p3 = Process(target=proxy_guru_earn, args=(SYMBOL, proxy))
+    p4 = Process(target=proxy_guru_interest, args=(SYMBOL, proxy))
+    p5 = Process(target=proxy_guru_net_capital, args=(SYMBOL, proxy))
+    p6 = Process(target=proxy_guru_lynch, args=(SYMBOL, proxy))
+    p7 = Process(target=proxy_guru_research, args=(SYMBOL, proxy))
+    p8 = Process(target=proxy_guru_revenue, args=(SYMBOL, proxy))
+    p9 = Process(target=proxy_guru_revenue_growths, args=(SYMBOL, proxy))
+    p10 = Process(target=proxy_guru_strength, args=(SYMBOL, proxy))
+    p11 = Process(target=proxy_guru_zscore, args=(SYMBOL, proxy))
 
-    proxy['symbol'] = SYMBOL
-    proxy['td'] = get_trading_day_utc()
-    proxy['t'] = datetime.now().replace(microsecond=0)
-    try:
-        make_price_cap_proxy(SYMBOL, proxy)
-        p1 = Process(target=proxy_guru_book_value, args=(SYMBOL, proxy))
-        p2 = Process(target=proxy_guru_debt, args=(SYMBOL, proxy))
-        p3 = Process(target=proxy_guru_earn, args=(SYMBOL, proxy))
-        p4 = Process(target=proxy_guru_interest, args=(SYMBOL, proxy))
-        p5 = Process(target=proxy_guru_net_capital, args=(SYMBOL, proxy))
-        p6 = Process(target=proxy_guru_lynch, args=(SYMBOL, proxy))
-        p7 = Process(target=proxy_guru_research, args=(SYMBOL, proxy))
-        p8 = Process(target=proxy_guru_revenue, args=(SYMBOL, proxy))
-        p9 = Process(target=proxy_guru_revenue_growths, args=(SYMBOL, proxy))
-        p10 = Process(target=proxy_guru_strength, args=(SYMBOL, proxy))
-        p11 = Process(target=proxy_guru_zscore, args=(SYMBOL, proxy))
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    p5.start()
+    p6.start()
+    p7.start()
+    p8.start()
+    p9.start()
+    p10.start()
+    p11.start()
 
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        p5.start()
-        p6.start()
-        p7.start()
-        p8.start()
-        p9.start()
-        p10.start()
-        p11.start()
-
-        p1.join()
-        p2.join()
-        p3.join()
-        p4.join()
-        p5.join()
-        p6.join()
-        p7.join()
-        p8.join()
-        p9.join()
-        p10.join()
-        p11.join()
-        return proxy
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    p5.join()
+    p6.join()
+    p7.join()
+    p8.join()
+    p9.join()
+    p10.join()
+    p11.join()
     
-    except Exception as error:
-        print(f'{symbol} proxy_guru error: ', error)
-        return {}
-    finally:  # To make sure processes are closed in the end, even if errors happen
-        p1.close()
-        p2.close()
-        p3.close()
-        p4.close()
-        p5.close()
-        p6.close()
-        p7.close()
-        p8.close()
-        p9.close()
-        p10.close()
-        p11.close()
+    p1.close()
+    p2.close()
+    p3.close()
+    p4.close()
+    p5.close()
+    p6.close()
+    p7.close()
+    p8.close()
+    p9.close()
+    p10.close()
+    p11.close()
+    return proxy
 
 
 
@@ -115,14 +104,8 @@ def make_guru_proxy(symbol: str) -> DictProxy:
     """
     proxy: DictProxy = process_guru(symbol)
     wealth_pc: Optional[float] = get_guru_wealth_pc(proxy)
-    proxy['wealth_pc'] = wealth_pc if wealth_pc is not None else None
+    proxy['wealth_pc'] = wealth_pc
     return proxy
-
-
-
-
-
-
 
 
 

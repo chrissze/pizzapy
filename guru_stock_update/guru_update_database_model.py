@@ -59,7 +59,8 @@ def upsert_guru(symbol: str) -> str:
     USED BY: upsert_gurus_by_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert, symbol).
     """
-    proxy: DictProxy = make_guru_proxy(symbol)
+    SYMBOL: str = symbol.upper()
+    proxy: DictProxy = make_guru_proxy(SYMBOL)
     valid_data: bool = proxy.get('wealth_pc') is not None
 
     if valid_data:

@@ -3,29 +3,10 @@
 """
 # STANDARD LIBS
 import sys; sys.path.append('..')
-from datetime import date, datetime
 
-from multiprocessing import Manager
-from multiprocessing.managers import DictProxy, SyncManager
+from multiprocessing.managers import DictProxy
 from typing import Any, List, Optional, Tuple, Union
 
-
-# THIRD PARTY LIBS
-
-import pandas
-from pandas.core.frame import DataFrame
-from pandas.core.series import Series
-
-import requests
-from requests.models import Response
-from requests.structures import CaseInsensitiveDict
-
-
-
-# CUSTOM LIBS
-from batterypy.string.read import readf, readi
-from batterypy.time.cal import get_trading_day, get_trading_day_utc
-from dimsumpy.web.crawler import get_html_dataframes, get_html_text
 
 # PROGRAM MODULES
 from general_update.general_model import initialize_proxy
@@ -43,7 +24,7 @@ def make_zacks_proxy(symbol: str) -> DictProxy:
     
     the symbol will be changed to upper case at upsert_zacks()
     """
-    proxy = initialize_proxy(symbol)
+    proxy: DictProxy = initialize_proxy(symbol)
     proxy_zacks_earnings(symbol, proxy)
     proxy_zacks_scores(symbol, proxy)
     return proxy

@@ -61,7 +61,8 @@ def upsert_option(symbol: str) -> str:
     USED BY: upsert_options_by_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert_option, symbol).
     """
-    proxy: DictProxy = make_option_proxy(symbol)
+    SYMBOL: str = symbol.upper()
+    proxy: DictProxy = make_option_proxy(SYMBOL)
     valid_data: bool = proxy.get('call_pc') is not None
 
     if valid_data:
