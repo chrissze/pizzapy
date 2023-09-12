@@ -196,7 +196,7 @@ SECTION: TIMER
 PACKAGE: guru_stock_update
 ==========================
 
-[ price_cap_model.py ]
+[ general_model.py ]
     * INDEPENDENT *
 
     EXPORTS: make_price_cap_proxy()
@@ -205,11 +205,11 @@ PACKAGE: guru_stock_update
 
 
 [ guru_proxy_model.py ]
-    DEPENDS ON: price_cap_model.py
+    DEPENDS ON: general_model.py
 
     EXPORTS: make_guru_proxy()
 
-    guru_proxy_model.py module depends on price_cap_model.py to get current stock price and market cap.
+    guru_proxy_model.py module depends on general_model.py to get current stock price and market cap.
 
     This module get all data from gurufocus and calculate the wealth percentage. The proxy dictionary is for database upsert in guru_database_model.py module.
 

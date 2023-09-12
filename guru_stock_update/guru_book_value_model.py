@@ -25,7 +25,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
-from general_update.price_cap_model import make_price_cap_proxy
+from general_update.general_model import make_price_cap_proxy
 
 
 

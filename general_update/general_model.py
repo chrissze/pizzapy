@@ -1,8 +1,12 @@
 
 # STANDARD LIBRARIES
 import sys; sys.path.append('..')
+from datetime import date, datetime
 import json
-from multiprocessing.managers import DictProxy
+
+from multiprocessing import Manager
+from multiprocessing.managers import DictProxy, SyncManager
+
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -15,6 +19,7 @@ import requests
 # CUSTOM LIBRARIES
 from batterypy.string.json import extract_nested_values
 from batterypy.string.read import formatlarge, readf
+from batterypy.time.cal import get_trading_day_utc
 from dimsumpy.web.crawler import get_html_soup
 
 
@@ -43,31 +48,32 @@ def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float
     return price, cap
 
 
-def try_get_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
-    """
-    DEPENDS ON: get_barchart_price_cap() 
-    """
-    try:
-        price, cap = get_barchart_price_cap(symbol)
-        return price, cap
-    except requests.exceptions.RequestException as requests_error:
-        print('try_get_barchart_price_cap RequestException: ', requests_error)
-        return None, None
-    except Exception as error:
-        print('try_get_barchart_price_cap general Exception: ', error)
-        return None, None
-
-
 def make_price_cap_proxy(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
-    DEPENDS ON: try_get_price_cap()
+    DEPENDS ON: get_barchart_price_cap()
     I write `is not None` for testing below since price, cap might be 0, which is a false value.
     """
     price, cap = get_barchart_price_cap(symbol)    
-    proxy['price'] = price if price > 0 else None
-    proxy['cap'] = cap if cap > 0 else None
+    proxy['price'] = price
+    proxy['cap'] = cap
     proxy['cap_str'] = formatlarge(cap) if cap is not None else None
     return proxy
+
+
+
+def initialize_proxy(symbol: str) -> DictProxy:
+    """
+        * INDEPENDENT *
+        IMPORTS: multiprocessing(DictProxy, SyncManager)
+        USED BY: make_option_proxy()
+    """
+    manager: SyncManager = Manager()
+    proxy: DictProxy = manager.dict()
+    proxy['symbol'] = symbol
+    proxy['td'] = get_trading_day_utc()
+    proxy['t'] = datetime.now().replace(second=0, microsecond=0)
+    return proxy
+
 
 
 if __name__ == '__main__':

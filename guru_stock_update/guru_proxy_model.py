@@ -15,7 +15,7 @@ from batterypy.time.cal import get_trading_day_utc
 
 
 # PROGRAM MODULES
-from general_update.price_cap_model import make_price_cap_proxy
+from general_update.general_model import make_price_cap_proxy
 from guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
 from guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
 from guru_stock_update.guru_earn_model import proxy_guru_earn
