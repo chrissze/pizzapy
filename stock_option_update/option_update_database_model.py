@@ -2,7 +2,7 @@
 
 USED BY: 
     terminal_scripts/option_operation_script.py, 
-    stock_option_update/core_update_controller.py
+    core_stock_update/core_update_controller.py
 
     
 """

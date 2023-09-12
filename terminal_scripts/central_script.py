@@ -8,31 +8,36 @@ In order for this script to works, the following must be satisfied:
     
 """
 
-
+# STANDARD LIBS
+import sys; sys.path.append('..')
 import subprocess
 from typing import List
 
 # PROGRAM MODULES
-from terminal_scripts.stocks_operation_script import manage_stocks
-from terminal_scripts.futures_operation_script import manage_futures
-from terminal_scripts.postgres_operation_script import manage_database
+from terminal_scripts.guru_operation_script import operate_guru_stock
+from terminal_scripts.zacks_operation_script import operate_zacks_stock
+from terminal_scripts.option_operation_script import operate_stock_option
+
+from terminal_scripts.postgres_manage_database_script import manage_postgres_database
 
 
 
 def start():
     actions = {
-        '1': lambda: manage_stocks(),
-        '2': lambda: manage_futures(),
-        '3': lambda: manage_database(),
+        '1': lambda: operate_guru_stock(),
+        '2': lambda: operate_zacks_stock(),
+        '3': lambda: operate_stock_option(),
+        '9': lambda: manage_postgres_database(),
         '0': lambda: exit(),
     }
     while True:
         subprocess.run(['clear'])
         ans = input(f"""
         Stock Actions: 
-            1) Manage Stocks
-            2) Manage Futures            
-            3) Manage Database, create or drop tables
+            1) Operate Guru
+            2) Operate Zacks
+            3) Operate Option
+            9) Manage Database, create or drop tables
             0) Exit the program
             
         please choose your action: """)
