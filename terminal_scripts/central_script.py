@@ -14,9 +14,7 @@ import subprocess
 from typing import List
 
 # PROGRAM MODULES
-from terminal_scripts.guru_operation_script import operate_guru_stock
-from terminal_scripts.zacks_operation_script import operate_zacks_stock
-from terminal_scripts.option_operation_script import operate_stock_option
+from terminal_scripts.general_terminal_model import operate_stock_table
 
 from terminal_scripts.postgres_manage_database_script import manage_postgres_database
 
@@ -24,9 +22,9 @@ from terminal_scripts.postgres_manage_database_script import manage_postgres_dat
 
 def start():
     actions = {
-        '1': lambda: operate_guru_stock(),
-        '2': lambda: operate_zacks_stock(),
-        '3': lambda: operate_stock_option(),
+        '1': lambda: operate_stock_table('guru_stock'),
+        '2': lambda: operate_stock_table('zacks_stock'),
+        '3': lambda: operate_stock_table('stock_option'),
         '9': lambda: manage_postgres_database(),
         '0': lambda: exit(),
     }
