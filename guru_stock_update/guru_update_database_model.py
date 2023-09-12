@@ -65,36 +65,12 @@ def upsert_guru(symbol: str) -> str:
 
     if valid_data:
         upsert_result: str = upsert_guru_by_proxy(proxy)
-        return upsert_result
+        return f'{SYMBOL} {proxy} {upsert_result}'
     else:
-        return f'{symbol} DictProxy missed wealth_pc'
+        return f'{symbol} {proxy} DictProxy missed wealth_pc'
 
 
 
-
-def upsert_gurus_by_terminal(symbols: List[str]) -> None:
-    """
-    DEPENDS ON: upsert_guru
-
-    Since I have used multiprocess process in each upsert_guru call, 
-    I might not further used pool.map() or pool.map_async() to speed up.    
-
-    I can add try block by:
-        upsert_result: str = try_str(upsert_guru, symbol)
-
-    """
-    for symbol in symbols:
-        upsert_result: str = try_str(upsert_guru, symbol)
-        print(upsert_result)
-
-
-
-def test_upsert_gurus_by_terminal() -> None:
-    start = default_timer()
-    xs = ['MCD', 'GS', 'MS']
-    upsert_gurus_by_terminal(xs)
-    print(default_timer() - start, ' seconds elapsed.')  # 27 seconds
-    
 
 
 
@@ -102,6 +78,5 @@ def test_upsert_gurus_by_terminal() -> None:
 
 
 if __name__ == '__main__':
-    test_upsert_gurus_by_terminal()
-
+    pass
 

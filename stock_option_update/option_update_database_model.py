@@ -59,7 +59,7 @@ def upsert_option(symbol: str) -> str:
     """
     DEPENDS ON: upsert_option_by_proxy()
     IMPORTS: make_option_proxy()
-    USED BY: upsert_options_by_terminal(), core_stock_update/core_update_controller.py
+    USED BY: upsert_symbols_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert_option, symbol).
     """
     SYMBOL: str = symbol.upper()
@@ -68,35 +68,16 @@ def upsert_option(symbol: str) -> str:
 
     if valid_data:
         upsert_result: str = upsert_option_by_proxy(proxy)
-        return upsert_result
+        return f'{SYMBOL} {proxy} {upsert_result}'
     else:
-        return f'{symbol} DictProxy data is not valid'
+        return f'{symbol} {proxy} DictProxy data does not have call_pc, it is invalid'
 
 
 
-def upsert_options_by_terminal(symbols: List[str]) -> None:
-    """
-    DEPENDS ON: upsert_option()
-
-    Since I have used multiprocess process in previous chain function, 
-    I might not further used pool.map() or pool.map_async() to speed up this function.    
-
-    I can add try block by:
-        upsert_result: str = try_str(upsert_option, symbol)
-
-    """
-    for symbol in symbols:
-        upsert_result: str = try_str(upsert_option, symbol)
-        print(upsert_result)
 
 
-
-def test_upsert_options_by_terminal() -> None:
-    start = default_timer()
-    xs = ['MCD', 'GS', 'MS']
-    upsert_options_by_terminal(xs)
-    print(default_timer() - start, ' seconds elapsed.')
-    
+def test() -> None:
+    pass    
 
 
 
@@ -104,6 +85,6 @@ def test_upsert_options_by_terminal() -> None:
 
 
 if __name__ == '__main__':
-    test_upsert_options_by_terminal()
+    test()
 
 

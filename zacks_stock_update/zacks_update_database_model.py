@@ -60,7 +60,7 @@ def upsert_zacks(symbol: str) -> str:
     """
     DEPENDS ON: upsert_zacks_by_proxy()
     IMPORTS: make_zacks_proxy()
-    USED BY: upsert_zackses_by_terminal(), core_stock_update/core_update_controller.py
+    USED BY: upsert_symbols_terminal(), core_stock_update/core_update_controller.py
     I could wrap this function into try_str(upsert_zacks, symbol).
     
     print('THE PROXY IS: ')
@@ -73,33 +73,11 @@ def upsert_zacks(symbol: str) -> str:
 
     if valid_data:
         upsert_result: str = upsert_zacks_by_proxy(proxy)
-        return upsert_result
+        return  f'{SYMBOL} {proxy} {upsert_result}'
     else:
-        return f'{symbol} DictProxy data is not valid'
+        return f'{symbol} {proxy} DictProxy data is not valid'
 
 
-
-def upsert_zackses_by_terminal(symbols: List[str]) -> None:
-    """
-    DEPENDS ON: upsert_zacks()
-    I might be able to add multiprocessing in this function as I don't have parallel operation in previous chain functions.
-
-    I can add try block by:
-        upsert_result: str = try_str(upsert_zacks, symbol)
-
-    """
-    for symbol in symbols:
-        upsert_result: str = try_str(upsert_zacks, symbol)
-        print(upsert_result)
-
-
-
-def test_upsert_zackses_by_terminal() -> None:
-    start = default_timer()
-    xs = ['MCD', 'GS', 'NVDA', 'MMM']
-    upsert_zackses_by_terminal(xs)
-    print(default_timer() - start, ' seconds elapsed.')
-    
 
 
 
@@ -107,6 +85,6 @@ def test_upsert_zackses_by_terminal() -> None:
 
 
 if __name__ == '__main__':
-    test_upsert_zackses_by_terminal()
+    pass
 
 
