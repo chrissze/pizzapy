@@ -109,12 +109,12 @@ stock_price_create_table_command: str = """
     t   TIMESTAMP,                    
     symbol   VARCHAR(10) NOT NULL,         
     td   DATE NOT NULL,  
-    op   FLOAT8,    
-    hi   FLOAT8,
-    lo   FLOAT8,    
-    cl   FLOAT8 NOT NULL,    
-    adjcl  FLOAT8 NOT NULL,    
-    vol BIGINT,    
+    open   FLOAT8,    
+    high   FLOAT8,
+    low   FLOAT8,    
+    close   FLOAT8 NOT NULL,    
+    adj_close  FLOAT8 NOT NULL,    
+    volume BIGINT,    
     PRIMARY KEY (symbol, td) 
     );
     """

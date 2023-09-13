@@ -149,6 +149,9 @@ def tech_upsert_1s(from_: date, to: date, code: str) -> str:
 
 
 def get_st_price_pairs(from_: date, to: date, symbol: str, con: connection) -> List[Any]:
+    """
+    Get price data from my own database table.
+    """
     try:
         sql = f"""SELECT td, adjcl FROM usstock_price WHERE symbol = '{symbol}' AND 
         td >= '{from_.isoformat()}' AND td <= '{to.isoformat()}' ORDER BY td DESC"""

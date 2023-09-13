@@ -53,7 +53,7 @@ def get_price_dataframe(date1, date2, symbol):
     """
     url = make_price_url(date1, date2, symbol)
     df = get_csv_dataframe(url, header=0)
-    df.columns = ['td', 'op', 'hi', 'lo', 'cl', 'adjcl', 'vol']
+    df.columns = ['td', 'open', 'high', 'low', 'close', 'adj_close', 'volume']
     df['symbol'] = symbol
     now = datetime.now().replace(second=0, microsecond=0)
     df['t'] = now  # program crashes if i put the now() statement here

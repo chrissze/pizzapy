@@ -34,6 +34,7 @@ from database_update.postgres_command_model import guru_stock_create_table_comma
 from guru_stock_update.guru_update_database_model import upsert_guru
 from stock_option_update.option_update_database_model import upsert_option
 from zacks_stock_update.zacks_update_database_model import upsert_zacks
+from stock_price_update.price_update_database_model import upsert_latest_price
 
 
 
@@ -60,7 +61,7 @@ table_function_dict: Dict[str, Any] = {
     'guru_stock': upsert_guru ,
     'zacks_stock': upsert_zacks,
     'stock_option': upsert_option,
-    'stock_price': upsert_guru,
+    'stock_price': upsert_latest_price,
     'stock_technical': upsert_guru,
     'futures_option': upsert_guru ,
 }

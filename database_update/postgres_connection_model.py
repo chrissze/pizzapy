@@ -21,6 +21,8 @@ from sqlalchemy.engine.base import Engine
 import requests
 from requests.models import Response
 
+# CUSTOM LIBS
+from dimsumpy.database.postgres import make_upsert_psycopg_query, upsert_psycopg
 
 
 
@@ -97,6 +99,7 @@ def execute_pandas_read(cmd: str) -> DataFrame:
     """
     dataframe: DataFrame = pandas.read_sql(sql=cmd, con=make_sqlalchemy_engine())
     return dataframe
+
 
 
 

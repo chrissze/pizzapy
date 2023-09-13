@@ -25,6 +25,7 @@ def start():
         '1': lambda: operate_stock_table('guru_stock'),
         '2': lambda: operate_stock_table('zacks_stock'),
         '3': lambda: operate_stock_table('stock_option'),
+        '4': lambda: operate_stock_table('stock_price'),
         '9': lambda: manage_postgres_database(),
         '0': lambda: exit(),
     }
@@ -34,7 +35,8 @@ def start():
         Stock Actions: 
             1) Operate Guru
             2) Operate Zacks
-            3) Operate Option
+            3) Operate Stock Option
+            4) Operate Stock Price
             9) Manage Database, create or drop tables
             0) Exit the program
             

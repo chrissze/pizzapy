@@ -22,6 +22,7 @@ from typing import Any, List, Optional, Tuple, Union
 from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg
 
+
 # PROGRAM MODULES
 from stock_option_update.option_proxy_model import make_option_proxy
 from database_update.postgres_command_model import table_list_dict
