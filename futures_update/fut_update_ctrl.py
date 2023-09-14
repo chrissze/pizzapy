@@ -29,23 +29,23 @@ class FutUpdateDialog(FutUpdateWin):
 
     @confirmation_self
     def updatefunc(self) -> None:
-        list_start: int = int0(self.le_list_start.text())
+        list_start: int = int0(self.symbols_lineedit_list_start.text())
         sender: str = self.sender().accessibleName()
         if sender == 'b_list_option':
-            combostr: str = self.combo.currentText()  # if the combobox is empty, '' will be the currentText
+            combostr: str = self.stock_list_combobox.currentText()  # if the combobox is empty, '' will be the currentText
             symbols: List[str] = getfutcode(combostr)[list_start:]
 
         elif sender == 'b_single_option':
-            combostr: str = self.combo_individual.currentText()
+            combostr: str = self.stock_list_combobox_individual.currentText()
             symbols: List[str] = [combostr[:2]]
         length: int = len(symbols)
-        self.pbar.setRange(0, length)
+        self.progress_bar.setRange(0, length)
         symbolsgen: Generator[str, None, None] = (x for x in symbols)
 
         for count, symbol in enumerate(symbolsgen, start=1):
             s: str = outer_update_fut(symbol)
             msg: str = str(count) + ' / ' + str(length) + ' ' + s
-            self.pbar.setValue(count)
+            self.progress_bar.setValue(count)
             self.browser.append(msg)
             self.browser.repaint()
             QCoreApplication.processEvents()   # update the GUI

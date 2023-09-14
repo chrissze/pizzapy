@@ -21,28 +21,28 @@ class FutUpdateWin(QWidget):
         self.setWindowTitle('Daily Futures Update')
         self.setGeometry(50, 50, 900, 600)
 
-        self.combo: QComboBox = QComboBox()
-        self.combo.addItems(fut_type_list)
-        self.combo.activated[str].connect(self.refresh_combo_individual)
-        self.combo_individual: QComboBox = QComboBox()
-        self.refresh_combo_individual(self.combo.currentText())
+        self.stock_list_combobox: QComboBox = QComboBox()
+        self.stock_list_combobox.addItems(fut_type_list)
+        self.stock_list_combobox.activated[str].connect(self.refresh_combo_individual)
+        self.stock_list_combobox_individual: QComboBox = QComboBox()
+        self.refresh_combo_individual(self.stock_list_combobox.currentText())
 
         self.b_list_option: QPushButton = QPushButton('Update List Option')
         self.b_list_option.setAccessibleName('b_list_option')
 
-        self.le_list_start: QLineEdit = QLineEdit('Enter an alternative no. to start the list')
+        self.symbols_lineedit_list_start: QLineEdit = QLineEdit('Enter an alternative no. to start the list')
         self.b_single_option: QPushButton = QPushButton('Update Single Option')
         self.b_single_option.setAccessibleName('b_single_option')
 
         self.browser: QTextBrowser = QTextBrowser()
         self.browser.setMaximumHeight(400)
 
-        self.pbar: QProgressBar = QProgressBar()
-        self.b_clear: QPushButton = QPushButton('Clear Browser')
-        self.b_quit: QPushButton = QPushButton('Quit')
+        self.progress_bar: QProgressBar = QProgressBar()
+        self.clear_button: QPushButton = QPushButton('Clear Browser')
+        self.quit_button: QPushButton = QPushButton('Quit')
 
-        self.b_clear.clicked.connect(self.clear_browser)
-        self.b_quit.clicked.connect(self.close)
+        self.clear_button.clicked.connect(self.clear_browser)
+        self.quit_button.clicked.connect(self.close)
 
         self.initui()
 
@@ -57,18 +57,18 @@ class FutUpdateWin(QWidget):
         mainbox.addLayout(hbox3)
         mainbox.addLayout(hbox4)
 
-        hbox1.addWidget(self.combo)
-        hbox1.addWidget(self.le_list_start)
+        hbox1.addWidget(self.stock_list_combobox)
+        hbox1.addWidget(self.symbols_lineedit_list_start)
         hbox1.addWidget(self.b_list_option)
 
-        hbox2.addWidget(self.combo_individual)
+        hbox2.addWidget(self.stock_list_combobox_individual)
         hbox2.addWidget(self.b_single_option)
 
         hbox3.addWidget(self.browser)
 
-        hbox4.addWidget(self.pbar)
-        hbox4.addWidget(self.b_clear)
-        hbox4.addWidget(self.b_quit)
+        hbox4.addWidget(self.progress_bar)
+        hbox4.addWidget(self.clear_button)
+        hbox4.addWidget(self.quit_button)
 
     @confirmation_self
     def clear_browser(self) -> None:
@@ -87,8 +87,8 @@ class FutUpdateWin(QWidget):
 
     def refresh_combo_individual(self, text: str) -> None:
         codes: List[str] = getfutures(text)
-        self.combo_individual.clear()
-        self.combo_individual.addItems(codes)
+        self.stock_list_combobox_individual.clear()
+        self.stock_list_combobox_individual.addItems(codes)
 
 
 def main() -> None:

@@ -77,23 +77,23 @@ class GuruBrowserDialog(GuruBrowserWin):
         sender = self.sender().accessibleName()
         if sender == 'load_list_button':
             tablename = 'usstock_g'
-            stockstr = self.combo.currentText()
+            stockstr = self.stock_list_combobox.currentText()
             stocklist = getstocks(stockstr)
             stockliststr = str(tuple(stocklist))
         elif sender == 'load_symbols_button':
             tablename = 'usstock_g'
-            stockstr = self.le.text()
+            stockstr = self.symbols_lineedit.text()
             stocklist = stockstr.split()
             stockliststr = str(stocklist).replace('[','(').replace(']',')')  # for single tuple
 
         elif sender == 'b_list_zacks':
             tablename = 'usstock_z'
-            stockstr = self.combo.currentText()
+            stockstr = self.stock_list_combobox.currentText()
             stocklist = getstocks(stockstr)
             stockliststr = str(tuple(stocklist))
         elif sender == 'b_le_zacks':
             tablename = 'usstock_z'
-            stockstr = self.le.text()
+            stockstr = self.symbols_lineedit.text()
             stocklist = stockstr.split()
             stockliststr = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
 

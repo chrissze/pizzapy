@@ -60,11 +60,11 @@ class FutBrowserWin(QMainWindow):
         # Create Central Widget:
         self.central: QWidget = QWidget()
         self.setCentralWidget(self.central)
-        self.combo: QComboBox = QComboBox()
-        self.combo.addItems(fut_type_list)
-        self.combo.activated[str].connect(self.refresh_combo_individual)
-        self.combo_individual: QComboBox = QComboBox()
-        self.refresh_combo_individual(self.combo.currentText())
+        self.stock_list_combobox: QComboBox = QComboBox()
+        self.stock_list_combobox.addItems(fut_type_list)
+        self.stock_list_combobox.activated[str].connect(self.refresh_combo_individual)
+        self.stock_list_combobox_individual: QComboBox = QComboBox()
+        self.refresh_combo_individual(self.stock_list_combobox.currentText())
 
         self.b_list_option: QPushButton = QPushButton('Load Option DB')
         self.b_list_option.setAccessibleName('b_list_option')
@@ -88,9 +88,9 @@ class FutBrowserWin(QMainWindow):
         mainbox.addLayout(hbox2)
         mainbox.addLayout(hbox3)
 
-        hbox1.addWidget(self.combo)
+        hbox1.addWidget(self.stock_list_combobox)
         hbox1.addWidget(self.b_list_option)
-        hbox2.addWidget(self.combo_individual)
+        hbox2.addWidget(self.stock_list_combobox_individual)
         hbox2.addWidget(self.b_single_option)
         hbox3.addWidget(self.pandas_tableview)
 
@@ -115,8 +115,8 @@ class FutBrowserWin(QMainWindow):
 
     def refresh_combo_individual(self, text: str) -> None:
         codes: List[str] = getfutures(text)
-        self.combo_individual.clear()
-        self.combo_individual.addItems(codes)
+        self.stock_list_combobox_individual.clear()
+        self.stock_list_combobox_individual.addItems(codes)
 
 
     def show_columns(self) -> None:

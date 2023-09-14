@@ -49,24 +49,24 @@ class StockPriceBrowserDialog(StockPriceBrowserWin):
         sender = self.sender().accessibleName()
         if sender == 'b_list_price':
             tablename = 'usstock_price'
-            stockstr = self.combo.currentText()
+            stockstr = self.stock_list_combobox.currentText()
             stocklist = stock_list_dict.get(stockstr)
             stockliststr = str(tuple(stocklist))
         elif sender == 'b_le_price':
             tablename = 'usstock_price'
-            stockstr = self.le.text().upper()
+            stockstr = self.symbols_lineedit.text().upper()
             stocklist = stockstr.split()
             stockliststr = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
 
 
         elif sender == 'b_list_option':
             tablename = 'usstock_option'
-            stockstr = self.combo.currentText()
+            stockstr = self.stock_list_combobox.currentText()
             stocklist = stock_list_dict.get(stockstr)
             stockliststr = str(tuple(stocklist))
         elif sender == 'b_le_option':
             tablename = 'usstock_option'
-            stockstr = self.le.text().upper()
+            stockstr = self.symbols_lineedit.text().upper()
             stocklist = stockstr.split()
             stockliststr = str(stocklist).replace('[', '(').replace(']', ')')  # for single tuple
         else:

@@ -87,14 +87,14 @@ class QuitRow:
         """
             'ego' is the instance of the current class QuitRow, 'self' is the instance of the calling class CoreUpdateView.
         """
-        self.progressbar = QProgressBar()
+        self.progress_bar = QProgressBar()
         self.progress_label = QLabel(' 0 / 0             ')
         self.clear_button = QPushButton('Clear Browser')
         self.quit_button = QPushButton('Quit')
 
         self.quit_hbox = QHBoxLayout()
         self.mainbox.addLayout(self.quit_hbox)
-        self.quit_hbox.addWidget(self.progressbar)
+        self.quit_hbox.addWidget(self.progress_bar)
         self.quit_hbox.addWidget(self.progress_label)
         self.quit_hbox.addWidget(self.clear_button)
         self.quit_hbox.addWidget(self.quit_button)

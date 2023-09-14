@@ -59,11 +59,11 @@ class MainDockWin(QMainWindow):
 
         self.lb_info = QLabel('Info Label')
         self.lb_info.setText(str(self.gbox1.isChecked()))
-        self.b_quit = QPushButton('Quit')
+        self.quit_button = QPushButton('Quit')
 
 
 
-        self.b_quit.clicked.connect(self.close)
+        self.quit_button.clicked.connect(self.close)
         self.gbox1.toggled.connect(self.fun)
 
         self.initui()
@@ -76,7 +76,7 @@ class MainDockWin(QMainWindow):
         mainbox.addWidget(self.gbox3)
         mainbox.addWidget(self.gbox4)
         mainbox.addWidget(self.lb_info)
-        mainbox.addWidget(self.b_quit)
+        mainbox.addWidget(self.quit_button)
 
         hbox1 = QHBoxLayout(self.gbox1)
         hbox2 = QHBoxLayout(self.gbox2)

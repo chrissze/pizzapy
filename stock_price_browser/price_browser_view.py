@@ -77,20 +77,20 @@ class StockPriceBrowserWin(QMainWindow):
         self.statusBar().showMessage('Ready')
 
     def create_central_widget(self) -> None:
-        self.lb_cal1 = QLabel('')
-        self.b_reset1 = QPushButton('Reset Calendar 1')
-        self.b_reset1.setAccessibleName('b_reset1')
-        self.lb_cal2 = QLabel('')
-        self.b_reset2 = QPushButton('Reset Calendar 2')
-        self.b_reset2.setAccessibleName('b_reset2')
+        self.from_calendar_label = QLabel('')
+        self.from_reset_button = QPushButton('Reset Calendar 1')
+        self.from_reset_button.setAccessibleName('from_reset_button')
+        self.to_calendar_label = QLabel('')
+        self.to_reset_button = QPushButton('Reset Calendar 2')
+        self.to_reset_button.setAccessibleName('to_reset_button')
 
-        self.cal1 = QCalendarWidget()
-        self.cal1.setAccessibleName('cal1')  # same name as variable
-        self.cal2 = QCalendarWidget()
-        self.cal2.setAccessibleName('cal2')
+        self.from_calendar = QCalendarWidget()
+        self.from_calendar.setAccessibleName('from_calendar')  # same name as variable
+        self.to_calendar = QCalendarWidget()
+        self.to_calendar.setAccessibleName('to_calendar')
 
-        self.combo = QComboBox()
-        self.combo.addItems(stock_list_dict.keys())
+        self.stock_list_combobox = QComboBox()
+        self.stock_list_combobox.addItems(stock_list_dict.keys())
         self.b_list_price = QPushButton('Load Price DB')
         self.b_list_price.setAccessibleName('b_list_price')
         self.b_list_2 = QPushButton('Load 2 DB')
@@ -99,7 +99,7 @@ class StockPriceBrowserWin(QMainWindow):
         self.b_list_option.setAccessibleName('b_list_option')
 
         self.symbols_label = QLabel('Stocks (divided by space):')
-        self.le = QLineEdit()
+        self.symbols_lineedit = QLineEdit()
         self.b_le_price = QPushButton('Le Price')
         self.b_le_price.setAccessibleName('b_le_price')
         self.b_le_2 = QPushButton('Le 2')
@@ -113,72 +113,72 @@ class StockPriceBrowserWin(QMainWindow):
 
 
         mainbox = QVBoxLayout(self.central)
-        grid1 = QGridLayout()
-        grid2 = QGridLayout()
+        calendar_grid = QGridLayout()
+        update_grid = QGridLayout()
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
         hbox3 = QHBoxLayout()
-        mainbox.addLayout(grid1)
-        mainbox.addLayout(grid2)
+        mainbox.addLayout(calendar_grid)
+        mainbox.addLayout(update_grid)
         mainbox.addLayout(hbox1)
         mainbox.addLayout(hbox2)
         mainbox.addLayout(hbox3)
 
         # grid (widget, row, column, height, width)
-        grid1.addWidget(self.lb_cal1,  0, 0)
-        grid1.addWidget(self.b_reset1, 0, 1)
-        grid1.addWidget(self.lb_cal2,  0, 2)
-        grid1.addWidget(self.b_reset2, 0, 3)
+        calendar_grid.addWidget(self.from_calendar_label,  0, 0)
+        calendar_grid.addWidget(self.from_reset_button, 0, 1)
+        calendar_grid.addWidget(self.to_calendar_label,  0, 2)
+        calendar_grid.addWidget(self.to_reset_button, 0, 3)
 
-        grid1.addWidget(self.cal1, 1, 0, 2, 2)
-        grid1.addWidget(self.cal2, 1, 2, 2, 2)
+        calendar_grid.addWidget(self.from_calendar, 1, 0, 2, 2)
+        calendar_grid.addWidget(self.to_calendar, 1, 2, 2, 2)
 
 
-        hbox1.addWidget(self.combo)
+        hbox1.addWidget(self.stock_list_combobox)
         hbox1.addWidget(self.b_list_price)
         hbox1.addWidget(self.b_list_2)
         hbox1.addWidget(self.b_list_option)
 
         hbox2.addWidget(self.symbols_label)
-        hbox2.addWidget(self.le)
+        hbox2.addWidget(self.symbols_lineedit)
         hbox2.addWidget(self.b_le_price)
         hbox2.addWidget(self.b_le_2)
         hbox2.addWidget(self.b_le_option)
 
         hbox3.addWidget(self.pandas_tableview)
 
-        self.b_reset1.clicked.connect(self.calendar_reset)
-        self.b_reset2.clicked.connect(self.calendar_reset)
-        self.b_reset1.click()
-        self.b_reset2.click()
+        self.from_reset_button.clicked.connect(self.calendar_reset)
+        self.to_reset_button.clicked.connect(self.calendar_reset)
+        self.from_reset_button.click()
+        self.to_reset_button.click()
 
-        self.cal1.clicked[QDate].connect(self.calendar_show_date)
-        self.cal2.clicked[QDate].connect(self.calendar_show_date)
+        self.from_calendar.clicked[QDate].connect(self.calendar_show_date)
+        self.to_calendar.clicked[QDate].connect(self.calendar_show_date)
 
-        self.cal1.currentPageChanged.connect(self.cal1.repaint)
-        self.cal2.currentPageChanged.connect(self.cal2.repaint)
+        self.from_calendar.currentPageChanged.connect(self.from_calendar.repaint)
+        self.to_calendar.currentPageChanged.connect(self.to_calendar.repaint)
 
 
         self.b_le_2.clicked.connect(self.calendar_get_dates)
 
     def calendar_get_dates(self) -> Tuple[date, date]:
-        date1: date = self.cal1.selectedDate().toPython()
-        date2: date = self.cal2.selectedDate().toPython()
+        date1: date = self.from_calendar.selectedDate().toPython()
+        date2: date = self.to_calendar.selectedDate().toPython()
         return date1, date2
 
     #
     # def calendar_refresh(self, year: int, month: int) -> None:
     #     sender: str = self.sender().accessibleName()
     #     qdate: QDate = QDate(year, month, 1)
-    #     if sender == 'cal1':
-    #         self.cal1.setSelectedDate(qdate)
-    #         self.cal1.updateCells()
-    #         self.lb_cal1.setText(qdate.toString())
+    #     if sender == 'from_calendar':
+    #         self.from_calendar.setSelectedDate(qdate)
+    #         self.from_calendar.updateCells()
+    #         self.from_calendar_label.setText(qdate.toString())
     #
-    #     elif sender == 'cal2':
-    #         self.cal2.setSelectedDate(qdate)
-    #         self.cal2.updateCells()
-    #         self.lb_cal2.setText(qdate.toString())
+    #     elif sender == 'to_calendar':
+    #         self.to_calendar.setSelectedDate(qdate)
+    #         self.to_calendar.updateCells()
+    #         self.to_calendar_label.setText(qdate.toString())
     #     QApplication.processEvents()
 
 
@@ -188,19 +188,19 @@ class StockPriceBrowserWin(QMainWindow):
         qtoday: QDate = QDate.fromString(str(today_), 'yyyy-MM-dd')
         qtodaystr: str = qtoday.toString()
         print('type:', type(qtodaystr))
-        if sender == 'b_reset1':
+        if sender == 'from_reset_button':
             print('if')
-            self.cal1.setSelectedDate(qtoday)
-            self.cal1.updateCells()
-            self.lb_cal1.setText(qtodaystr)
-            self.lb_cal1.repaint()
+            self.from_calendar.setSelectedDate(qtoday)
+            self.from_calendar.updateCells()
+            self.from_calendar_label.setText(qtodaystr)
+            self.from_calendar_label.repaint()
 
-        elif sender == 'b_reset2':
+        elif sender == 'to_reset_button':
             print('elif')
-            self.cal2.setSelectedDate(qtoday)
-            self.cal2.updateCells()
-            self.lb_cal2.setText(qtodaystr)
-            self.lb_cal2.repaint()
+            self.to_calendar.setSelectedDate(qtoday)
+            self.to_calendar.updateCells()
+            self.to_calendar_label.setText(qtodaystr)
+            self.to_calendar_label.repaint()
         else:
             print('no sender')
         QApplication.processEvents()
@@ -208,14 +208,14 @@ class StockPriceBrowserWin(QMainWindow):
 
     def calendar_show_date(self, qdate: QDate) -> None:
         sender: str = self.sender().accessibleName()
-        if sender == 'cal1':
-            self.lb_cal1.setText(qdate.toString())
-            self.lb_cal1.repaint()
-            self.cal1.updateCells()
-        elif sender == 'cal2':
-            self.lb_cal2.setText(qdate.toString())
-            self.lb_cal2.repaint()
-            self.cal2.updateCells()
+        if sender == 'from_calendar':
+            self.from_calendar_label.setText(qdate.toString())
+            self.from_calendar_label.repaint()
+            self.from_calendar.updateCells()
+        elif sender == 'to_calendar':
+            self.to_calendar_label.setText(qdate.toString())
+            self.to_calendar_label.repaint()
+            self.to_calendar.updateCells()
         else:
             print('no sender')
         QApplication.processEvents()

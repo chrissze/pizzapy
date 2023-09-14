@@ -27,12 +27,12 @@ class FutBrowserDialog(FutBrowserWin):
 
         if sender == 'b_list_option':
             tablename: str = 'fut_option'
-            stockstr: str = self.combo.currentText()
+            stockstr: str = self.stock_list_combobox.currentText()
             stocklist: List[str] = getfutcode(stockstr)
             stockliststr: str = str(tuple(stocklist))
         elif sender == 'b_single_option':
             tablename: str = 'fut_option'
-            stockstr: str = self.combo_individual.currentText()[:2]
+            stockstr: str = self.stock_list_combobox_individual.currentText()[:2]
             stocklist: List[str] = [stockstr]
             stockliststr: str = "('" + stockstr + "')"  # for single tuple
         else:

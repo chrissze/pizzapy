@@ -59,14 +59,14 @@ def update_core(self) -> None:
     stock_list: List[str] = symbols_lineedit_string.split()
 
     stock_list_length = len(stock_list)
-    self.progressbar.setRange(0, stock_list_length)
+    self.progress_bar.setRange(0, stock_list_length)
     stockgen = (x for x in stock_list)
     func = table_function_dict.get(self.table_name)   
     # self.table_name is defined in core_update_view.py
     for count, symbol in enumerate(stockgen, start=1):
         s = try_str(func, symbol)
         msg = f'{count} / {stock_list_length} {s}'
-        self.progressbar.setValue(count)
+        self.progress_bar.setValue(count)
         self.progress_label.setText(f'{count} / {stock_list_length} {symbol}          ')
         self.browser.append(msg)
         self.browser.repaint()
@@ -91,7 +91,7 @@ def update_core_list(self) -> None:
     QCoreApplication.processEvents()  # update the GUI
 
     self.stock_working_list_length = len(stock_working_list)
-    self.progressbar.setRange(0, self.stock_working_list_length)
+    self.progress_bar.setRange(0, self.stock_working_list_length)
     stockgen = (x for x in stock_working_list)
     func = table_function_dict.get(self.table_name)
     # self.table_name is defined in core_update_view.py
@@ -99,7 +99,7 @@ def update_core_list(self) -> None:
         QCoreApplication.processEvents()   # update the GUI
         s = try_str(func, symbol)
         msg = f'{count} / {self.stock_working_list_length} {s}'
-        self.progressbar.setValue(count)
+        self.progress_bar.setValue(count)
         self.progress_label.setText(f'{count} / {self.stock_working_list_length} {symbol}          ')
         self.browser.append(msg)
         self.browser.repaint()
