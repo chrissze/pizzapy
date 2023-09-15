@@ -1,4 +1,9 @@
+"""
 
+The aim of this module is to get the result of get_technical_proxies(), all earlier functions are helper of get_technical_proxies().
+
+
+"""
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
@@ -7,7 +12,7 @@ from functools import partial
 from itertools import dropwhile, repeat
 import io
 from multiprocessing import Pool
-from multiprocessing.managers import DictProxy
+from multiprocessing.managers import DictProxy, SyncManager
 import os
 from timeit import default_timer
 from typing import Any, Dict, List, Tuple, Optional
@@ -25,12 +30,15 @@ import requests
 # CUSTOM LIBS
 from batterypy.functional.list import first, grab
 from batterypy.time.cal import add_trading_days, date_range, tdate_range, tdate_length, date_length,  get_trading_day_utc, is_weekly_close
-from dimsumpy.finance.technical import ema, quantile, deltas, changes, rsi_calc, steep
+from batterypy.number.format import round0, round1, round2, round4
+
+from dimsumpy.finance.technical import ema, quantile, deltas, convert_to_changes, calculate_rsi, steep
 from dimsumpy.web.crawler import get_urllib_text, get_csv_dataframe
 
 # PROGRAM MODULES
 
 from database_update.postgres_connection_model import execute_pandas_read
+from general_update.general_model import initialize_proxy
 
 
 
@@ -47,9 +55,163 @@ from database_update.postgres_connection_model import execute_pandas_read
 
 
 
-def get_td_adjclose(FROM: date, TO: date, symbol: str) -> List[Tuple[date, float]]:
+
+def get_prices_rsi(pairs: List[Tuple[date, float]], td: date) -> Tuple[List[Tuple[date, float]], List[float], float, float]:
+    """
+    * INDEPENDENT *
+    IMPORTS: is_weekly_close(), calculate_rsi()
+    USED BY: get_technical_values()
     """
 
+    # latest dates tuples are placed in the front in pairs
+    td_pairs: List[Tuple[date, float]] = list(dropwhile(lambda x: x[0] > td, pairs))    # drop all dates exceeding target date   
+    # td's closing price will the the first element, prices are placed from td to the past
+    td_prices: List[float] = [adjclose for (_, adjclose) in td_pairs]   
+    weekly_prices: List[float] = td_prices[:1] + [price for (day, price) in td_pairs[1:] if is_weekly_close(day)]
+    rsi = calculate_rsi(14, td_prices)
+    weekly_rsi = calculate_rsi(14, weekly_prices)
+    return td_pairs, td_prices, rsi, weekly_rsi    
+
+
+
+def get_specific_prices(prices: List[float]) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
+    """
+    * INDEPENDENT *
+    IMPORTS: first(), grab()
+    USED BY: get_technical_values()
+    """
+    price = first(prices)
+    p20 = grab(prices, 20)
+    p50 = grab(prices, 50)
+    p125 = grab(prices, 125)
+    p200 = grab(prices, 200)
+    return price, p20, p50, p125, p200
+
+
+
+
+def calculate_target_prices(p20: Optional[float], p50: Optional[float], prices: List[float]) -> Tuple[float, float, float, float, Optional[float], Optional[float], Optional[float], Optional[float]]:
+    """
+    * INDEPENDENT *
+    IMPORTS: conver_to_changes(), quantile()
+    USED BY: get_technical_values()
+    """
+    
+    list_of_20_day_change = convert_to_changes(20, prices[:421])
+    list_of_50_day_change = convert_to_changes(50, prices[:451])
+    increase_20 = quantile(0.98, list_of_20_day_change)
+    decrease_20 = quantile(0.02, list_of_20_day_change)
+    increase_50 = quantile(0.98, list_of_50_day_change)
+    decrease_50 = quantile(0.02, list_of_50_day_change)
+    best_20 = p20 * (1.0 + increase_20) if p20 else None
+    worst_20 = p20 * (1.0 + decrease_20) if p20 else None
+    best_50 = p50 * (1.0 + increase_50) if p50 else None
+    worst_50 = p50 * (1.0 + decrease_50) if p50 else None
+    return increase_20, decrease_20, increase_50, decrease_50, best_20, worst_20, best_50, worst_50
+
+
+
+
+def calculate_steep(prices: List[float]) -> Tuple[float, float]:
+    """
+    * INDEPENDENT *
+    IMPORTS: ema(), steep()
+    USED BY: get_technical_values()
+    """
+
+    steep_20 = steep(20, prices)
+    steep_50 = steep(50, prices)
+    return steep_20, steep_50
+
+
+def check_top_bottom(pairs: List[Tuple[date, float]], td_price: Optional[float], td: date) -> Tuple[Optional[bool],Optional[bool]]:
+    """
+    * INDEPENDENT *
+    IMPORTS: add_trading_days()
+    USED BY: get_technical_values()
+
+    the length is sometime 39.
+    """
+    plus_minus_20_prices = [price for (day, price) in pairs if add_trading_days(td, -21) < day < add_trading_days(td, 21) and day != td]
+
+    length: int = len(plus_minus_20_prices)
+
+    is_top: Optional[bool] = all(td_price > price for price in plus_minus_20_prices) if length > 38 and td_price else None
+    
+    is_bottom: Optional[bool] = all(td_price < price for price in plus_minus_20_prices) if length > 38 and td_price else None
+    return is_top, is_bottom
+
+
+
+def get_technical_values(pairs: List[Tuple[date, float]], td: date) -> Any:
+    """
+    DEPENDS ON: get_prices_rsi(), get_specific_prices(), calculate_target_prices(), calculate_steep(), check_top_bottom()
+    IMPORTS: round1(), round2(), round4()
+    USED BY: make_technical_proxy()
+
+    pairs argument is generated by get_td_adjclose()
+    
+    I must place td at last because it is the iterable argument in pool.map()
+    """
+    td_pairs, td_prices, rsi, weekly_rsi = get_prices_rsi(pairs, td)
+    
+    td_price, p20, p50, p125, p200 = get_specific_prices(td_prices)
+
+    increase_20, decrease_20, increase_50, decrease_50, best_20, worst_20, best_50, worst_50 = calculate_target_prices(p20, p50, td_prices)
+
+    steep_20, steep_50 = calculate_steep(td_prices)
+    is_top, is_bottom = check_top_bottom(pairs, td_price, td)
+    
+    technical_values = round2(td_price), round2(p20), round2(p50), round2(p125), round2(p200), round4(rsi), round4(weekly_rsi), round2(increase_20), round2(decrease_20), round2(increase_50), round2(decrease_50), round1(best_20), round1(worst_20), round1(best_50), round1(worst_50), round2(steep_20), round2(steep_50), is_top, is_bottom
+    
+    return technical_values
+
+
+
+
+def make_technical_proxy(pairs: List[Tuple[date, float]], SYMBOL: str, td: date) -> Dict:
+    """
+    DEPENDS ON: get_technical_values()
+    IMPORTS: datetime
+    USED BY: get_technical_proxies()
+    """
+    
+    price, p20, p50, p125, p200, rsi, weekly_rsi, increase_20, decrease_20, increase_50, decrease_50, best_20, worst_20, best_50, worst_50, steep_20, steep_50, is_top, is_bottom = get_technical_values(pairs, td)
+    
+    proxy: Dict = {}
+    proxy['symbol'] = SYMBOL
+    proxy['td'] = td
+    proxy['t'] = datetime.now().replace(second=0, microsecond=0)
+    
+    proxy['price'] = price
+    proxy['p20'] = p20
+    proxy['p50'] = p50
+    proxy['p125'] = p125
+    proxy['p200'] = p200
+
+    proxy['rsi'] = rsi
+    proxy['weekly_rsi'] = weekly_rsi
+    
+    proxy['increase_20'] = increase_20
+    proxy['decrease_20'] = decrease_20
+    proxy['increase_50'] = increase_50
+    proxy['decrease_50'] = decrease_50
+    proxy['best_20'] = best_20
+    proxy['worst_20'] = worst_20
+    proxy['best_50'] = best_50
+    proxy['worst_50'] = worst_50
+    
+    proxy['steep_20'] = steep_20
+    proxy['steep_50'] = steep_50 
+    proxy['is_top'] = is_top
+    proxy['is_bottom'] = is_bottom
+    
+    return proxy
+
+
+
+def get_td_adjclose(FROM: date, TO: date, symbol: str) -> Tuple[List[Tuple[date, float]], bool]:
+    """
     IMPORTS: execute_pandas_read()
     USED BY: tech_upsert_1s()
     
@@ -57,133 +219,50 @@ def get_td_adjclose(FROM: date, TO: date, symbol: str) -> List[Tuple[date, float
 
     The resuling list will have latest dates placed at the front as it is DESC.
     """
-    sql = f"SELECT td, adj_close FROM stock_price WHERE symbol = '{symbol}' AND td >= '{FROM.isoformat()}' AND td <= '{TO.isoformat()}' ORDER BY td DESC"
+    earlier_from = add_trading_days(FROM, -1000)
+    later_to = add_trading_days(TO, 20)
+
+    sql = f"SELECT td, adj_close FROM stock_price WHERE symbol = '{symbol}' AND td >= '{earlier_from.isoformat()}' AND td <= '{later_to.isoformat()}' ORDER BY td DESC"
     df: DataFrame = execute_pandas_read(sql) # no error for empty result
     td_adjclose_pairs: List[Any] = [tuple(x) for x in df.values] # List of 2-tuples
-    return td_adjclose_pairs
-
-
-
-
-
-def calculate_changes(symbol:str, pairs: List[Tuple[date, float]], td: date) -> None:
-    """
-
-    pairs argument is generated by get_td_adjclose()
-
-    walrus operator := allows you to assign a value to a variable as part of an expression.
     
-    # I must place td at last because it is the iterable argument
-    """
-    
-    # latest dates tuples are placed in the front in pairs
-    tuples = list(dropwhile(lambda x: x[0] > td, pairs))    # drop all dates exceeding target date   
-    
-    # td's closing price will the the first element, prices are placed from td to the past
-    prices: List[float] = [adjclose for (_, adjclose) in tuples] 
-    
-    weekly_prices = prices[:1] + [x[1] for x in tuples[1:] if is_weekly_close(x[0])]
-    
-    plus_minus_20_prices = [x[1] for x in pairs if add_trading_days(td, -21) < x[0] < add_trading_days(td, 21) and x[0] != td]
-
-    #print('fut_past_prices, ', fut_past_prices)
-    #print('Fut_past length: ', len(fut_past_prices))
-
-    td_price = first(prices)
-    p20 = grab(prices, 20)
-    p50 = grab(prices, 50)
-    p125 = grab(prices, 125)
-    p200 = grab(prices, 200)
-    list20 = changes(20, prices[:421])
-    list50 = changes(50, prices[:451])
-    ch2002 = quantile(0.02, list20)
-    ch2098 = quantile(0.98, list20)
-    ch5002 = quantile(0.02, list50)
-    ch5098 = quantile(0.98, list50)
-    tg2002 = p20 * (1.0 + ch2002)
-    tg2098 = p20 * (1.0 + ch2098)
-    tg5002 = p50 * (1.0 + ch5002)
-    tg5098 = p50 * (1.0 + ch5098)
-
-
-    rsi = rsi_calc(14, prices)
-    wrsi = rsi_calc(14, weekly_prices)
-    ema20 = ema(20, prices)
-    ema50 = ema(50, prices)
-    steep20 = steep(20, prices)
-    steep50 = steep(50, prices)
-
-    istop: Optional[bool] = all(td_price > price for price in plus_minus_20_prices) if len(plus_minus_20_prices) == 40 else None
-    
-    isbot: Optional[bool] = all(td_price < price for price in plus_minus_20_prices) if len(plus_minus_20_prices) == 40 else None
-    if istop: 
-        print(symbol, 'istop', istop, td_price, td, steep20)
-    if isbot: 
-        print(symbol, 'isbot', isbot, td_price, td, tg2002, tg5002, rsi,wrsi, steep20)
-
-    print(td_price)
-    print(p20)
-    print(p50)
-    print(ch2002)
-    print(tg2002)
-    print(rsi)
-    print(wrsi)
-    print(steep20)
-    print(steep50)
-
-
-def tech_upsert_1s(FROM: date, TO: date, SYMBOL: str) -> str:
-    """
-    DEPENDS ON: get_td_adjclose(), st_chg_calc()
-    """
-    pairs_from_date = add_trading_days(FROM, -1000)
-    pairs_to_date = add_trading_days(TO, 20)
-
-    td_adjclose_pairs: List[Any] = get_td_adjclose(pairs_from_date, pairs_to_date, SYMBOL)
     pairs_length = len(td_adjclose_pairs)
-    from_to_trading_dates: List[date] = [x[0] for x in td_adjclose_pairs if FROM <= x[0] <= TO]
-
     last_trading_day = get_trading_day_utc()
-    theory_len = tdate_length(pairs_from_date, min(last_trading_day, pairs_to_date))
-    #print('ext_len', ext_len)
-    #print('theory len:', theory_len)
+    theory_len = tdate_length(earlier_from, min(last_trading_day, later_to))
+    valid_length = (theory_len - pairs_length) < 3
+
+    return td_adjclose_pairs, valid_length
 
 
-    valid = (theory_len - pairs_length) < 3
-    if valid:
+
+
+def get_technical_proxies(FROM: date, TO: date, SYMBOL: str) -> List[Any]:
+    """
+    DEPENDS ON: get_td_adjclose(), make_technical_proxy()
+    IMPORTS: os, partial()
+    do not use kwargs in partial()
+    """
+    td_adjclose_pairs, valid_length = get_td_adjclose(FROM, TO, SYMBOL)
+    
+    if valid_length:
+        from_to_trading_dates: List[date] = [day for (day, _) in td_adjclose_pairs if FROM <= day <= TO]
         with Pool(os.cpu_count()) as pool:
-            pool.map(partial(calculate_changes, SYMBOL, td_adjclose_pairs), from_to_trading_dates) # do not use kwargs
-
+            proxies: List[Any] = pool.map(partial(make_technical_proxy, td_adjclose_pairs, SYMBOL), from_to_trading_dates) 
+        return proxies
     else:
-        print('theory_len:', theory_len)
-        print('ext_len:', pairs_length)
-        print('valid: ', valid)
-        return (f' - no tech_upsert')
-    return 'done'
-
-
-
-
-
-def calc_up(lst) -> bool:
-    em20 = ema(lst, 20)
-    em125 = ema(lst, 125)
-    return em20 > em125
+        return []
+        
 
 
 
 
 
 def test():
-    FROM = date(2017, 1, 1)
-    TO = date(2023, 9, 14)
-    pairs = get_td_adjclose(FROM, TO, 'AMD')
-    
-    td = date(2023, 8, 1)
-
-    calculate_changes('AMD', pairs, td)
-
-
+    FROM = date(2023, 6, 7)
+    TO = date(2023, 6, 10)
+    #pairs = get_td_adjclose(FROM, TO, 'AMD')
+    x = get_technical_proxies(FROM, TO, 'AMD')
+    print(x)
 
 
 if __name__ == '__main__':

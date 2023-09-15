@@ -33,9 +33,11 @@ def make_dataframe(self) -> None:
 
         Needs self.symbols_list in load_stock_table() and load_stock_list_table().
 
+        When I input only one SYMBOL in the symbols_lineedit, it will becomes ('AMD',) if I convert it to a tuple, this string will have error in SQL query_clause, so I have to get rid of the comma when there is only 1 element.
+
     """
     self.clear()
-    self.symbols_tuple_str = str(tuple(self.symbols_list))  # for single tuple
+    self.symbols_tuple_str = str(tuple(self.symbols_list)) if len(self.symbols_list) > 1 else str(tuple(self.symbols_list)).replace(',', '') # for single tuple
     self.table_name = self.table_list_combobox.currentText()
     query_clause: str = '' if not self.symbols_list else f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
     cmd: str = f'SELECT * FROM {self.table_name} {query_clause}'

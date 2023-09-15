@@ -121,18 +121,36 @@ stock_price_create_table_command: str = """
 
 # from stock_price
 stock_technical_create_table_command: str = """
-    CREATE TABLE IF NOT EXISTS stock_tech (
+    CREATE TABLE IF NOT EXISTS stock_technical (
     id  BIGSERIAL, 
     t   TIMESTAMP,                    
-    symbol   VARCHAR(10) NOT NULL,         
-    td   DATE NOT NULL,  
-    px   FLOAT8,    
+    symbol   VARCHAR(10),         
+    td   DATE,  
+
+    price   FLOAT8,    
     p20   FLOAT8,
     p50   FLOAT8,    
     p125   FLOAT8,    
     p200  FLOAT8,        
+    rsi  FLOAT8,        
+    weekly_rsi  FLOAT8,        
+    
+    increase_20  FLOAT8,        
+    decrease_20  FLOAT8,        
+    increase_50  FLOAT8,        
+    decrease_50  FLOAT8,        
+    best_20  FLOAT8,        
+    worst_20  FLOAT8,        
+    best_50  FLOAT8,        
+    worst_50  FLOAT8,
+
+    steep_20  FLOAT8,
+    steep_50  FLOAT8,
+    is_top  BOOLEAN,
+    is_bottom  BOOLEAN,
+
     PRIMARY KEY (symbol, td) 
-    );
+    )
     """
 
 

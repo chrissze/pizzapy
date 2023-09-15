@@ -2,38 +2,24 @@
 # STANDARD LIBS
 import sys; sys.path.append('..')
 from datetime import date, datetime, timezone
-from functools import partial
-from itertools import dropwhile, repeat
-import io
-from multiprocessing import Pool
-from multiprocessing.managers import DictProxy
-import os
-from timeit import default_timer
 from typing import Any, Dict, List, Tuple, Optional
-
-import shutil
-import urllib
 
 
 # THIRD PARTY LIBS
-import pandas
-import requests
 
 
 # CUSTOM LIBS
-from batterypy.functional.list import first, grab
-from batterypy.time.cal import add_trading_days, date_range, tdate_range, tdate_length, date_length,  get_trading_day_utc, is_weekly_close
-from dimsumpy.finance.technical import ema, quantile, deltas, changes, rsi_calc, steep
-from dimsumpy.web.crawler import get_urllib_text, get_csv_dataframe
+from dimsumpy.web.crawler import get_csv_dataframe
 
 # PROGRAM MODULES
 
 
-# must use https
 def make_price_url(date1: date, date2: date, symbol: str) -> str:
     """
     * INDEPENDENT *
     USED BY: get_price_dataframe()
+    
+    must use https
     """
     datetime1 = datetime(date1.year, date1.month, date1.day)
     datetime2 = datetime(date2.year, date2.month, date2.day)
@@ -44,12 +30,13 @@ def make_price_url(date1: date, date2: date, symbol: str) -> str:
 
 
 
-# easier to debug for having 3 functions
-# might have error during HK weekday night
 def get_price_dataframe(date1, date2, symbol):
     """
     DEPENDS ON: make_price_url()
     IMPORTS: get_csv_dataframe()
+
+    easier to debug for having 3 functions
+    might have error during HK weekday night
     """
     url = make_price_url(date1, date2, symbol)
     df = get_csv_dataframe(url, header=0)

@@ -25,6 +25,27 @@ from PySide6.QtWidgets import (QApplication, QComboBox,
 from database_update.postgres_command_model import table_list_dict
 from database_update.stock_list_model import stock_list_dict
 
+class SetupWindow:
+    def __init__(ego, self):
+        """
+            'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
+        """
+        self.setWindowTitle('Core Stock Update')
+        self.resize(900, 600)
+        self.mainbox = QVBoxLayout(self) 
+        
+
+class BrowserRow:
+    def __init__(ego, self):
+        """
+            'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
+        """
+        self.browser = QTextBrowser()
+        self.browser.setMaximumHeight(400)
+
+        self.browser_hbox = QHBoxLayout()
+        self.mainbox.addLayout(self.browser_hbox)
+        self.browser_hbox.addWidget(self.browser)
 
 
 class StockListRow:
@@ -69,17 +90,6 @@ class StocksRow:
         self.stocks_hbox.addWidget(self.symbols_lineedit)
         self.stocks_hbox.addWidget(self.update_symbols_button)
 
-class BrowserRow:
-    def __init__(ego, self):
-        """
-            'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
-        """
-        self.browser = QTextBrowser()
-        self.browser.setMaximumHeight(400)
-
-        self.browser_hbox = QHBoxLayout()
-        self.mainbox.addLayout(self.browser_hbox)
-        self.browser_hbox.addWidget(self.browser)
 
 
 class QuitRow:
@@ -98,6 +108,20 @@ class QuitRow:
         self.quit_hbox.addWidget(self.progress_label)
         self.quit_hbox.addWidget(self.clear_button)
         self.quit_hbox.addWidget(self.quit_button)
+
+
+
+class MakeConnects:
+    def __init__(ego, self):
+        """
+        """        
+        self.table_list_comboxbox_changed() 
+        self.stock_list_comboxbox_changed() 
+        
+        # deliberately run it for the first time to fill in label and lineedit text.
+        self.table_list_combobox.currentIndexChanged.connect(self.table_list_comboxbox_changed)
+        self.stock_list_combobox.currentIndexChanged.connect(self.stock_list_comboxbox_changed)
+
 
 
 def table_list_combobox_changed(self) -> None:
@@ -123,33 +147,24 @@ class CoreUpdateView(QWidget):
     """
         # self in StockListRow(self) is the DailyGuruWin instance, and this instance becomes the parent of StockListRow instance. During the StockListRow initialization, first argument of StockListRow itself is implicit, no need to write it on instance creation, so the 'self' argument here maps to the 2nd parameter parent.
 
+        self instance here represents the parent container of mainbox, Rows must be placed after mainbox because Rows content contain adding widgets for mainbox.
     """
     def __init__(self) -> None:
         super().__init__()  # initialize all QWidget() variables and methods
-        self.setWindowTitle('Core Stock Update')
-        self.resize(900, 600)
-        self.initui() # initui() draws the layout
-
-    def initui(self) -> None:
-        """
-        self instance here represents the parent container of mainbox, Rows must be placed after mainbox because Rows content contain adding widgets for mainbox.
-        """
-        self.mainbox = QVBoxLayout(self) 
+        SetupWindow(self)
+        
         BrowserRow(self)  
         StockListRow(self)     # Initialized StockListRow widgets
         StocksRow(self)  
         QuitRow(self)        
-        self.table_list_comboxbox_changed() 
-        self.stock_list_comboxbox_changed() 
-        # deliberately run it for the first time to fill in label and lineedit text.
-        self.table_list_combobox.currentIndexChanged.connect(self.table_list_comboxbox_changed)
-        self.stock_list_combobox.currentIndexChanged.connect(self.stock_list_comboxbox_changed)
-
+        MakeConnects(self)
+        
     def table_list_comboxbox_changed(self) -> None:
         return table_list_combobox_changed(self)
     
     def stock_list_comboxbox_changed(self) -> None:
         return stock_list_combobox_changed(self)
+
 
 
 def main() -> None:
