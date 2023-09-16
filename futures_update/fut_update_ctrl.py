@@ -1,7 +1,7 @@
 
 import sys;
 
-from dimsumpy.qt5.decorators import confirmation_self
+from dimsumpy.qt5.decorators import self_confirmation
 
 sys.path.append('..')
 
@@ -27,7 +27,7 @@ class FutUpdateDialog(FutUpdateWin):
         self.b_list_option.clicked.connect(self.updatefunc)
         self.b_single_option.clicked.connect(self.updatefunc)
 
-    @confirmation_self
+    @self_confirmation
     def updatefunc(self) -> None:
         list_start: int = int0(self.symbols_lineedit_list_start.text())
         sender: str = self.sender().accessibleName()

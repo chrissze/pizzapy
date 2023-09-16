@@ -32,7 +32,7 @@ from database_update.stock_list_model import stock_list_dict, table_function_dic
 
 
 
-@list_confirmation()
+@list_confirmation
 def upsert_core(self, stock_list) -> None:
     """
     IMPORTS: QCoreApplication, table_function_dict
@@ -62,12 +62,15 @@ def update_core(self) -> None:
     """
     DEPENDS ON: upsert_core()
     USED BY: CoreUpdateController
+
+    I use stock_list as a upsert_core second argument so that list decorator will work, 
+    if I don't use decorator for upsert_core, I could simply make stock_list as self.stock_list, no second argument will be needed in upsert_core().
     """
     symbols_lineedit_string: str = self.symbols_lineedit.text()
     stock_list: List[str] = symbols_lineedit_string.split()
 
     if stock_list:   # prevent empty lineedit
-        upsert_core(self, stock_list)
+        upsert_core(self, stock_list) 
     else:
         self.statusbar.showMessage('No SYMBOLS in the lineedit')
 
@@ -82,8 +85,8 @@ def update_core_list(self) -> None:
     self.stock_list_combobox_text, self.full_stock_list, self.full_list_length are defined in self.stock_list_combobox_changed() in core_update_view.py
     """
     lineedit_text: str = self.starting_lineedit.text()
-    stockstr = self.stock_list_combobox.currentText()
-    stock_list = stock_list_dict.get(stockstr)
+    stock_list_name = self.stock_list_combobox.currentText()
+    stock_list = stock_list_dict.get(stock_list_name)
     if lineedit_text in stock_list:
         stock_list = list(dropwhile(lambda x: x != lineedit_text, stock_list))
     else:        
@@ -101,7 +104,6 @@ def update_core_list(self) -> None:
 
 def table_list_combobox_changed(self) -> None:
     """
-    This method is about layout appearance change, so I place it in view module.
     """
     self.table_name = self.table_list_combobox.currentText()
     self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
@@ -109,7 +111,6 @@ def table_list_combobox_changed(self) -> None:
 
 def stock_list_combobox_changed(self) -> None:
     """
-    This method is about layout appearance change, so I place it in view module.
     """
     self.stock_list_combobox_text = self.stock_list_combobox.currentText()
     self.full_stock_list = stock_list_dict.get(self.stock_list_combobox_text)

@@ -1,6 +1,6 @@
 import sys;
 
-from dimsumpy.qt5.decorators import confirmation_self
+from dimsumpy.qt5.decorators import self_confirmation
 
 sys.path.append('..')
 
@@ -70,7 +70,7 @@ class FutUpdateWin(QWidget):
         hbox4.addWidget(self.clear_button)
         hbox4.addWidget(self.quit_button)
 
-    @confirmation_self
+    @self_confirmation
     def clear_browser(self) -> None:
         self.browser.clear()
         self.browser.repaint()

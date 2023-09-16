@@ -27,7 +27,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 # CUSTOM LIBS
 from batterypy.control.trys import try_str
 from batterypy.string.read import is_floatable, is_intable, int0, float0
-from dimsumpy.qt.decorators import confirmation_self
+from dimsumpy.qt.decorators import self_confirmation
 
 
 # PROGRAM MODULES
@@ -57,7 +57,7 @@ class CustomThread(QThread):
 
     def callitback(self) -> None:
         self.callback()
-        print('callback 35') # debug
+        print('callitback done') # debug
 
 
 
@@ -104,7 +104,7 @@ def call_upsert(self, FROM: date, TO: date, stockgen: Generator[str, None, None]
 
 
 
-@confirmation_self
+@self_confirmation
 def update_price(self) -> None:
     """
     DEPENDS ON: self.calendar_get_dates(), self.call_upsert(), CustomThread class, self.thread_finished()
