@@ -10,9 +10,12 @@ from typing import Any, List, Tuple
 
 
 # THIRD PARTY LIBS
+from pandas import DataFrame
 from PySide6.QtCore import QCoreApplication, QRegularExpression
 from PySide6.QtGui import QAction, QCloseEvent
 from PySide6.QtWidgets import QApplication, QCheckBox ,QGridLayout, QLineEdit ,QWidget
+
+
 
 # CUSTOM LIBS
 from dimsumpy.qt.dataframemodel import DataFrameModel
@@ -27,27 +30,29 @@ from general_update.qt_model import MySortFilterProxyModel
 from core_stock_browser.core_browser_view import CoreBrowserView
 
 
-
-
-
 def make_dataframe(self) -> None:
     """
         DEPENDS ON: self.symbols_list (property), self.table_list_combobox
         IMPORTS: pandas, execute_pandas_read()
         USED BY: load_stock_table(), load_stock_list_table()
+        
+        The aim of this function is to create self.df variable on the last line.
+
         self.df needs to be in self to share its value so that it can be accessed by load_tableview() and load_grid()
 
-        Needs self.symbols_list in load_stock_table() and load_stock_list_table().
+        This function depends on self.symbols_list in load_stock_table() and load_stock_list_table().
 
         When I input only one SYMBOL in the symbols_lineedit, it will becomes ('AMD',) if I convert it to a tuple, this string will have error in SQL query_clause, so I have to get rid of the comma when there is only 1 element.
+
+        If self.symbols_list is empty, this function will just created a empty DataFrame for self.df.
 
     """
     self.clear()
     self.symbols_tuple_str = str(tuple(self.symbols_list)) if len(self.symbols_list) > 1 else str(tuple(self.symbols_list)).replace(',', '') # for single tuple
     self.table_name = self.table_list_combobox.currentText()
-    query_clause: str = '' if not self.symbols_list else f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
+    query_clause: str = f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
     cmd: str = f'SELECT * FROM {self.table_name} {query_clause}'
-    self.df = execute_pandas_read(cmd)
+    self.df = execute_pandas_read(cmd) if self.symbols_list else DataFrame()
 
 
 
@@ -99,6 +104,7 @@ def load_stock_table(self) -> None:
     """
         DEPENDS ON: make_dataframe(), make_tableview(), make_grid()
         USED BY: CoreBrowserController
+
         self.symbols_list needs to have self to share its value so that it can be accessed by make_dataframe()
     """
     symbols_str: str = self.symbols_lineedit.text().upper()
@@ -114,8 +120,8 @@ def load_list_table(self) -> None:
     IMPORTS: stock_list_dict
     USED BY: CoreBrowserController
     """
-    list_name_str: str = self.stock_list_combobox.currentText()
-    self.symbols_list: List[str] = stock_list_dict.get(list_name_str)
+    list_name: str = self.stock_list_combobox.currentText()
+    self.symbols_list: List[str] = stock_list_dict.get(list_name)
     make_dataframe(self)
     make_tableview(self)
     make_grid(self)    
@@ -144,14 +150,16 @@ def show_columns(self) -> None:
 
 def table_list_combobox_changed(self) -> None:
     """
-    This method is about layout appearance change, so I place it in view module.
+
     """
     self.table_name = self.table_list_combobox.currentText()
     self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
 
 
 def on_checkbox_changed(self, value: int, index: int) -> None:
-    """ USED BY: make_grid() """
+    """ 
+    USED BY: make_grid() 
+    """
     if value == 2:    # value is 2 for checked state
         self.pandas_tableview.setColumnHidden(index, False)
     else:
@@ -175,7 +183,7 @@ def on_floor_lineedit_changed(self, text, col) -> None:
 def on_ceiling_lineedit_changed(self, text, col) -> None:
     """ 
     USED BY: make_grid() 
-    
+
     As this method's Regular Expression does not have CaseInsensitiveOption, so it will fall into the else-clause in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
     """
     self.sort_filter_model.setFilterByColumn(
@@ -186,8 +194,9 @@ def on_ceiling_lineedit_changed(self, text, col) -> None:
 
 class MakeConnects:
     """
-    Run self.table_list_combobox_changed() once for filling placeholder text.
+    USED BY: CoreBrowserController
 
+    Run self.table_list_combobox_changed() once for filling placeholder text.
     """
     def __init__(ego, self) -> None:
         self.table_list_combobox.currentIndexChanged.connect(self.table_list_combobox_changed)
@@ -199,7 +208,7 @@ class MakeConnects:
         self.show_columns_action.triggered.connect(self.show_columns)
         self.hide_columns_action.triggered.connect(self.hide_columns)
         self.clear_action.triggered.connect(self.clear)
-        self.quit_action.triggered.connect(self.close)
+        self.quit_action.triggered.connect(self.close) # defined in closeEvent()
 
 
 
@@ -232,8 +241,8 @@ class CoreBrowserController(CoreBrowserView):
     def on_ceiling_lineedit_changed(self, text, col) -> None:
         return on_ceiling_lineedit_changed(self, text, col)    
 
-    def closeEvent(self, event: QCloseEvent) -> None:
-        return closeEvent(self, event)
+    def table_list_combobox_changed(self) -> None:
+        return table_list_combobox_changed(self)
 
     def clear(self) -> None:
         return clear(self)
@@ -244,8 +253,8 @@ class CoreBrowserController(CoreBrowserView):
     def show_columns(self) -> None:
         return show_columns(self)
         
-    def table_list_combobox_changed(self) -> None:
-        return table_list_combobox_changed(self)
+    def closeEvent(self, event: QCloseEvent) -> None:
+        return closeEvent(self, event)
     
 
 
