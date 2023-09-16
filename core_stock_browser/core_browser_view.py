@@ -12,13 +12,13 @@ import sys; sys.path.append('..')
 
 
 # THIRD PARTY LIBS
-from PySide6.QtCore import QCoreApplication, QObject , QSortFilterProxyModel ,Qt
-from PySide6.QtGui import QAction, QCloseEvent, QIcon
-from PySide6.QtWidgets import (QApplication, QCheckBox,  QComboBox, QDockWidget, QFileDialog,
-                               QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (QApplication, QComboBox, QDockWidget,
+                               QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QMenu, QMenuBar,
-                               QMessageBox, QProgressBar, QPushButton,
-                               QTableView, QTextBrowser, QToolBar,QVBoxLayout, QWidget)
+                               QPushButton,
+                               QTableView, QToolBar,QVBoxLayout, QWidget)
 
 
 # PROGRAM MODULES

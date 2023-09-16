@@ -8,6 +8,7 @@ DEPENDS ON: core_update_view.py, stock_list_model.py
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
+from itertools import dropwhile
 from typing import Any, Dict, Generator, List, Optional
 
 
@@ -20,7 +21,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 # CUSTOM LIBS
 from batterypy.control.trys import try_str
 from batterypy.string.read import is_intable, int0, float0
-from dimsumpy.qt.decorators import confirmation_self
+from dimsumpy.qt.decorators import list_confirmation
 from dimsumpy.qt.functions import closeEvent
 
 
@@ -31,19 +32,15 @@ from database_update.stock_list_model import stock_list_dict, table_function_dic
 
 
 
-
-
-@confirmation_self
-def update_core(self) -> None:    
+@list_confirmation()
+def upsert_core(self, stock_list) -> None:
     """
-    IMPORTS: QCoreApplication, func(upsert_guru)
-    USED BY: CoreUpdateController
+    IMPORTS: QCoreApplication, table_function_dict
+    USED BY: update_core(), update_core_list()
     """
-    symbols_lineedit_string: str = self.symbols_lineedit.text()
-    stock_list: List[str] = symbols_lineedit_string.split()
-
     stock_list_length = len(stock_list)
     self.progress_bar.setRange(0, stock_list_length)
+    self.statusbar.showMessage(f'Updateing {stock_list_length} stocks')
     stockgen = (x for x in stock_list)
     func = table_function_dict.get(self.table_name)   
     # self.table_name is defined in core_update_view.py
@@ -56,39 +53,48 @@ def update_core(self) -> None:
         self.browser.repaint()
         QCoreApplication.processEvents()   # update the GUI
         print(msg)
+    self.statusbar.showMessage('DONE')
+    
 
 
 
+def update_core(self) -> None:    
+    """
+    DEPENDS ON: upsert_core()
+    USED BY: CoreUpdateController
+    """
+    symbols_lineedit_string: str = self.symbols_lineedit.text()
+    stock_list: List[str] = symbols_lineedit_string.split()
+
+    if stock_list:   # prevent empty lineedit
+        upsert_core(self, stock_list)
+    else:
+        self.statusbar.showMessage('No SYMBOLS in the lineedit')
 
 
-@confirmation_self
+
 def update_core_list(self) -> None:
     """
+    DEPENDS ON: upsert_core()
     IMPORTS: QCoreApplication, func(upsert_guru), batterypy(int0)
     USED BY: CoreUpdateController
 
     self.stock_list_combobox_text, self.full_stock_list, self.full_list_length are defined in self.stock_list_combobox_changed() in core_update_view.py
     """
-    starting_number: int = int0(self.starting_lineedit.text()) - 1
-    valid_starting_number: bool = starting_number < self.full_list_length and starting_number >= 0
-    stock_working_list = stock_list_dict.get(self.stock_list_combobox_text)[starting_number:] if valid_starting_number else self.full_stock_list
+    lineedit_text: str = self.starting_lineedit.text()
+    stockstr = self.stock_list_combobox.currentText()
+    stock_list = stock_list_dict.get(stockstr)
+    if lineedit_text in stock_list:
+        stock_list = list(dropwhile(lambda x: x != lineedit_text, stock_list))
+    else:        
+        starting_number = max(int0(lineedit_text) - 1, 0)
+        valid_starting_number: bool = starting_number < self.full_list_length
+        stock_list = stock_list[starting_number:] if valid_starting_number else []
     QCoreApplication.processEvents()  # update the GUI
-
-    self.stock_working_list_length = len(stock_working_list)
-    self.progress_bar.setRange(0, self.stock_working_list_length)
-    stockgen = (x for x in stock_working_list)
-    func = table_function_dict.get(self.table_name)
-    # self.table_name is defined in core_update_view.py
-    for count, symbol in enumerate(stockgen, start=1):
-        QCoreApplication.processEvents()   # update the GUI
-        s = try_str(func, symbol)
-        msg = f'{count} / {self.stock_working_list_length} {s}'
-        self.progress_bar.setValue(count)
-        self.progress_label.setText(f'{count} / {self.stock_working_list_length} {symbol}          ')
-        self.browser.append(msg)
-        self.browser.repaint()
-        QCoreApplication.processEvents()   # update the GUI
-        print(msg)
+    if stock_list:
+        upsert_core(self, stock_list)
+    else:
+        self.statusbar.showMessage('Empty List')
 
 
 
@@ -98,7 +104,7 @@ def table_list_combobox_changed(self) -> None:
     This method is about layout appearance change, so I place it in view module.
     """
     self.table_name = self.table_list_combobox.currentText()
-    self.symbols_label.setText(f'{self.table_name} SYMBOLS (divided by space): ')
+    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
 
 
 def stock_list_combobox_changed(self) -> None:
@@ -108,7 +114,7 @@ def stock_list_combobox_changed(self) -> None:
     self.stock_list_combobox_text = self.stock_list_combobox.currentText()
     self.full_stock_list = stock_list_dict.get(self.stock_list_combobox_text)
     self.full_list_length = len(self.full_stock_list)
-    self.starting_lineedit.setPlaceholderText(f'Input 1 to {self.full_list_length} as starting no. (optional)')
+    self.starting_lineedit.setPlaceholderText(f'Input 1 to {self.full_list_length} OR a SYMBOL in the list to start')
 
 
 
@@ -119,7 +125,7 @@ def clear(self) -> None:
     """
     self.browser.clear()
     self.progress_label.setText(' 0 / 0          ')
-
+    self.statusbar.showMessage('Ready')
 
 class MakeConnects:
     """

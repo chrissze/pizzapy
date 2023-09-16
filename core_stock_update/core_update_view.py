@@ -16,7 +16,7 @@ from typing import Tuple
 
 # THIRD PARTY LIBS
 from PySide6.QtWidgets import (QApplication, QComboBox,
-                               QHBoxLayout, QLabel, QLineEdit, QProgressBar, QPushButton,
+                               QHBoxLayout, QLabel, QLineEdit, QMainWindow, QProgressBar, QPushButton,
                                QTextBrowser, QVBoxLayout, QWidget)
 
 # PROGRAM MODULES
@@ -31,11 +31,19 @@ class SetupWindow:
             This class has self.mainbox, it has to be the first in CoreUpdateView.
 
             Rows must be placed after mainbox because Rows content contain adding widgets for mainbox.
+
+            I created self.statusbar property, if I don't create it, every time I want to update the status bar, I need to make function call to the self.statusBar()
         """
         self.setWindowTitle('Core Stock Update')
         self.resize(900, 600)
-        self.mainbox = QVBoxLayout(self)
-        
+
+        self.central: QWidget = QWidget()  
+        self.setCentralWidget(self.central)
+
+        self.mainbox = QVBoxLayout(self.central)
+        self.statusbar = self.statusBar()  
+        self.statusbar.showMessage('Ready')
+
 
 class BrowserRow:
     def __init__(ego, self):
@@ -43,7 +51,7 @@ class BrowserRow:
             'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
         """
         self.browser = QTextBrowser()
-        self.browser.setMaximumHeight(400)
+        
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.browser)
@@ -116,7 +124,7 @@ class QuitRow:
     
 
 
-class CoreUpdateView(QWidget):
+class CoreUpdateView(QMainWindow):
     """
     DEPENDS ON: SetupWindow, BrowserRow, StockListRow, StocksRow, QuitRow
     IMPORTS: QWidget

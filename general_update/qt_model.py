@@ -1,5 +1,7 @@
 """
 
+USED BY: core_browser_controller.py
+
 Custom Sort Filter Example:
 https://doc.qt.io/qtforpython-6/overviews/qtwidgets-itemviews-customsortfiltermodel-example.html
 
@@ -10,12 +12,13 @@ https://doc.qt.io/qtforpython-6/PySide6/QtCore/QSortFilterProxyModel.html#qsortf
 import sys;sys.path.append('..')
 from typing import Any, Dict, List, Set, Union
 
+
 # THIRD PARTY LIBS
-import pandas as pd
-from PySide6.QtCore import (Qt, QModelIndex, QRegularExpression ,QSortFilterProxyModel)
+from PySide6.QtCore import (QModelIndex, QRegularExpression ,QSortFilterProxyModel)
+
 
 # CUSTOM LIBS
-from batterypy.string.read import is_floatable, readf, float0
+from batterypy.string.read import is_floatable
 
 
 
@@ -110,6 +113,9 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         leftdat: Union[str, float] = leftstr if not is_floatable(leftstr) else float(leftstr)
         rightdat: Union[str, float] = rightstr if not is_floatable(rightstr) else float(rightstr)
         return leftdat < rightdat
+
+
+
 
 
 if __name__ == '__main__':
