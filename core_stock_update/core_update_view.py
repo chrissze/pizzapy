@@ -1,18 +1,16 @@
 """
+AIM OF THIS MODULE: To create a CoreUpdateView class for core_update_controller to inherit. All other classes are helpers of CoreUpdateView class.
+ 
 USED BY: core_update_controller.py
 
 This class is the Graphical Layout of Core Update Controller without major function implementations. It is the 'View' of Model-View-Controller pattern.
 
-This window has 4 horizontal boxes.
-
-I created the widgets first in __init__() method. Then arrange them in initui() method.
-
+This window has 4 horizontal boxes. These 4 boxes' sequence can be changed freely.
 
 """
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
-
 from typing import Tuple
 
 
@@ -25,14 +23,18 @@ from PySide6.QtWidgets import (QApplication, QComboBox,
 from database_update.postgres_command_model import table_list_dict
 from database_update.stock_list_model import stock_list_dict
 
+
 class SetupWindow:
     def __init__(ego, self):
         """
-            'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
+            'ego' is the instance of the current class, 'self' is the instance of the calling class CoreUpdateView.
+            This class has self.mainbox, it has to be the first in CoreUpdateView.
+
+            Rows must be placed after mainbox because Rows content contain adding widgets for mainbox.
         """
         self.setWindowTitle('Core Stock Update')
         self.resize(900, 600)
-        self.mainbox = QVBoxLayout(self) 
+        self.mainbox = QVBoxLayout(self)
         
 
 class BrowserRow:
@@ -43,9 +45,9 @@ class BrowserRow:
         self.browser = QTextBrowser()
         self.browser.setMaximumHeight(400)
 
-        self.browser_hbox = QHBoxLayout()
-        self.mainbox.addLayout(self.browser_hbox)
-        self.browser_hbox.addWidget(self.browser)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.browser)
+        self.mainbox.addLayout(hbox)
 
 
 class StockListRow:
@@ -61,17 +63,18 @@ class StockListRow:
         self.stock_list_combobox = QComboBox()
         self.stock_list_combobox.addItems(stock_list_dict.keys())
 
-        self.starting_number_lineedit = QLineEdit()
+        self.starting_lineedit = QLineEdit()
+
 
         self.update_list_button = QPushButton('Update List')
         self.update_list_button.setAccessibleName('update_list_button')
 
-        self.stock_list_hbox = QHBoxLayout()
-        self.mainbox.addLayout(self.stock_list_hbox) 
-        self.stock_list_hbox.addWidget(self.table_list_combobox)
-        self.stock_list_hbox.addWidget(self.stock_list_combobox)
-        self.stock_list_hbox.addWidget(self.starting_number_lineedit)
-        self.stock_list_hbox.addWidget(self.update_list_button)
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.table_list_combobox)
+        hbox.addWidget(self.stock_list_combobox)
+        hbox.addWidget(self.starting_lineedit)
+        hbox.addWidget(self.update_list_button)
+        self.mainbox.addLayout(hbox) 
 
 
 class StocksRow:
@@ -79,8 +82,7 @@ class StocksRow:
         """
             'ego' is the instance of the current class StocksRow, 'self' is the instance of the calling class CoreUpdateView.
         """
-        
-        self.symbols_label = QLabel('SYMBOLS (divided by space): ')
+        self.symbols_label = QLabel('SYMBOLS: ')
         self.symbols_lineedit = QLineEdit()
         self.update_symbols_button = QPushButton('Update SYMBOLS')
         self.update_symbols_button.setAccessibleName('update_symbols_button')
@@ -110,61 +112,28 @@ class QuitRow:
         self.quit_hbox.addWidget(self.quit_button)
 
 
-
-class MakeConnects:
-    def __init__(ego, self):
-        """
-        """        
-        self.table_list_comboxbox_changed() 
-        self.stock_list_comboxbox_changed() 
         
-        # deliberately run it for the first time to fill in label and lineedit text.
-        self.table_list_combobox.currentIndexChanged.connect(self.table_list_comboxbox_changed)
-        self.stock_list_combobox.currentIndexChanged.connect(self.stock_list_comboxbox_changed)
-
-
-
-def table_list_combobox_changed(self) -> None:
-    """
-    This method is about layout appearance change, so I place it in view module.
-    """
-    self.table_name = self.table_list_combobox.currentText()
-    self.symbols_label.setText(f'{self.table_name} SYMBOLS (divided by space): ')
-
-
-def stock_list_combobox_changed(self) -> None:
-    """
-    This method is about layout appearance change, so I place it in view module.
-    """
-    self.stock_list_combobox_text = self.stock_list_combobox.currentText()
-    self.full_stock_list = stock_list_dict.get(self.stock_list_combobox_text)
-    self.full_list_length = len(self.full_stock_list)
-    self.starting_number_lineedit.setPlaceholderText(f'Input 1 to {self.full_list_length} as starting no. (optional)')
-
+    
 
 
 class CoreUpdateView(QWidget):
     """
-        # self in StockListRow(self) is the DailyGuruWin instance, and this instance becomes the parent of StockListRow instance. During the StockListRow initialization, first argument of StockListRow itself is implicit, no need to write it on instance creation, so the 'self' argument here maps to the 2nd parameter parent.
+    DEPENDS ON: SetupWindow, BrowserRow, StockListRow, StocksRow, QuitRow
+    IMPORTS: QWidget
+    USED BY: core_update_controller.py, main()
 
-        self instance here represents the parent container of mainbox, Rows must be placed after mainbox because Rows content contain adding widgets for mainbox.
+        # self in StockListRow(self) is the CoreUpdateView instance, and this instance becomes the parent of StockListRow instance. During the StockListRow initialization, first argument of StockListRow itself is implicit, no need to write it on instance creation, so the 'self' argument here maps to the 2nd parameter.
+
     """
     def __init__(self) -> None:
-        super().__init__()  # initialize all QWidget() variables and methods
-        SetupWindow(self)
-        
+        super().__init__()  # initialized all base class QWidget() variables and methods
+        SetupWindow(self)   # initialized mainbox
         BrowserRow(self)  
-        StockListRow(self)     # Initialized StockListRow widgets
+        StockListRow(self)
         StocksRow(self)  
         QuitRow(self)        
-        MakeConnects(self)
-        
-    def table_list_comboxbox_changed(self) -> None:
-        return table_list_combobox_changed(self)
     
-    def stock_list_comboxbox_changed(self) -> None:
-        return stock_list_combobox_changed(self)
-
+        
 
 
 def main() -> None:

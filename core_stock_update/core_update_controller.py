@@ -1,8 +1,5 @@
 """
-
-
-Core Update Controller further works:
-
+DEPENDS ON: core_update_view.py, stock_list_model.py
 
 
 """
@@ -24,6 +21,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from batterypy.control.trys import try_str
 from batterypy.string.read import is_intable, int0, float0
 from dimsumpy.qt.decorators import confirmation_self
+from dimsumpy.qt.functions import closeEvent
 
 
 # PROGRAM MODULES
@@ -31,20 +29,6 @@ from core_stock_update.core_update_view import CoreUpdateView
 from database_update.stock_list_model import stock_list_dict, table_function_dict
 
 
-
-def closeEvent(self, event: QCloseEvent) -> None:
-    """
-    IMPORTS: QMessageBox
-    USED BY: DailyGuruDialog
-    This special named 'closeEvent' method overrides default close() method.
-    This methed is called when we call self.close() or users click the X button.
-    """
-    reply: QMessageBox.StandardButton = QMessageBox.question(
-        self, 'Confirmation', 'Do you want to QUIT now?', QMessageBox.Yes | QMessageBox.Cancel)
-    if reply == QMessageBox.Yes:
-        event.accept()
-    else:
-        event.ignore()
 
 
 
@@ -83,9 +67,9 @@ def update_core_list(self) -> None:
     IMPORTS: QCoreApplication, func(upsert_guru), batterypy(int0)
     USED BY: CoreUpdateController
 
-    self.stock_list_combobox_text, self.full_stock_list, self.full_list_length are defined in self.stock_list_comboxbox_changed() in core_update_view.py
+    self.stock_list_combobox_text, self.full_stock_list, self.full_list_length are defined in self.stock_list_combobox_changed() in core_update_view.py
     """
-    starting_number: int = int0(self.starting_number_lineedit.text()) - 1
+    starting_number: int = int0(self.starting_lineedit.text()) - 1
     valid_starting_number: bool = starting_number < self.full_list_length and starting_number >= 0
     stock_working_list = stock_list_dict.get(self.stock_list_combobox_text)[starting_number:] if valid_starting_number else self.full_stock_list
     QCoreApplication.processEvents()  # update the GUI
@@ -109,6 +93,32 @@ def update_core_list(self) -> None:
 
 
 
+def table_list_combobox_changed(self) -> None:
+    """
+    This method is about layout appearance change, so I place it in view module.
+    """
+    self.table_name = self.table_list_combobox.currentText()
+    self.symbols_label.setText(f'{self.table_name} SYMBOLS (divided by space): ')
+
+
+def stock_list_combobox_changed(self) -> None:
+    """
+    This method is about layout appearance change, so I place it in view module.
+    """
+    self.stock_list_combobox_text = self.stock_list_combobox.currentText()
+    self.full_stock_list = stock_list_dict.get(self.stock_list_combobox_text)
+    self.full_list_length = len(self.full_stock_list)
+    self.starting_lineedit.setPlaceholderText(f'Input 1 to {self.full_list_length} as starting no. (optional)')
+
+
+
+def clear(self) -> None:
+    """
+    IMPORTS: 
+    USED BY: CoreUpdateController
+    """
+    self.browser.clear()
+    self.progress_label.setText(' 0 / 0          ')
 
 
 class MakeConnects:
@@ -118,36 +128,49 @@ class MakeConnects:
 
     When there is no base class, it is more common to omit () after class name, as it is cleaner. 
     Although it is also valid to write a pair of empty selfhesis.
+
+    deliberately run combobox changes for the first time to fill in label and lineedit text. I put the staring_lineedit.setPlaceholderText in the change function because I just need to edit once if I want to make further changes.
     """
     def __init__(ego, self) -> None:
+        self.table_list_combobox.currentIndexChanged.connect(self.table_list_combobox_changed)
+        self.stock_list_combobox.currentIndexChanged.connect(self.stock_list_combobox_changed)
+        self.table_list_combobox_changed() 
+        self.stock_list_combobox_changed() 
+        
         self.update_list_button.clicked.connect(self.update_core_list)
-
         self.update_symbols_button.clicked.connect(self.update_core)
         
-        self.clear_button.clicked.connect(self.browser.clear)
+        self.clear_button.clicked.connect(self.clear)
         self.quit_button.clicked.connect(self.close)
         
-
+    
 class CoreUpdateController(CoreUpdateView):
     """
     DEPENDS ON: MakeConnects class, closeEvent(),  update_core_list(), update_core()
-    IMPORTS: DailyGuruWin, upsert_guru
+    IMPORTS: CoreUpdateView, closeEvent()
     """
     def __init__(self) -> None:
-        super().__init__() # initialize all DailyGuruWin() variables and methods
-        #self.threads: Dict[float, CustomThread] = {}
+        super().__init__() # initialize all base class variables and methods
         MakeConnects(self)
+        
+    def clear(self) -> None:
+        return clear(self)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         return closeEvent(self, event)
+
+    def stock_list_combobox_changed(self) -> None:
+        return stock_list_combobox_changed(self)
     
+    def table_list_combobox_changed(self) -> None:
+        return table_list_combobox_changed(self)
+    
+    def update_core(self) -> None:
+        return update_core(self)
+
     def update_core_list(self) -> None:
         return update_core_list(self)
         
-    def update_core(self) -> None:
-        return update_core(self)
-        
-
 
 def main() -> None:
     app = QApplication(sys.argv)

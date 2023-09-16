@@ -1,16 +1,23 @@
+"""
+AIM OF THIS MODULE: To create CoreBrowserController class. All other classes and functions are helpers of CoreBrowserController class.
 
+DEPENDS ON: core_browser_view.py, qt_model.py
+"""
 # STANDARD LIBS
 import sys; sys.path.append('..')
 from functools import partial
+from typing import Any, List, Tuple
+
 
 # THIRD PARTY LIBS
-import pandas
-from pandas import DataFrame
+from PySide6.QtCore import QCoreApplication, QRegularExpression
+from PySide6.QtGui import QAction, QCloseEvent
 from PySide6.QtWidgets import QApplication, QCheckBox ,QGridLayout, QLineEdit ,QWidget
-from PySide6.QtCore import Qt, QRegularExpression
 
 # CUSTOM LIBS
 from dimsumpy.qt.dataframemodel import DataFrameModel
+from dimsumpy.qt.functions import closeEvent
+
 
 # PROGRAM MODULES
 from database_update.stock_list_model import stock_list_dict
@@ -18,7 +25,6 @@ from database_update.postgres_connection_model import execute_pandas_read
 
 from general_update.qt_model import MySortFilterProxyModel 
 from core_stock_browser.core_browser_view import CoreBrowserView
-from typing import Any, List, Tuple
 
 
 
@@ -62,7 +68,7 @@ def make_tableview(self) -> None:
 
 def make_grid(self) -> None:
     """
-        DEPENDS ON: make_dataframe(), self.on_checkbox_changed(), self.on_text_changed_floor(), self.on_text_changed_ceiling()
+        DEPENDS ON: make_dataframe(), self.on_checkbox_changed(), self.on_floor_lineedit_changed(), self.on_ceiling_lineedit_changed()
         IMPORTS: pandas
         USED BY: load_stock_table(), load_stock_list_table()
 
@@ -75,8 +81,8 @@ def make_grid(self) -> None:
         checkbox.stateChanged.connect(partial(self.on_checkbox_changed, index=count))
         floor_lineedit: QLineEdit = QLineEdit()
         ceiling_lineedit: QLineEdit = QLineEdit()
-        floor_lineedit.textChanged.connect(lambda text, col=count: self.on_text_changed_floor(text, col))
-        ceiling_lineedit.textChanged.connect(lambda text, col=count: self.on_text_changed_ceiling(text, col))
+        floor_lineedit.textChanged.connect(lambda text, col=count: self.on_floor_lineedit_changed(text, col))
+        ceiling_lineedit.textChanged.connect(lambda text, col=count: self.on_ceiling_lineedit_changed(text, col))
 
         grid.addWidget(checkbox, count, 0)
         grid.addWidget(floor_lineedit, count, 1)
@@ -115,12 +121,86 @@ def load_list_table(self) -> None:
     make_grid(self)    
 
 
+def clear(self) -> None:
+    self.pandas_tableview.setModel(None)
+    QWidget().setLayout(self.dockwin.layout()) # re-assign the existing layout
+
+
+def hide_columns(self) -> None:
+    index: int = 0 if not self.dockwin.layout() else self.dockwin.layout().count() // 3  # since there are two columns in grid
+    if index:
+        for i in range(index):
+            self.dockwin.layout().itemAtPosition(i,0).widget().setChecked(False)
+            QCoreApplication.processEvents()  # update the GUI
+
+
+def show_columns(self) -> None:
+    index: int = 0 if not self.dockwin.layout() else self.dockwin.layout().count() // 3
+    if index:
+        for i in range(index):
+            self.dockwin.layout().itemAtPosition(i, 0).widget().setChecked(True)
+            QCoreApplication.processEvents()
+
+
+def table_list_combobox_changed(self) -> None:
+    """
+    This method is about layout appearance change, so I place it in view module.
+    """
+    self.table_name = self.table_list_combobox.currentText()
+    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
+
+
+def on_checkbox_changed(self, value: int, index: int) -> None:
+    """ USED BY: make_grid() """
+    if value == 2:    # value is 2 for checked state
+        self.pandas_tableview.setColumnHidden(index, False)
+    else:
+        self.pandas_tableview.setColumnHidden(index, True)
+
+
+def on_floor_lineedit_changed(self, text, col) -> None:
+    """ 
+    USED BY: make_grid() 
+
+    I deliberately add CaseInsensitiveOption to the floor filter's QRegualarExpression, so that I can have two streams in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
+
+    the floor_lineedit is for input a number so as to filter out all numbers below that threshold. For example, I want to get rid of all stocks that have a earn_pc lower that 5%, I can input 5 to floor_lineedit.
+
+    In string columns like 'symbol', when the symbol is matched, the row will be hidden. 
+    """
+    self.sort_filter_model.setFilterByColumn(
+        QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
+
+
+def on_ceiling_lineedit_changed(self, text, col) -> None:
+    """ 
+    USED BY: make_grid() 
+    
+    As this method's Regular Expression does not have CaseInsensitiveOption, so it will fall into the else-clause in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
+    """
+    self.sort_filter_model.setFilterByColumn(
+        QRegularExpression(text), col)
+
+
+
 
 class MakeConnects:
-    """self in this class is the instance of the calling class CoreBrowserController"""
+    """
+    Run self.table_list_combobox_changed() once for filling placeholder text.
+
+    """
     def __init__(ego, self) -> None:
+        self.table_list_combobox.currentIndexChanged.connect(self.table_list_combobox_changed)
+        self.table_list_combobox_changed()
+
         self.load_list_button.clicked.connect(self.load_list_table)
         self.load_symbols_button.clicked.connect(self.load_stock_table)
+
+        self.show_columns_action.triggered.connect(self.show_columns)
+        self.hide_columns_action.triggered.connect(self.hide_columns)
+        self.clear_action.triggered.connect(self.clear)
+        self.quit_action.triggered.connect(self.close)
+
 
 
 
@@ -144,31 +224,31 @@ class CoreBrowserController(CoreBrowserView):
         return load_stock_table(self)
 
     def on_checkbox_changed(self, value: int, index: int) -> None:
-        """ USED BY: make_grid() """
-        if value == 2:    # value is 2 for checked state
-            self.pandas_tableview.setColumnHidden(index, False)
-        else:
-            self.pandas_tableview.setColumnHidden(index, True)
+        return on_checkbox_changed(self, value, index)
+    
+    def on_floor_lineedit_changed(self, text, col) -> None:
+        return on_floor_lineedit_changed(self, text, col)
 
-    def on_text_changed_floor(self, text, col):
-        """ 
-        USED BY: make_grid()
-        I deliberately add CaseInsensitiveOption to the floor filter's QRegualarExpression, so that I can have two streams in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
+    def on_ceiling_lineedit_changed(self, text, col) -> None:
+        return on_ceiling_lineedit_changed(self, text, col)    
 
-        the floor_lineedit is for input a number so as to filter out all numbers below that threshold. For example, I want to get rid of all stocks that have a earn_pc lower that 5%, I can input 5 to floor_lineedit.
+    def closeEvent(self, event: QCloseEvent) -> None:
+        return closeEvent(self, event)
 
-        In string columns like 'symbol', when the symbol is matched, the row will be hidden. 
-        """
-        self.sort_filter_model.setFilterByColumn(
-            QRegularExpression(text, QRegularExpression.CaseInsensitiveOption), col)
+    def clear(self) -> None:
+        return clear(self)
 
-    def on_text_changed_ceiling(self, text, col):
-        """ 
-        USED BY: make_grid() 
-        As this method's Regular Expression does not have CaseInsensitiveOption, so it will fall into the else-clause in MySortFilterProxyModel's filterAcceptsRow() built-in virtual function.
-        """
-        self.sort_filter_model.setFilterByColumn(
-            QRegularExpression(text), col)
+    def hide_columns(self) -> None:
+        return hide_columns(self)
+
+    def show_columns(self) -> None:
+        return show_columns(self)
+        
+    def table_list_combobox_changed(self) -> None:
+        return table_list_combobox_changed(self)
+    
+
+
 
 
 def main() -> None:
