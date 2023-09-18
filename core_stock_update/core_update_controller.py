@@ -220,7 +220,7 @@ class MakeConnects:
     def __init__(ego, self) -> None:
         self.table_list_combobox.currentIndexChanged.connect(self.table_list_combobox_changed)
         self.stock_list_combobox.currentIndexChanged.connect(self.stock_list_combobox_changed)
-        self.table_list_combobox_changed() 
+        self.table_list_combobox_changed()   # this line sets self.table_name
         self.stock_list_combobox_changed() 
         
         self.update_list_button.clicked.connect(self.update_core_list)
