@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (QApplication, QCalendarWidget, QComboBox, QGridLa
                                QTextBrowser, QVBoxLayout, QWidget)
 
 # CUSTOM LIBS
-from dimsumpy.qt.functions import closeEvent
 
 # PROGRAM MODULES
 from database_update.stock_list_model import stock_list_dict
@@ -80,12 +79,16 @@ class UpdateGrid:
         self.update_technical_list_button = QPushButton('Update Technical List')
         self.update_technical_list_button.setAccessibleName('update_technical_list_button')
 
+        self.symbols_label = QLabel('SYMBOLS: ')
         self.symbols_lineedit = QLineEdit()
-        self.symbols_label = QLabel('Separate symbols by space')
+        self.symbols_lineedit.setPlaceholderText('separated by spaces')
         self.update_price_button = QPushButton('Update Price')
         self.update_price_button.setAccessibleName('update_price_button')
         self.update_technical_button = QPushButton('Update Technical')
         self.update_technical_button.setAccessibleName('update_technical_button')
+
+        self.clear_button = QPushButton('Clear')
+        self.quit_button = QPushButton('Quit')
 
         update_grid = QGridLayout()
         update_grid.addWidget(self.stock_list_combobox,    0, 0)
@@ -93,94 +96,24 @@ class UpdateGrid:
         update_grid.addWidget(self.update_price_list_button, 0, 2)
         update_grid.addWidget(self.update_technical_list_button,  0, 3)
 
-        update_grid.addWidget(self.symbols_lineedit,       1, 0)
-        update_grid.addWidget(self.symbols_label,    1, 1)
+        update_grid.addWidget(self.symbols_label,    1, 0)
+        update_grid.addWidget(self.symbols_lineedit,       1, 1)
         update_grid.addWidget(self.update_price_button,1, 2)
         update_grid.addWidget(self.update_technical_button, 1, 3)
+        
+        update_grid.addWidget(self.clear_button, 2, 2)
+        update_grid.addWidget(self.quit_button,  2, 3)
+
         self.mainbox.addLayout(update_grid)
 
 
 
 class ProgressRow:
     def __init__(ego, self) -> None:
-
-        self.progress_bar = QProgressBar()
-        self.progress_label = QLabel(' 0 / 0          ')
-        self.clear_button = QPushButton('Clear')
-        self.quit_button = QPushButton('Quit')
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.progress_bar)
-        hbox.addWidget(self.progress_label)
-        hbox.addWidget(self.clear_button)
-        hbox.addWidget(self.quit_button)
-        self.mainbox.addLayout(hbox)
+        self.progress_box = QVBoxLayout()
+        self.mainbox.addLayout(self.progress_box)
 
 
-
-def reset_calendar(self) -> None:
-    sender: str = self.sender().accessibleName()
-    today_: date = date.today()
-    qtoday: QDate = QDate.fromString(str(today_), 'yyyy-MM-dd')
-    qtodaystr: str = qtoday.toString()
-    if sender == 'from_reset_button':
-        self.from_calendar.setSelectedDate(qtoday)
-        self.from_calendar.updateCells()
-        self.from_calendar_label.setText(qtodaystr)
-        self.from_calendar_label.repaint()
-    elif sender == 'to_reset_button':
-        self.to_calendar.setSelectedDate(qtoday)
-        self.to_calendar.updateCells()
-        self.to_calendar_label.setText(qtodaystr)
-        self.to_calendar_label.repaint()
-    else:
-        print('no sender')
-    QApplication.processEvents()
-
-
-
-def update_calendar_date(self, qdate: QDate) -> None:
-    sender: str = self.sender().accessibleName()
-    datestr: str = qdate.toString()
-    if sender == 'from_calendar':
-        self.from_calendar_label.setText(datestr)
-        self.from_calendar_label.repaint()
-        self.from_calendar.updateCells()
-        self.from_calendar.repaint()
-    elif sender == 'to_calendar':
-        self.to_calendar_label.setText(datestr)
-        self.to_calendar_label.repaint()
-        self.to_calendar.updateCells()
-        self.to_calendar.repaint()
-    else:
-        print('no sender')
-    QApplication.processEvents()
-
-
-def clear_interface(self) -> None:
-    self.browser.clear
-    self.progress_label.setText(' 0 / 0       ')
-
-
-
-class MakeConnects:
-    """
-    I deliberate put MakeConnect class definition after all outer classes just to have a clearer flow.
-    """
-    def __init__(ego, self) -> None:
-
-        self.from_reset_button.clicked.connect(self.reset_calendar)
-        self.to_reset_button.clicked.connect(self.reset_calendar)
-        self.from_reset_button.click()
-        self.to_reset_button.click()
-
-        self.from_calendar.clicked[QDate].connect(self.update_calendar_date)
-        self.to_calendar.clicked[QDate].connect(self.update_calendar_date)
-
-        self.from_calendar.currentPageChanged.connect(self.from_calendar.repaint)
-        self.to_calendar.currentPageChanged.connect(self.to_calendar.repaint)
-
-        self.clear_button.clicked.connect(self.clear_interface)
-        self.quit_button.clicked.connect(self.close)
 
 
 
@@ -192,19 +125,6 @@ class PriceUpdateView(QWidget):
         CalendarGrid(self)
         UpdateGrid(self)
         ProgressRow(self)
-        MakeConnects(self)
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        return closeEvent(self, event)
-
-    def reset_calendar(self) -> None:
-        return reset_calendar(self)
-    
-    def update_calendar_date(self, qdate: QDate) -> None:
-        return update_calendar_date(self, qdate)
-    
-    def clear_interface(self) -> None:
-        return clear_interface(self)
 
 
 

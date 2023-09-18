@@ -26,7 +26,7 @@ def get_next_earning_date(dfs: List[DataFrame]) -> Optional[date]:
     
     'USO' type is float
     """
-    print(dfs[2])
+    
     earning_date_str: Any = '' if len(dfs) < 11 else dfs[2].iloc[0, -1]
     earning_date_invalid: bool = (not isinstance(earning_date_str, str)) or '/' not in earning_date_str  
     earning_date: Optional[date] = None if earning_date_invalid else datetime.strptime(earning_date_str.replace('*AMC','').replace('*BMO',''), '%m/%d/%y').date()

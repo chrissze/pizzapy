@@ -36,11 +36,9 @@ class SetupWindow:
         """
         self.setWindowTitle('Core Stock Update')
         self.resize(900, 600)
-
         self.central: QWidget = QWidget()  
-        self.setCentralWidget(self.central)
-
         self.mainbox = QVBoxLayout(self.central)
+        self.setCentralWidget(self.central)
         self.statusbar = self.statusBar()  
         self.statusbar.showMessage('Ready')
 
@@ -51,8 +49,6 @@ class BrowserRow:
             'ego' is the instance of the current class BrowserRow, 'self' is the instance of the calling class CoreUpdateView.
         """
         self.browser = QTextBrowser()
-        
-
         hbox = QHBoxLayout()
         hbox.addWidget(self.browser)
         self.mainbox.addLayout(hbox)
@@ -72,8 +68,6 @@ class StockListRow:
         self.stock_list_combobox.addItems(stock_list_dict.keys())
 
         self.starting_lineedit = QLineEdit()
-
-
         self.update_list_button = QPushButton('Update List')
         self.update_list_button.setAccessibleName('update_list_button')
 
@@ -94,11 +88,12 @@ class StocksRow:
         self.symbols_lineedit = QLineEdit()
         self.update_symbols_button = QPushButton('Update SYMBOLS')
         self.update_symbols_button.setAccessibleName('update_symbols_button')
-        self.stocks_hbox = QHBoxLayout()
-        self.mainbox.addLayout(self.stocks_hbox)
-        self.stocks_hbox.addWidget(self.symbols_label)
-        self.stocks_hbox.addWidget(self.symbols_lineedit)
-        self.stocks_hbox.addWidget(self.update_symbols_button)
+        
+        self.hbox = QHBoxLayout()
+        self.hbox.addWidget(self.symbols_label)
+        self.hbox.addWidget(self.symbols_lineedit)
+        self.hbox.addWidget(self.update_symbols_button)
+        self.mainbox.addLayout(self.hbox)
 
 
 
@@ -107,17 +102,22 @@ class QuitRow:
         """
             'ego' is the instance of the current class QuitRow, 'self' is the instance of the calling class CoreUpdateView.
         """
-        self.progress_bar = QProgressBar()
-        self.progress_label = QLabel(' 0 / 0             ')
+        
         self.clear_button = QPushButton('Clear Browser')
+        self.clear_button.setMaximumWidth(200)
         self.quit_button = QPushButton('Quit')
+        self.quit_button.setMaximumWidth(200)
 
-        self.quit_hbox = QHBoxLayout()
-        self.mainbox.addLayout(self.quit_hbox)
-        self.quit_hbox.addWidget(self.progress_bar)
-        self.quit_hbox.addWidget(self.progress_label)
-        self.quit_hbox.addWidget(self.clear_button)
-        self.quit_hbox.addWidget(self.quit_button)
+        self.hbox = QHBoxLayout()
+        self.hbox.addWidget(self.clear_button)
+        self.hbox.addWidget(self.quit_button)
+        self.mainbox.addLayout(self.hbox)
+
+
+class ProgressRow:
+    def __init__(ego, self) -> None:
+        self.progress_box = QVBoxLayout()
+        self.mainbox.addLayout(self.progress_box)
 
 
         
@@ -140,6 +140,7 @@ class CoreUpdateView(QMainWindow):
         StockListRow(self)
         StocksRow(self)  
         QuitRow(self)        
+        ProgressRow(self)        
     
         
 

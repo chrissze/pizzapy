@@ -48,7 +48,7 @@ def make_dataframe(self) -> None:
 
     """
     self.clear()
-    self.symbols_tuple_str = str(tuple(self.symbols_list)) if len(self.symbols_list) > 1 else str(tuple(self.symbols_list)).replace(',', '') # for single tuple
+    self.symbols_tuple_str = str(tuple(self.symbols_list)) if len(self.symbols_list) > 1 else str(tuple(self.symbols_list)).replace(',', '') # replace() is for single tuple
     self.table_name = self.table_list_combobox.currentText()
     query_clause: str = f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
     cmd: str = f'SELECT * FROM {self.table_name} {query_clause}'
