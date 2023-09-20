@@ -7,6 +7,7 @@ The aim of this module is to get the result of get_technical_proxies(), all earl
 
 # STANDARD LIBS
 import sys; sys.path.append('..')
+from collections import OrderedDict
 from datetime import date, datetime, timezone
 from functools import partial
 from itertools import dropwhile, repeat
@@ -39,6 +40,8 @@ from dimsumpy.web.crawler import get_urllib_text, get_csv_dataframe
 
 from database_update.postgres_connection_model import execute_pandas_read
 from general_update.general_model import initialize_proxy
+from stock_price_update.raw_price_model import get_price_dataframe
+
 
 
 
@@ -218,7 +221,7 @@ def get_td_adjclose(FROM: date, TO: date, symbol: str) -> Tuple[List[Tuple[date,
     earlier_from = add_trading_days(FROM, -1000)
     later_to = add_trading_days(TO, 50)
 
-    sql = f"SELECT td, adj_close FROM stock_price WHERE symbol = '{symbol}' AND td >= '{earlier_from.isoformat()}' AND td <= '{later_to.isoformat()}' ORDER BY td DESC"
+    sql = f"SELECT td, adjclose FROM stock_price WHERE symbol = '{symbol}' AND td >= '{earlier_from.isoformat()}' AND td <= '{later_to.isoformat()}' ORDER BY td DESC"
     df: DataFrame = execute_pandas_read(sql) # no error for empty result
     td_adjclose_pairs: List[Any] = [tuple(x) for x in df.values] # List of 2-tuples
     
@@ -260,13 +263,14 @@ def test():
     FROM = date(2023, 4, 1)
     TO = date(2023, 7, 1)
     #pairs = get_td_adjclose(FROM, TO, 'AMD')
-    dicts = get_technical_proxies(FROM, TO, 'AMD')
-    filtered_list = [d for d in dicts if d.get('is_top')]
+    #dicts = get_technical_proxies(FROM, TO, 'AMD')
+    #filtered_list = [d for d in dicts if d.get('is_top')]
 
-    for d in filtered_list:
-
-        print(d, '\n\n')
-
+    df = get_price_dataframe(FROM, TO, 'AMD')
+    desc_df = df.sort_values(by='td', ascending=False)
+    print(df)
+    price_dict: OrderedDict = desc_df.set_index('td')['adjclose'].to_dict(into=OrderedDict)
+    print(price_dict)
 
 if __name__ == '__main__':
     test()

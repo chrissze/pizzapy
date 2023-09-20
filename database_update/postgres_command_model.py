@@ -113,7 +113,7 @@ stock_price_create_table_command: str = """
     high   FLOAT8,
     low   FLOAT8,    
     close   FLOAT8 NOT NULL,    
-    adj_close  FLOAT8 NOT NULL,    
+    adjclose  FLOAT8 NOT NULL,    
     volume BIGINT,    
     PRIMARY KEY (symbol, td) 
     );

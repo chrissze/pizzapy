@@ -1,5 +1,7 @@
 """
 
+DEPENDS ON: raw_price_model.py
+
 """
 
 
@@ -25,7 +27,7 @@ from dimsumpy.database.postgres import upsert_many_dataframe
 # PROGRAM MODULES
 from database_update.postgres_command_model import table_list_dict
 from database_update.postgres_connection_model import make_psycopg_connection
-from stock_price_update.price_dataframe_model import get_price_dataframe
+from stock_price_update.raw_price_model import get_price_dataframe, get_price_dataframe_odict
 
 
 
