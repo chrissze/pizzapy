@@ -41,6 +41,8 @@ def get_price_dataframe(FROM, TO, SYMBOL, ascending=True) -> DataFrame:
     DEPENDS ON: make_price_url()
     IMPORTS: get_csv_dataframe()
     USED BY: get_price_odict()
+
+    the result set DOES NOT include TO date, only the previous day of TO date.
     """
     url = make_price_url(FROM, TO, SYMBOL)
     df = get_csv_dataframe(url, header=0)
@@ -59,6 +61,8 @@ def get_price_odict(FROM, TO, SYMBOL, ascending=True) -> OrderedDict[date, float
     """
     DEPENDS ON: get_price_dataframe()
     IMPORTS: datetime, OrderedDict
+
+    the result set DOES NOT include TO date, only the previous day of TO date.
     """
     price_df: DataFrame = get_price_dataframe(FROM, TO, SYMBOL, ascending=ascending)
     string_price_odict: OrderedDict[str, float] = price_df.set_index('td')['adjclose'].to_dict(into=OrderedDict)
@@ -73,6 +77,8 @@ def get_price_dataframe_odict(FROM, TO, SYMBOL, ascending=True) -> Tuple[DataFra
     """
     DEPENDS ON: get_price_dataframe()
     IMPORTS: datetime, OrderedDict
+
+    the result set DOES NOT include TO date, only the previous day of TO date.
     """
     price_df: DataFrame = get_price_dataframe(FROM, TO, SYMBOL, ascending=ascending)
     string_price_odict: OrderedDict[str, float] = price_df.set_index('td')['adjclose'].to_dict(into=OrderedDict)
@@ -84,10 +90,10 @@ def get_price_dataframe_odict(FROM, TO, SYMBOL, ascending=True) -> Tuple[DataFra
 
 
 def test():
-    d1 = date(2023, 1, 23)
-    d2 = date(2023, 2, 1)
-    symbol = 'AMD'
-    x = get_price_dataframe_odict(d1, d2, symbol, ascending=False)
+    d1 = date(2023, 4, 3)
+    d2 = date(2023, 4, 4)
+    symbol = 'NVDA'
+    x = get_price_dataframe(d1, d2, symbol)
     print(x)
     
 
