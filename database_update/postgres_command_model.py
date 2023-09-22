@@ -127,32 +127,41 @@ stock_technical_create_table_command: str = """
     symbol   VARCHAR(10),         
     td   DATE,  
 
+    ma20  FLOAT8,
+    ma50  FLOAT8,
+    steep20  FLOAT8,
+    steep50  FLOAT8,
+
+    rsi  FLOAT8,        
+    weekly_rsi  FLOAT8,        
+    is_top  BOOLEAN,
+    is_bottom  BOOLEAN,
+
     price   FLOAT8,    
     p20   FLOAT8,
     p50   FLOAT8,    
-    p125   FLOAT8,    
+    p100   FLOAT8,    
     p200  FLOAT8,        
-    rsi  FLOAT8,        
-    weekly_rsi  FLOAT8,        
-    
-    increase_20  FLOAT8,        
-    decrease_20  FLOAT8,        
-    increase_50  FLOAT8,        
-    decrease_50  FLOAT8,        
-    best_20  FLOAT8,        
-    worst_20  FLOAT8,        
-    best_50  FLOAT8,        
-    worst_50  FLOAT8,
+    p500  FLOAT8,
 
-    steep_20  FLOAT8,
-    steep_50  FLOAT8,
-    is_top  BOOLEAN,
-    is_bottom  BOOLEAN,
+    increase20  FLOAT8,        
+    decrease20  FLOAT8,        
+    increase50  FLOAT8,        
+    decrease50  FLOAT8,
+
+    best20  FLOAT8,        
+    worst20  FLOAT8,        
+    best50  FLOAT8,        
+    worst50  FLOAT8,
+
+    gain20  FLOAT8,        
+    fall20  FLOAT8,        
+    gain50  FLOAT8,        
+    fall50  FLOAT8,
 
     PRIMARY KEY (symbol, td) 
     )
     """
-
 
 
 # nasdaq or barchart
