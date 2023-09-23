@@ -25,7 +25,7 @@ from dimsumpy.database.postgres import upsert_many_dicts
 # PROGRAM MODULES
 from database_update.postgres_command_model import table_list_dict
 from database_update.postgres_connection_model import make_psycopg_connection
-from stock_price_update.technical_analysis_model import get_technical_proxies
+from stock_price_update.technical_analysis_model import construct_technical_proxies
 
 
 
@@ -55,7 +55,7 @@ def upsert_technical(FROM: date, TO: date, SYMBOL: str) -> str:
     I should wrap upsert_technical into a try block when I call it, because getting dicts might have error when the date range has no data.
         result = try_str(upsert_technical, from_date, to_date, symbol)
     """
-    proxies: List[Dict] = get_technical_proxies(FROM, TO, SYMBOL)
+    proxies: List[Dict] = construct_technical_proxies(FROM, TO, SYMBOL)
     result: str = upsert_technical_by_dicts(proxies)
     return result
 
@@ -72,7 +72,7 @@ def upsert_latest_technical(SYMBOL: str) -> str:
     I should wrap upsert_price into a try block when I call it, because getting dataframe might have error when the date range has no data.
         result = try_str(upsert_technical, d1, d2, symbol)
     """
-    FROM: date = date(2023, 9, 9)
+    FROM: date = date(2023, 1, 1)
     TO: date = date.today()
     result: str = upsert_technical(FROM, TO, SYMBOL)
     return result

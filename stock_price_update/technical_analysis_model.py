@@ -54,6 +54,10 @@ def calculate_historical_prices(odict: OrderedDict[date, float], td: date) -> An
     p100 = odict.get(add_trading_days(td, -100))
     p200 = odict.get(add_trading_days(td, -200))
     p500 = odict.get(add_trading_days(td, -500))
+    if p20 is None:
+        p20 = odict.get(add_trading_days(td, -19))
+    if p50 is None:
+        p50 = odict.get(add_trading_days(td, -49))
     return td_price, p20, p50, p100, p200, p500
 
 

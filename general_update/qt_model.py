@@ -76,11 +76,11 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         when the regex_text or cell_text is not floatable, the filter will change to string comparison.
         regex_text == cell_text is for symbol string comparison, if I want to get rid of of a particular symbol, just input the symbol in the lineedit
 
-        Alternatively, I can add a '+' string to the upper limit number to make it an invalid regular expression. So it will fall to the else clause when I test regex.isValid().
+        
         """
         for key, regex in self.filters_dict.items():
             is_floor_filter: bool = regex.patternOptions() == QRegularExpression.CaseInsensitiveOption
-            regex_text: str = regex.pattern().upper()  # convert regex_text to upper for symbol mapping
+            regex_text: str = regex.pattern()   #.upper()  # convert regex_text to upper for symbol mapping, but it will affect True False
             
             if is_floor_filter:
                 # self is the ProxyModel instance
