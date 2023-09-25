@@ -129,13 +129,17 @@ stock_technical_create_table_command: str = """
 
     ma20  FLOAT8,
     ma50  FLOAT8,
+    ma250  FLOAT8,
     steep20  FLOAT8,
     steep50  FLOAT8,
+    steep250  FLOAT8,
+    ma50_distance  FLOAT8,
+    ma250_distance  FLOAT8,
 
     rsi  FLOAT8,        
     weekly_rsi  FLOAT8,        
-    is_top  BOOLEAN,
-    is_bottom  BOOLEAN,
+    is_top  SMALLINT,
+    is_bottom  SMALLINT,
 
     price   FLOAT8,    
     p20   FLOAT8,

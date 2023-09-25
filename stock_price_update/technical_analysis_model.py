@@ -52,13 +52,13 @@ def calculate_historical_prices(odict: OrderedDict[date, float], td: date) -> An
     p20 = odict.get(add_trading_days(td, -20))
     p50 = odict.get(add_trading_days(td, -50))
     p100 = odict.get(add_trading_days(td, -100))
-    p200 = odict.get(add_trading_days(td, -200))
+    p250 = odict.get(add_trading_days(td, -250))
     p500 = odict.get(add_trading_days(td, -500))
     if p20 is None:
-        p20 = odict.get(add_trading_days(td, -19))
+        p20 = odict.get(add_trading_days(td, -21))
     if p50 is None:
-        p50 = odict.get(add_trading_days(td, -49))
-    return td_price, p20, p50, p100, p200, p500
+        p50 = odict.get(add_trading_days(td, -51))
+    return td_price, p20, p50, p100, p250, p500
 
 
 
@@ -115,16 +115,21 @@ def get_target_prices(td_odict: OrderedDict[date, float], td: date) -> Any:
 
 
 
-def get_moving_averages(td_prices: List[float]) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
+def get_moving_averages(td_prices: List[float]) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     """
     IMPORTS: sma(), steep()
     USED BY: compute_technical_values()
     """
+    td_price: Optional[float] = td_prices[0] if td_prices else None
     ma20: Optional[float] = sma(20, td_prices)
     ma50: Optional[float] = sma(50, td_prices)
+    ma250: Optional[float] = sma(250, td_prices)
     steep20: Optional[float]  = steep(20, td_prices)
     steep50: Optional[float]  = steep(50, td_prices)
-    return ma20, ma50, steep20, steep50
+    steep250: Optional[float]  = steep(250, td_prices)
+    ma50_distance = (td_price - ma50) / ma50 if td_price and ma50 else None
+    ma250_distance = (td_price - ma250) / ma250 if td_price and ma250 else None
+    return ma20, ma50, ma250, steep20, steep50, steep250, ma50_distance, ma250_distance
 
 
 
@@ -151,7 +156,7 @@ def get_weekly_rsi(odict: OrderedDict[date, float], td: date) -> Optional[float]
 
 
 
-def check_top_bottom(odict: OrderedDict[date, float], td: date) -> Tuple[Optional[bool],Optional[bool]]:
+def check_top_bottom(odict: OrderedDict[date, float], td: date) -> Tuple[Optional[int],Optional[int]]:
     """
     * INDEPENDENT *
     IMPORTS: add_trading_days()
@@ -164,9 +169,9 @@ def check_top_bottom(odict: OrderedDict[date, float], td: date) -> Tuple[Optiona
     plus_50_prices = [value for (key, value) in odict.items() if td < key < add_trading_days(td, 51)]
 
     length: int = len(plus_50_prices)
-    is_top: Optional[bool] = all(td_price > p for p in plus_50_prices) if length > 48 and td_price else None
+    is_top: Optional[int] = int(all(td_price > p for p in plus_50_prices)) if length > 48 and td_price else None
     
-    is_bottom: Optional[bool] = all(td_price < p for p in plus_50_prices) if length > 48 and td_price else None
+    is_bottom: Optional[int] = int(all(td_price < p for p in plus_50_prices)) if length > 48 and td_price else None
     return is_top, is_bottom
 
 
@@ -192,11 +197,12 @@ def compute_technical_values(odict: OrderedDict[date, float], td: date) -> Any:
     
     steep20 requires minimum length of list_x = 20 * 3 + 5 = 65
     steep50 requires minimum length of list_x = 50 * 3 + 5 = 155
+    steep250 requires minimum length of list_x = 250 * 3 + 5 = 755
     steep() input list can be very long list, the function will cut the required length by itself
     """
     td_prices: List[float] = [value for key, value in odict.items() if key <= td] if td in odict else []
     
-    ma20, ma50, steep20, steep50 = get_moving_averages(td_prices)
+    ma20, ma50, ma250, steep20, steep50, steep250, ma50_distance, ma250_distance = get_moving_averages(td_prices)
     
     rsi: Optional[float] = calculate_rsi(14, td_prices)
     
@@ -208,7 +214,8 @@ def compute_technical_values(odict: OrderedDict[date, float], td: date) -> Any:
     
     td_price, p20, p50, p100, p200, p500, increase20, decrease20, increase50, decrease50, best20, worst20, best50, worst50, gain20, fall20, gain50, fall50 = get_target_prices(td_odict_500, td)
     
-    technical_values = round2(ma20), round2(ma50), round4(steep20), round4(steep50), \
+    technical_values = round2(ma20), round2(ma50), round2(ma250), round4(steep20), \
+        round4(steep50), round4(steep250), round4(ma50_distance), round4(ma250_distance), \
         round2(rsi), round2(weekly_rsi), is_top, is_bottom, \
         round2(td_price), round2(p20), round2(p50), round2(p100), round2(p200), round2(p500), \
         round2(increase20), round2(decrease20), round2(increase50), round2(decrease50), \
@@ -228,7 +235,8 @@ def make_technical_proxy(odict: OrderedDict[date, float], SYMBOL: str, td: date)
     pairs argument is a dataset of extended dates, it is FROM-1000 till TO+50
     """
     
-    ma20, ma50, steep20, steep50, \
+    ma20, ma50, ma250, steep20, \
+        steep50, steep250, ma50_distance, ma250_distance, \
         rsi, weekly_rsi, is_top, is_bottom, \
         td_price, p20, p50, p100, p200, p500, \
         increase20, decrease20, increase50, decrease50, \
@@ -242,8 +250,13 @@ def make_technical_proxy(odict: OrderedDict[date, float], SYMBOL: str, td: date)
     
     proxy['ma20'] = ma20
     proxy['ma50'] = ma50 
+    proxy['ma250'] = ma250 
     proxy['steep20'] = steep20
+
     proxy['steep50'] = steep50 
+    proxy['steep250'] = steep250 
+    proxy['ma50_distance'] = ma50_distance 
+    proxy['ma250_distance'] = ma250_distance 
 
     proxy['rsi'] = rsi
     proxy['weekly_rsi'] = weekly_rsi    
