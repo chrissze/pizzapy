@@ -24,7 +24,7 @@ from batterypy.string.read import is_floatable
 
 class MySortFilterProxyModel(QSortFilterProxyModel):
     """
-    This is for Pyside6
+    This is for PySide6
     """
     def __init__(self) -> None:
         super().__init__()
@@ -80,7 +80,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         """
         for key, regex in self.filters_dict.items():
             is_floor_filter: bool = regex.patternOptions() == QRegularExpression.CaseInsensitiveOption
-            regex_text: str = regex.pattern()   #.upper()  # convert regex_text to upper for symbol mapping, but it will affect True False
+            regex_text: str = regex.pattern() #.upper()  # I should not convert the regex_text to upper, otherwise I cannot hide nan values. Since nan values are lowercase.
             
             if is_floor_filter:
                 # self is the ProxyModel instance
@@ -91,6 +91,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
                     result: bool = float(regex_text) > float(cell_text) if is_floatable(cell_text) \
                         and is_floatable(regex_text) else regex_text == cell_text
                         # above line end need to be False, so lineedit text deletion will restore rows.
+                    #print(f'{regex_text} {cell_text} {result}')
                     if result:
                         return False
 
@@ -101,6 +102,7 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
 
                 if model_index.isValid():
                     result: bool = float(regex_text) < float(cell_text) if is_floatable(cell_text) and is_floatable(regex_text) else regex_text == cell_text
+                    #print(f' {result} {regex_text} {cell_text}')
                     if result:
                         return False
                     
@@ -108,11 +110,16 @@ class MySortFilterProxyModel(QSortFilterProxyModel):
         return True   # The row is shown by default value True.
 
     def lessThan(self, left: QModelIndex, right: QModelIndex) -> bool:
+        """
+        When I click the column header text, this function will be triggered.
+        """
         leftstr: str = left.data()
         rightstr: str = right.data()
-        leftdat: Union[str, float] = leftstr if not is_floatable(leftstr) else float(leftstr)
-        rightdat: Union[str, float] = rightstr if not is_floatable(rightstr) else float(rightstr)
-        return leftdat < rightdat
+
+        if is_floatable(leftstr) and is_floatable(rightstr):
+            return float(leftstr) < float(rightstr) 
+        else:
+            return leftstr < rightstr
 
 
 
