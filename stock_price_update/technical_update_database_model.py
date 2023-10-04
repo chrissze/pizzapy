@@ -60,7 +60,7 @@ def upsert_technical(FROM: date, TO: date, SYMBOL: str) -> Generator[str, None, 
     
 
 
-def upsert_ten_year_technical(SYMBOL: str) -> None:
+def upsert_recent_technical(SYMBOL: str) -> None:
     """
     DEPENDS ON: upsert_technical_by_dicts()
     IMPORTS: get_technical_proxies()
@@ -73,7 +73,7 @@ def upsert_ten_year_technical(SYMBOL: str) -> None:
         result = try_str(upsert_technical, d1, d2, symbol)
     """
     TO: date = date.today()
-    FROM: date = date(TO.year - 10, 1, 1)
+    FROM: date = date(TO.year - 2, TO.month, TO.day)
     result_gen = upsert_technical(FROM, TO, SYMBOL)
     for result in result_gen:
         print(result)
@@ -85,7 +85,7 @@ def test():
     d2 = date(2023, 2, 4)
     symbol = 'NVDA'
     
-    x = upsert_ten_year_technical(symbol)
+    x = upsert_recent_technical(symbol)
     print(x)
 
 if __name__ == '__main__':

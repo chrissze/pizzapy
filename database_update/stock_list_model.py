@@ -9,15 +9,16 @@ USED BY:
 # STANDARD LIBS
 import sys;sys.path.append('..')
 from datetime import datetime
+from functools import partial
 import io
 import subprocess
 from timeit import timeit
 from typing import Any, Dict, List, Set, Union
 import urllib.request as request
 
+
 # THIRD PARTY LIBS
 from bs4 import BeautifulSoup, ResultSet
-
 import pandas 
 from pandas.core.frame import DataFrame
 import requests
@@ -35,7 +36,7 @@ from guru_stock_update.guru_update_database_model import upsert_guru
 from stock_option_update.option_update_database_model import upsert_option
 from zacks_stock_update.zacks_update_database_model import upsert_zacks
 from stock_price_update.price_update_database_model import upsert_latest_price
-from stock_price_update.technical_update_database_model import upsert_ten_year_technical
+from stock_price_update.technical_update_database_model import upsert_recent_technical
 
 
 
@@ -63,7 +64,7 @@ table_function_dict: Dict[str, Any] = {
     'zacks_stock': upsert_zacks,
     'stock_option': upsert_option,
     'stock_price': upsert_latest_price,
-    'stock_technical': upsert_ten_year_technical,
+    'stock_technical': upsert_recent_technical,
     'futures_option': upsert_guru ,
 }
 
