@@ -2,6 +2,8 @@
 AIM OF THIS MODULE: To create CoreBrowserController class. All other classes and functions are helpers of CoreBrowserController class.
 
 DEPENDS ON: core_browser_view.py, qt_model.py
+
+USED BY: main_dock_controller.py
 """
 # STANDARD LIBS
 import sys; sys.path.append('..')

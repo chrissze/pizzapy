@@ -1,7 +1,7 @@
 """
 DEPENDS ON: core_update_view.py, stock_list_model.py
 
-
+USED BY: main_dock_controller.py
 """
 
 

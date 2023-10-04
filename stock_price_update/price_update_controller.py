@@ -4,6 +4,8 @@ The aim of this module is to create self.update_list() and self.update_symbols_l
 
 DEPENDS ON: price_update_view.py
 
+USED BY: main_dock_controller.py
+
 I can click the quit button to stop the current operations.
 
 I can start a 2nd operation when the 1st operation is still running by using threads.
