@@ -1,5 +1,5 @@
 """
-In order for this script to works, the following must be satisfied:
+In order for this script to work, the following must be satisfied:
     (1) each module in a subfolder must have sys.path.append('..')
 
     (2)  each module in a subfolder must have full path import even for same folder module,
