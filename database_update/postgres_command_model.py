@@ -168,6 +168,55 @@ stock_technical_create_table_command: str = """
     """
 
 
+# 
+technical_one_create_table_command: str = """
+    CREATE TABLE IF NOT EXISTS technical_one (
+    id  BIGSERIAL, 
+    t   TIMESTAMP,                    
+    symbol   VARCHAR(10),         
+    td   DATE,  
+
+    ma20  FLOAT8,
+    ma50  FLOAT8,
+    ma250  FLOAT8,
+    steep20  FLOAT8,
+    steep50  FLOAT8,
+    steep250  FLOAT8,
+    ma50_distance  FLOAT8,
+    ma250_distance  FLOAT8,
+
+    rsi  FLOAT8,        
+    weekly_rsi  FLOAT8,        
+    is_top  SMALLINT,
+    is_bottom  SMALLINT,
+
+    price   FLOAT8,    
+    p20   FLOAT8,
+    p50   FLOAT8,    
+    p100   FLOAT8,    
+    p200  FLOAT8,        
+    p500  FLOAT8,
+
+    increase20  FLOAT8,        
+    decrease20  FLOAT8,        
+    increase50  FLOAT8,        
+    decrease50  FLOAT8,
+
+    best20  FLOAT8,        
+    worst20  FLOAT8,        
+    best50  FLOAT8,        
+    worst50  FLOAT8,
+
+    gain20  FLOAT8,        
+    fall20  FLOAT8,        
+    gain50  FLOAT8,        
+    fall50  FLOAT8,
+
+    PRIMARY KEY (symbol) 
+    )
+    """
+
+
 # nasdaq or barchart
 stock_option_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_option (
@@ -226,6 +275,7 @@ table_list_dict: Dict[str, Any] = {
     'stock_option': {'primary_key_list': ['symbol', 'td'], 'command': stock_option_create_table_command},
     'stock_price': {'primary_key_list': ['symbol', 'td'], 'command': stock_price_create_table_command},
     'stock_technical': {'primary_key_list': ['symbol', 'td'], 'command': stock_technical_create_table_command},
+    'technical_one': {'primary_key_list': ['symbol'], 'command': technical_one_create_table_command},
     'futures_option': {'primary_key_list': ['symbol', 'td'], 'command': futures_option_create_table_command},
 }
 

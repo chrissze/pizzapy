@@ -36,7 +36,7 @@ from guru_stock_update.guru_update_database_model import upsert_guru
 from stock_option_update.option_update_database_model import upsert_option
 from zacks_stock_update.zacks_update_database_model import upsert_zacks
 from stock_price_update.price_update_database_model import upsert_latest_price
-from stock_price_update.technical_update_database_model import upsert_recent_technical
+from stock_price_update.technical_update_database_model import upsert_recent_technical, upsert_technical_one
 
 
 
@@ -65,6 +65,7 @@ table_function_dict: Dict[str, Any] = {
     'stock_option': upsert_option,
     'stock_price': upsert_latest_price,
     'stock_technical': upsert_recent_technical,
+    'technical_one': upsert_technical_one,
     'futures_option': upsert_guru ,
 }
 

@@ -13,6 +13,7 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 
 # CUSTOM LIBS
+from batterypy.time.cal import get_trading_day_utc
 from batterypy.time.date import make_date_ranges
 
 from dimsumpy.database.postgres import upsert_many_dicts
@@ -25,14 +26,14 @@ from stock_price_update.technical_analysis_model import construct_technical_prox
 
 
 
-def upsert_technical_by_dicts(dicts: List[Dict]) -> str:
+def upsert_technical_by_dicts(table_name: str, dicts: List[Dict]) -> str:
     """
     * INDEPENDENT *
     IMPORTS: dimsumpy(upsert_many_dataframe), table_list_dict, make_psycopg_connection()
     USED BY: upsert_technical()
     
     """
-    table_name: str = 'stock_technical'
+    #table_name: str = 'stock_technical'
     pk_list: List[str] = table_list_dict[table_name].get('primary_key_list')
     query_result: str = upsert_many_dicts(dicts, table=table_name, primary_key_list=pk_list, connection=make_psycopg_connection())
     return query_result
@@ -55,9 +56,27 @@ def upsert_technical(FROM: date, TO: date, SYMBOL: str) -> Generator[str, None, 
     #generator = (x for x in [])
     for start, end in date_ranges:
         proxies: List[Dict] = construct_technical_proxies(start, end, SYMBOL)
-        result: str = upsert_technical_by_dicts(proxies)
+        result: str = upsert_technical_by_dicts('stock_technical', proxies)
         yield result
     
+
+def upsert_technical_one(SYMBOL: str) -> str:
+    """
+    DEPENDS ON: upsert_technical_by_dicts()
+    IMPORTS: get_technical_proxies()
+    USED BY:
+    
+    small letter 'from' is a reserved keyword
+    dates can be created by  d1 = date(2017, 2, 25)
+
+    I should wrap upsert_technical into a try block when I call it, because getting dicts might have error when the date range has no data.
+        result = try_str(upsert_technical, from_date, to_date, symbol)
+    """
+    TO: date = date.today()
+    FROM: date = get_trading_day_utc()
+    proxies: List[Dict] = construct_technical_proxies(FROM, TO, SYMBOL)
+    result: str = upsert_technical_by_dicts('technical_one', proxies)
+    return result
 
 
 def upsert_recent_technical(SYMBOL: str) -> None:

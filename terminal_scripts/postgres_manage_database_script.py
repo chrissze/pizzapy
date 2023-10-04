@@ -30,7 +30,7 @@ postgres_menu_text: str = """\n
         13) create_table('stock_option')
         14) create_table('stock_price')
         15) create_table('stock_technical')
-        16) create_table('futures_option')
+        16) create_table('technical_one')
         
         0) quit
     Choose your action: """
@@ -51,7 +51,7 @@ actions_dict: Dict[str, Any] = {
     '13': lambda: create_table('stock_option'),
     '14': lambda: create_table('stock_price'),
     '15': lambda: create_table('stock_technical'),
-    '16': lambda: create_table('futures_option'),
+    '16': lambda: create_table('technical_one'),
     }
 
 
