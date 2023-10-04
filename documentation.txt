@@ -3,6 +3,62 @@
 #########################
 
 
+==========================
+Technical Analysis
+==========================
+
+How to determine a WEAK stock by technical analysis? 
+    I can use technical_one table to compare stocks, since technical_one has just one day data for each stock, it is much easier to load.
+    
+    First, use steepness to sort stocks, the steepness less than 1.0 is considered week. while 0.95 or 0.96 is very weak.
+    
+    Second, simply use RSI to read their recent price action, choose some higher numbers. if the RSI is higher recently, that means they have rebounded.
+
+    Third, go to stockcharts.com to view visual technical graphs.
+
+    ma50 is just a price point, while steep50 use much further closing prices to determine the slope of the moving average line.
+
+
+==========================
+GURU
+==========================
+
+How to determine a WEAK stock by GURU analysis? 
+
+    I can select stocks with high interest payments (2023 OCT):
+        AAL - American Airlines, 25%,  8 B
+        CZR - Caesars Entertainment, 23%,  10 B
+        F - Ford Motor Company 14%, 48 B 
+        UAL - United Airlines Holdings, 13% of 13 B
+        CCL - Carnival Corporation & plc, 12% of 15 B
+        OGN - Organon & Co., 11% of 4.2 B
+        AES - The AES Corporation, 11.4 % of 10.6 B   (Power generation and utility)
+        PARA - Paramount Global 11% of 8.3 B      (Media)
+
+    Banks stocks to be excluded: 
+        C 
+        GS
+        BK: The Bank of New York Mellon
+        KEY: KeyCorp (KeyBank National Association)
+        COF: Capital One Financial (Capital One Bank)
+        BAC: Bank of America
+        NTRS: Northern Trust Corporation (financial services)
+        MS
+        CFG: Citizens Financial Group
+        SYF: Synchrony Financial
+        STT: State Street Corporation
+        TFC: Truist Financial Corporation
+        CMA: Comerica Incorporated (financial services)
+        USB: U.S. Bancorp
+        ZION: Zions Bancorporation
+        DFS: Discover Financial Services
+        HBAN: Huntington Bancshares
+        FITB: Fifth Third Bancorp
+        WFC: Wells Fargo & Company
+        PNF: The PNC Financial Services
+        JPM
+
+
 
 SECTION: CURRENT WORK
 ---------------------
@@ -182,7 +238,6 @@ SECTION: TIMER
         start: float = default_timer()
         print("Run some IO operations")
         print('Elapsed time in seconds:', default_timer() - start)
-
 
 
 

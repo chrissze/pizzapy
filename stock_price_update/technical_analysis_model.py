@@ -1,6 +1,14 @@
 """
 
+How to determine a WEAK stock by technical figures here?
+    First, I should use steepness to sort stocks, the steepness less than 1.0 is considered week. while 0.95 or 0.96 is very weak.
+    Second, I can simply use RSI to read their recent price action, choose some higher numbers. if the RSI is higher recently, that means they have rebounded.
+
+
 When I prepare an OrderedDict data source, I should use TODAY, not last trading day as 'TO' date, so that last trading day is included, since 'TO' date's value is not included in yahoo price source.
+
+
+
 """
 # STANDARD LIBS
 import sys; sys.path.append('..')

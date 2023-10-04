@@ -17,7 +17,7 @@ from PySide6.QtGui import QCloseEvent
 from dimsumpy.qt.functions import closeEvent
 
 # PROGRAM MODULES
-from main_dock.main_dock_view import MainDockView
+from gui_dock.main_dock_view import MainDockView
 
 from core_stock_update.core_update_controller import CoreUpdateController
 
