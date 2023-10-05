@@ -13,39 +13,27 @@ When I prepare an OrderedDict data source, I should use TODAY, not last trading 
 # STANDARD LIBS
 import sys; sys.path.append('..')
 from collections import OrderedDict
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from functools import partial
-from itertools import dropwhile, repeat
-import io
+
 from multiprocessing import Pool
-from multiprocessing.managers import DictProxy, SyncManager
 import os
 from timeit import default_timer
 from typing import Any, Dict, List, Tuple, Optional
 
-import shutil
-import urllib
 
 
 # THIRD PARTY LIBS
-import pandas
-from pandas import DataFrame
-import requests
 
 
 # CUSTOM LIBS
-from batterypy.functional.list import first, grab
-from batterypy.time.cal import add_trading_days, date_range, tdate_range, tdate_length, date_length,  get_trading_day_utc, is_weekly_close
+from batterypy.time.cal import add_trading_days, is_weekly_close
 from batterypy.number.format import round0, round1, round2, round4
+from dimsumpy.finance.technical import quantile, convert_to_changes, calculate_rsi, sma, steep
 
-from dimsumpy.finance.technical import ema, quantile, deltas, convert_to_changes, calculate_rsi, sma, steep
-from dimsumpy.web.crawler import get_urllib_text, get_csv_dataframe
 
 # PROGRAM MODULES
-
-from database_update.postgres_connection_model import execute_pandas_read
-from general_update.general_model import initialize_proxy
-from stock_price_update.raw_price_model import get_price_dataframe, get_price_odict
+from stock_price_update.raw_price_model import get_price_odict
 
 
 
