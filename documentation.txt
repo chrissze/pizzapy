@@ -25,15 +25,27 @@ GURU
 
 How to determine a WEAK stock by GURU analysis? 
 
+    High interest stocks:
+        AAL CZR F UAL CCL OGN AES PARA NCLH WBD CHTR WYNN RCL T NRG EIX PCG BXP DXC WRK RJF VTRS CE PRU WHR SEE BBWI GEN FE ETR DVA D AXP KMI AEP KMX EXC EVRG NI MGM DAL DUK SWK ES CMS DTE PPL PNW CNP IP VZ ED IRM CAG SO TRGP XEL VTR VFC LNT WBA
+
+    Low Altman Z-score: preferably less than 1
+        Z-scores can be negative.
+        VRSN FIS NCLH STX CCL WBD SBAC PCG T PEAK MTCH AES NI CME VTR D DUK CZR DXC RCL EIX EVRG CCI BXP EXC ICE FE LCID CHTR
+
+
     I can select stocks with high interest payments (2023 OCT):
         AAL - American Airlines, 25%,  8 B
         CZR - Caesars Entertainment, 23%,  10 B
         F - Ford Motor Company 14%, 48 B 
         UAL - United Airlines Holdings, 13% of 13 B
-        CCL - Carnival Corporation & plc, 12% of 15 B
+        CCL - Carnival Corporation & plc, 12% of 15 B (LOSS, Z 0.33)
         OGN - Organon & Co., 11% of 4.2 B
         AES - The AES Corporation, 11.4 % of 10.6 B   (Power generation and utility)
         PARA - Paramount Global 11% of 8.3 B      (Media)
+        NCLH - 
+        WBD - Warner Bros Discovery Inc, 8.4% of 26.9 B (LOSS, Z 0.34)
+
+
 
     Banks stocks to be excluded: 
         C 

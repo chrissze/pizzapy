@@ -1022,7 +1022,7 @@ sp_nasdaq_stocks: List[str] = [
     "RVTY",
     "SBAC",
     "SBUX",
-    "SCHW",
+    
     "SEDG",
     "SEE",
     "SGEN",
