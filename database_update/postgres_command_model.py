@@ -276,7 +276,7 @@ table_list_dict: Dict[str, Any] = {
     'stock_price': {'primary_key_list': ['symbol', 'td'], 'command': stock_price_create_table_command},
     'stock_technical': {'primary_key_list': ['symbol', 'td'], 'command': stock_technical_create_table_command},
     'technical_one': {'primary_key_list': ['symbol'], 'command': technical_one_create_table_command},
-    'futures_option': {'primary_key_list': ['symbol', 'td'], 'command': futures_option_create_table_command},
+    #'futures_option': {'primary_key_list': ['symbol', 'td'], 'command': futures_option_create_table_command},
 }
 
 

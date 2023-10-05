@@ -30,7 +30,6 @@ from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 from database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks, option_traded_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
-from database_update.postgres_command_model import guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command
 
 from guru_stock_update.guru_update_database_model import upsert_guru
 from stock_option_update.option_update_database_model import upsert_option
@@ -45,6 +44,10 @@ from stock_price_update.technical_update_database_model import upsert_recent_tec
 
 # need to comment out all_stocks when I use code to generate 
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
+
+bank_stocks: List[str] = ['BAC', 'BK', 'C', 'CFG', 'CMA', 'COF', 'DFS', 'FITB', 'GS', 'JPM', 'HBAN', 'MS', 'MTB', 'NTRS', 'KEY', 'PNC', 'RF', 'STT', 'SYF', 'TFC', 'USB', 'WFC', 'ZION']
+
+bank_stocks_set: Set[str] = set(bank_stocks)
 
 stock_list_dict: Dict[str, List[str]] = {
     f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
@@ -66,8 +69,9 @@ table_function_dict: Dict[str, Any] = {
     'stock_price': upsert_latest_price,
     'stock_technical': upsert_recent_technical,
     'technical_one': upsert_technical_one,
-    'futures_option': upsert_guru ,
+    #'futures_option': upsert_guru ,
 }
+
 
 
 
@@ -104,10 +108,13 @@ def get_sp_nasdaq() -> List[str]:
     """
     DEPENDS ON: get_sp_500(), get_nasdaq_100()
     USED BY: guru_operation_script.py
+
+    The result is not including bank stocks.
     """
     sp_500_stocks: List[str] = get_sp_500()
     nasdaq_100_stocks: List[str] = get_nasdaq_100()
-    sp_nasdaq_stocks: List[str] = sorted(list(set(sp_500_stocks + nasdaq_100_stocks)))
+    sp_nasdaq_set: Set[str] = set(sp_500_stocks + nasdaq_100_stocks)
+    sp_nasdaq_stocks: List[str] = sorted(list(sp_nasdaq_set - bank_stocks_set))
     return sp_nasdaq_stocks
 
 
@@ -123,18 +130,13 @@ def get_nasdaq_listed() -> List[str]:
     the initial_list has some nan values (without quotation marks)
     5,120 stocks on 2023-09-04
     """
-
-    try:
-        url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt'
-        with request.urlopen(url1) as r:
-            text = r.read().decode()
-        df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
-        initial_list: List[str] = list(df_nasdaq.iloc[:-1, 0])
-        stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
-        return stock_list
-    except Exception as e:
-        print('get_nasdaq_listed error:', e)
-        return []
+    url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt'
+    with request.urlopen(url1) as r:
+        text = r.read().decode()
+    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    initial_list: List[str] = list(df_nasdaq.iloc[:-1, 0])
+    stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
+    return stock_list
 
 
 def get_nasdaq_traded() -> List[str]:
@@ -146,17 +148,13 @@ def get_nasdaq_traded() -> List[str]:
 
     11,292 stock on 2023-09-04
     """
-    try:
-        url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt'
-        with request.urlopen(url1) as r:
-            text = r.read().decode()
-        df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
-        initial_list: List[str] = list(df_nasdaq.iloc[:-1, 1])
-        stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
-        return stock_list
-    except Exception as e:
-        print('get_nasdaq_traded error:', e)
-        return []
+    url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt'
+    with request.urlopen(url1) as r:
+        text = r.read().decode()
+    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    initial_list: List[str] = list(df_nasdaq.iloc[:-1, 1])
+    stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
+    return stock_list
 
 
 def get_option_traded() -> List[str]:
@@ -166,17 +164,13 @@ def get_option_traded() -> List[str]:
     execution time: 2 minutes
     file size is about 50mb, need several minutes to process, unique symbols are about 3129
     """
-    try:
-        url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/options.txt'
-        with request.urlopen(url1) as r:
-            text = r.read().decode()
-        df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
-        stocks: List[str] = list(df_nasdaq.iloc[:-1, 0])
-        stocks_set = sorted(list(set(stocks)))
-        return stocks_set
-    except Exception as e:
-        print('get_option_traded error:', e)
-        return []
+    url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/options.txt'
+    with request.urlopen(url1) as r:
+        text = r.read().decode()
+    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    stocks: List[str] = list(df_nasdaq.iloc[:-1, 0])
+    option_stocks: List[str] = sorted(list(set(stocks)))
+    return option_stocks
 
 
 
@@ -184,10 +178,10 @@ def prepare_stock_list_file_content() -> str:
     """
     DEPENDS ON: get_sp_500(), get_sp_nasdaq(), get_nasdaq_100(),  get_nasdaq_listed(), get_nasdaq_traded(), get_option_traded()
     IMPORTS: datetime
-    USED BY: generate_stock_list_module() 
+    USED BY: generate_stock_list_file() 
     """
     current_time: datetime = datetime.now().replace(second=0, microsecond=0)
-    file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_module() """'
+    file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_file() FUNCTION IN stock_list_model.py """'
     file_import: str = 'from typing import List'
 
     sp_500: List[str] = get_sp_500()
@@ -240,9 +234,11 @@ def prepare_stock_list_file_content() -> str:
 
 
 
-def generate_stock_list_module() -> None:
+def generate_stock_list_file() -> None:
     """
     DEPENDS ON: prepare_stock_list_file_content()
+    USED BY: terminal_scripts/central_script.py
+
     execution time: 4 minutes due to get_option_traded() and black command
     When I re-run this file, it will overwrite the original content
     """
@@ -265,7 +261,7 @@ def test_generated_stock_list_module() -> None:
     def run() -> None:
         reply: str = input('Do you want to generate stock list module (yes/no)?')
         if reply == 'yes': 
-            x =  generate_stock_list_module()
+            x =  generate_stock_list_file()
             print(x)
 
     seconds = timeit(run, number=1)
@@ -277,4 +273,4 @@ def test() -> None:
     print('test')
 
 if __name__ == '__main__':
-    test()
+    test_generated_stock_list_module()
