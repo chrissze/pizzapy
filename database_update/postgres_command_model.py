@@ -41,6 +41,9 @@ guru_stock_create_table_command: str = """
     interest   FLOAT8,    
     interest_pc   FLOAT8,  
 
+    equity   FLOAT8,    
+    equity_pc   FLOAT8,  
+
     lynch   FLOAT8,    
     lynch_move_pc   FLOAT8,    
     

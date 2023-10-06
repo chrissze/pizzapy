@@ -19,6 +19,7 @@ from general_update.general_model import initialize_proxy, make_price_cap_proxy
 from guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
 from guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
 from guru_stock_update.guru_earn_model import proxy_guru_earn
+from guru_stock_update.guru_equity_model import proxy_guru_equity
 from guru_stock_update.guru_interest_model import proxy_guru_interest
 from guru_stock_update.guru_lynch_model import proxy_guru_lynch
 from guru_stock_update.guru_net_capital_model import proxy_guru_net_capital   # dataframes
@@ -39,14 +40,15 @@ def process_guru(SYMBOL: str) -> DictProxy:
     p1 = Process(target=proxy_guru_book_value, args=(SYMBOL, proxy))
     p2 = Process(target=proxy_guru_debt, args=(SYMBOL, proxy))
     p3 = Process(target=proxy_guru_earn, args=(SYMBOL, proxy))
-    p4 = Process(target=proxy_guru_interest, args=(SYMBOL, proxy))
-    p5 = Process(target=proxy_guru_net_capital, args=(SYMBOL, proxy))
-    p6 = Process(target=proxy_guru_lynch, args=(SYMBOL, proxy))
-    p7 = Process(target=proxy_guru_research, args=(SYMBOL, proxy))
-    p8 = Process(target=proxy_guru_revenue, args=(SYMBOL, proxy))
-    p9 = Process(target=proxy_guru_revenue_growths, args=(SYMBOL, proxy))
-    p10 = Process(target=proxy_guru_strength, args=(SYMBOL, proxy))
-    p11 = Process(target=proxy_guru_zscore, args=(SYMBOL, proxy))
+    p4 = Process(target=proxy_guru_equity, args=(SYMBOL, proxy))
+    p5 = Process(target=proxy_guru_interest, args=(SYMBOL, proxy))
+    p6 = Process(target=proxy_guru_net_capital, args=(SYMBOL, proxy))
+    p7 = Process(target=proxy_guru_lynch, args=(SYMBOL, proxy))
+    p8 = Process(target=proxy_guru_research, args=(SYMBOL, proxy))
+    p9 = Process(target=proxy_guru_revenue, args=(SYMBOL, proxy))
+    p10 = Process(target=proxy_guru_revenue_growths, args=(SYMBOL, proxy))
+    p11 = Process(target=proxy_guru_strength, args=(SYMBOL, proxy))
+    p12 = Process(target=proxy_guru_zscore, args=(SYMBOL, proxy))
 
     p1.start()
     p2.start()
@@ -59,6 +61,7 @@ def process_guru(SYMBOL: str) -> DictProxy:
     p9.start()
     p10.start()
     p11.start()
+    p12.start()
 
     p1.join()
     p2.join()
@@ -71,6 +74,7 @@ def process_guru(SYMBOL: str) -> DictProxy:
     p9.join()
     p10.join()
     p11.join()
+    p12.join()
     
     p1.close()
     p2.close()
@@ -83,6 +87,7 @@ def process_guru(SYMBOL: str) -> DictProxy:
     p9.close()
     p10.close()
     p11.close()
+    p12.close()
     return proxy
 
 
