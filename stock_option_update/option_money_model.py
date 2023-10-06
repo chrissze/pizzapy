@@ -1,12 +1,16 @@
 
+"""
 
+
+USED BY: option_proxy_model.py
+
+"""
 # STANDARD LIBS
 import sys; sys.path.append('..')
-from datetime import datetime
 from itertools import dropwhile
 
-from multiprocessing import Manager, Pool, Process
-from multiprocessing.managers import DictProxy, SyncManager
+from multiprocessing import Pool
+from multiprocessing.managers import DictProxy
 
 import os
 from typing import Any, List, Optional, Tuple, Union
@@ -14,13 +18,11 @@ from typing import Any, List, Optional, Tuple, Union
 
 # THIRD PARTY LIBS
 from pandas import DataFrame
-import dill
 
 # CUSTOM LIBS
 from batterypy.string.read import float0
 
 from dimsumpy.web.crawler import get_html_dataframes, get_html_text
-
 
 
 # PROGRAM MODULES
@@ -144,6 +146,9 @@ def proxy_option_money(symbol: str, proxy: DictProxy={}) -> DictProxy:
         DEPENDS ON: get_total_premiums()
         USED BY: make_option_proxy()
         Optionally rely on make_price_cap_proxy() to create a DictProxy in make_option_proxy()
+
+        Hypothesis:
+            If OTM put option has a higher ratio, the stock is like to fall further.
     """
     price: Optional[float] = proxy.get('price')
 

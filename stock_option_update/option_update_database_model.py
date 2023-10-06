@@ -19,7 +19,7 @@ from typing import Any, List, Optional, Tuple, Union
 # THIRD PARTY LIBS
 
 # CUSTOM LIBS
-from batterypy.control.trys import try_str
+
 from dimsumpy.database.postgres import upsert_psycopg
 
 
