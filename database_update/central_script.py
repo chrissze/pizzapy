@@ -14,11 +14,11 @@ import subprocess
 from typing import List
 
 # PROGRAM MODULES
-from database_update.stock_list_model import generate_stock_list_file
+from database_update.generate_file_model import generate_stock_list_file
 
-from terminal_scripts.general_terminal_model import operate_stock_table
+from database_update.general_terminal_model import operate_stock_table
 
-from terminal_scripts.postgres_manage_database_script import manage_postgres_database
+from database_update.postgres_manage_database_script import manage_postgres_database
 
 
 
@@ -30,7 +30,7 @@ def start():
         '4': lambda: operate_stock_table('stock_technical'),
         '5': lambda: operate_stock_table('technical_one'),
         '9': lambda: manage_postgres_database(),
-        '10': lambda: generate_stock_list_file(),
+        '10': generate_stock_list_file,
         '0': lambda: exit(),
     }
     while True:
