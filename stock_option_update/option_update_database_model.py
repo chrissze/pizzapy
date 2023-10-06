@@ -78,12 +78,9 @@ def upsert_option(symbol: str) -> str:
 
 
 def test() -> None:
-    pass    
-
-
-
-
-
+    symbol = 'NVDA'
+    x = upsert_option(symbol)    
+    print(x)
 
 if __name__ == '__main__':
     test()

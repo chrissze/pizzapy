@@ -4,6 +4,8 @@ beautifulsoup4==4.12
 
 black
 
+dill
+
 html5lib
 
 lxml
