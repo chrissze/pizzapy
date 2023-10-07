@@ -2,6 +2,8 @@
 DEPENDS ON: core_update_view.py, stock_list_model.py
 
 USED BY: main_dock_controller.py
+
+
 """
 
 
@@ -9,6 +11,7 @@ USED BY: main_dock_controller.py
 # STANDARD LIBS
 import sys; sys.path.append('..')
 from itertools import dropwhile
+import re
 import time
 from typing import Any, Dict, Generator, List, Optional
 
@@ -132,9 +135,6 @@ def start_thread(self, stock_list: List[str]) -> None:
 
 
 
-    
-
-
 
 def update_core(self) -> None:    
     """
@@ -145,7 +145,7 @@ def update_core(self) -> None:
     if I don't use decorator for upsert_core, I could simply make stock_list as self.stock_list, no second argument will be needed.
     """
     symbols_lineedit_string: str = self.symbols_lineedit.text()
-    stock_list: List[str] = symbols_lineedit_string.split()
+    stock_list: List[str] = re.split(r'[ ,]+', symbols_lineedit_string.strip())
 
     if stock_list:   # prevent empty lineedit
         start_thread(self, stock_list) 

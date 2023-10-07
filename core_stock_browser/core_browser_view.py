@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QDockWidget,
                                QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QMenu, QMenuBar,
                                QPushButton,
+                               QScrollArea,
                                QTableView, QToolBar,QVBoxLayout, QWidget)
 
 
@@ -150,14 +151,34 @@ class MakeToolBar:
 class MakeDock:
     """
     USED BY: CoreBrowserView
-    """
-    def __init__(ego, self):
-        self.dock: QDockWidget = QDockWidget('Columns      LowerLimit    UpperLimit', self)
-        self.dock.setFixedWidth(300) # resize method does not work, alternatively I can use setFixedSize
+
+    CoreBrowserView (self object) > self.dock > self.scroll > self.dockwin (QWidget) > 
+
+    self.dock's resize method does not work, so I have to use setFixedWidth or setFixedSize.
+
+    Here are the codes that does not have a vertical scroll bar:
+        self.dock: QDockWidget = QDockWidget('Columns             LowerLimit    UpperLimit', self)
+        self.dock.setFixedWidth(300) 
         self.dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
         self.dockwin: QWidget = QWidget(self)
         self.dock.setWidget(self.dockwin)
+
+    """
+    def __init__(ego, self):
+        self.dock: QDockWidget = QDockWidget('Columns             LowerLimit    UpperLimit', self)
+        self.dock.setFixedWidth(300) 
+        self.dock.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.dock)
+        self.scroll: QScrollArea = QScrollArea()
+        self.dockwin: QWidget = QWidget(self)
+
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+
+        self.dock.setWidget(self.scroll)
+        self.scroll.setWidget(self.dockwin)
 
 
 

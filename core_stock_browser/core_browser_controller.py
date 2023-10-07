@@ -8,6 +8,7 @@ USED BY: main_dock_controller.py
 # STANDARD LIBS
 import sys; sys.path.append('..')
 from functools import partial
+import re
 from typing import Any, List, Tuple
 
 
@@ -110,7 +111,7 @@ def load_stock_table(self) -> None:
         self.symbols_list needs to have self to share its value so that it can be accessed by make_dataframe()
     """
     symbols_str: str = self.symbols_lineedit.text().upper()
-    self.symbols_list: List[str] = symbols_str.split()
+    self.symbols_list: List[str] = re.split(r'[ ,]+', symbols_str.strip())
     make_dataframe(self)
     make_tableview(self)
     make_grid(self)   
