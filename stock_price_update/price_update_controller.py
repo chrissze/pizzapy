@@ -110,13 +110,10 @@ def call_upsert(self, FROM: date, TO: date, stockgen: Generator[str, None, None]
         print(f'INVALID SENDER: {sender}')
         return
     
-    is_filled: bool = any(True for _ in stockgen) 
-    if is_filled:
-
-        for i, symbol in enumerate(stockgen, start=1): # if the list is too long, program will have Segmentation fault
-            result = try_str(func, FROM, TO, symbol)
-            progress_bar.setValue(i)
-            progress_label.setText(f'{i}  {symbol} ')
+    for i, symbol in enumerate(stockgen, start=1): # if the list is too long, program will have Segmentation fault
+        result = try_str(func, FROM, TO, symbol)
+        progress_bar.setValue(i)
+        progress_label.setText(f'{i}  {symbol} ')
 
 
 
@@ -160,7 +157,7 @@ def start_thread(self, stock_list: List[str]) -> None:
     self.threads_dict[thread_id] = thread # added this line in 2019
     thread.start()  # start the run() in QThread
     thread.wait(2) # prevent crash
-    message = f'JOB {job_id}: Update {list_length} stocks, {FROM} to {TO} ({self.sender().accessibleName()}) \n'
+    message = f'JOB {job_id}: Updating {list_length} stocks, {FROM} to {TO} ({self.sender().accessibleName()}) \n'
     self.browser.append(message)
     self.statusbar.showMessage(message)
 

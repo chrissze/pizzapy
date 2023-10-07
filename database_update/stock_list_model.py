@@ -52,7 +52,7 @@ stock_list_dict: Dict[str, List[str]] = {
     f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
     f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
     f'S&P 400 ({len(sp_400_stocks)})': sp_400_stocks,
-    f'S&P 500, 400 + Nasdqa 100 ({len(sp_nasdaq_stocks)})': sp_nasdaq_stocks,
+    f'S&P 500, 400 + Nasdaq 100 ({len(sp_nasdaq_stocks)})': sp_nasdaq_stocks,
     #f'Option Stocks ({len(option_traded_stocks)})': option_traded_stocks,
     f'Nasdaq Listed ({len(nasdaq_listed_stocks)})': nasdaq_listed_stocks,
     f'Nasdaq Traded ({len(nasdaq_traded_stocks)})': nasdaq_traded_stocks,

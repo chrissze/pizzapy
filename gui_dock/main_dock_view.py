@@ -31,7 +31,7 @@ class MainDockView(QMainWindow):
         self.updater_group_box = QGroupBox('UPDATER')
         self.core_browser_button = QPushButton('Core Browser')
         self.core_updater_button = QPushButton('Core Updater')
-        self.price_updater_button = QPushButton('Price Updater')
+        self.price_updater_button = QPushButton('Price Technical Updater')
 
         self.quit_button = QPushButton('Quit')
 
@@ -49,12 +49,12 @@ class MainDockView(QMainWindow):
 
 
 
-def maindock() -> None:
+def view() -> None:
     app: QApplication = QApplication(sys.argv)
-    win: MainDockWin = MainDockWin()
+    win = MainDockView()
     win.show()
     sys.exit(app.exec())
 
 
 if __name__ == '__main__':
-    maindock()
+    view()

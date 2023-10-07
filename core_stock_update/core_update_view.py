@@ -35,8 +35,8 @@ class SetupWindow:
             I created self.statusbar property, if I don't create it, every time I want to update the status bar, I need to make function call to the self.statusBar()
         """
         self.setWindowTitle('Core Stock Update')
-        self.resize(900, 600)
-        self.central: QWidget = QWidget()  
+        self.resize(500, 500)
+        self.central = QWidget()  
         self.mainbox = QVBoxLayout(self.central)
         self.setCentralWidget(self.central)
         self.statusbar = self.statusBar()  
@@ -102,7 +102,6 @@ class QuitRow:
         """
             'ego' is the instance of the current class QuitRow, 'self' is the instance of the calling class CoreUpdateView.
         """
-        
         self.clear_button = QPushButton('Clear Browser')
         self.clear_button.setMaximumWidth(200)
         self.quit_button = QPushButton('Quit')
@@ -118,10 +117,6 @@ class ProgressRow:
     def __init__(ego, self) -> None:
         self.progress_box = QVBoxLayout()
         self.mainbox.addLayout(self.progress_box)
-
-
-        
-    
 
 
 class CoreUpdateView(QMainWindow):
@@ -145,7 +140,7 @@ class CoreUpdateView(QMainWindow):
         
 
 
-def main() -> None:
+def view() -> None:
     app = QApplication(sys.argv)
     win = CoreUpdateView()
     win.show()
@@ -153,4 +148,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    view()
