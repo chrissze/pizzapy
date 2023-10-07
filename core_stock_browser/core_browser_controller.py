@@ -71,6 +71,8 @@ def make_tableview(self) -> None:
     self.sort_filter_model = MySortFilterProxyModel()
     self.sort_filter_model.setSourceModel(dataframe_model)
     self.pandas_tableview.setModel(self.sort_filter_model)
+    self.statusbar.showMessage(f'{len(self.df)} rows')
+
 
 
 
@@ -110,11 +112,15 @@ def load_stock_table(self) -> None:
 
         self.symbols_list needs to have self to share its value so that it can be accessed by make_dataframe()
     """
-    symbols_str: str = self.symbols_lineedit.text().upper()
-    self.symbols_list: List[str] = re.split(r'[ ,]+', symbols_str.strip())
-    make_dataframe(self)
-    make_tableview(self)
-    make_grid(self)   
+    lineedit_str: str = self.symbols_lineedit.text().upper().strip()
+    self.symbols_list: List[str] = re.split(r'[ ,]+', lineedit_str) if lineedit_str else []
+    if self.symbols_list:      # prevent empty lineedit string
+        make_dataframe(self)
+        make_tableview(self)
+        make_grid(self) 
+    else:
+        self.statusbar.showMessage('No SYMBOLS in the lineedit')
+
 
 
 def load_list_table(self) -> None:

@@ -18,6 +18,7 @@ I can start a 2nd operation when the 1st operation is still running by using thr
 import sys; sys.path.append('..')
 from datetime import date
 from itertools import dropwhile
+import re
 import time
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
@@ -70,6 +71,7 @@ def thread_finished(self, tid: float, box) -> None:
     job_id: str = str(tid)[-3:]  
     thread_message: str = f'JOB {job_id} FINISHED \n'
     self.browser.append(thread_message)
+    self.statusbar.showMessage(thread_message)
 
 
 
@@ -158,7 +160,9 @@ def start_thread(self, stock_list: List[str]) -> None:
     self.threads_dict[thread_id] = thread # added this line in 2019
     thread.start()  # start the run() in QThread
     thread.wait(2) # prevent crash
-    self.browser.append(f'JOB {job_id}: Update {list_length} stocks, {FROM} to {TO} ({self.sender().accessibleName()}) \n')
+    message = f'JOB {job_id}: Update {list_length} stocks, {FROM} to {TO} ({self.sender().accessibleName()}) \n'
+    self.browser.append(message)
+    self.statusbar.showMessage(message)
 
 
 
@@ -167,10 +171,13 @@ def update_symbols_lineedit(self) -> None:
     """
     DEPENDS ON: start_thread()
     """
-    stockstr = self.symbols_lineedit.text()
-    stock_list = stockstr.split()
-    start_thread(self, stock_list)
-
+    lineedit_str = self.symbols_lineedit.text().strip()
+    stock_list = re.split(r'[ ,]+', lineedit_str) if lineedit_str else []
+    if stock_list:
+        self.statusbar.showMessage(f'Updating {len(stock_list)} stocks')
+        start_thread(self, stock_list)
+    else:
+        self.statusbar.showMessage('No SYMBOLS in the lineedit')
 
 
 
@@ -230,7 +237,12 @@ def update_calendar_date(self, qdate: QDate) -> None:
     QApplication.processEvents()
 
 
-
+def clear(self) -> None:
+    """
+    
+    """
+    self.browser.clear()
+    self.statusbar.showMessage('Clear')
 
 
 
@@ -251,7 +263,7 @@ class MakeConnects:
         self.from_calendar.currentPageChanged.connect(self.from_calendar.repaint)
         self.to_calendar.currentPageChanged.connect(self.to_calendar.repaint)
 
-        self.clear_button.clicked.connect(self.browser.clear)
+        self.clear_button.clicked.connect(self.clear)
         self.quit_button.clicked.connect(self.close)
 
 
@@ -295,8 +307,14 @@ class PriceUpdateController(PriceUpdateView):
         return update_calendar_date(self, qdate)
     
 
+
+    def clear(self) -> None:
+        return clear(self)
+    
     def closeEvent(self, event: QCloseEvent) -> None:
         return closeEvent(self, event)
+
+
 
     def get_calendar_dates(self) -> Tuple[date, date]:
         return get_calendar_dates(self)

@@ -40,7 +40,8 @@ class SetupWindow:
         self.central: QWidget = QWidget()  
         self.setCentralWidget(self.central)
         self.mainbox: QVBoxLayout = QVBoxLayout(self.central) 
-        self.statusBar().showMessage('Ready')
+        self.statusbar = self.statusBar()  
+        self.statusbar.showMessage('Ready')
 
 
 

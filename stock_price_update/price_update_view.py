@@ -14,7 +14,8 @@ from typing import Tuple
 from PySide6.QtCore import QDate
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import (QApplication, QCalendarWidget, QComboBox, QGridLayout,
-                               QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+                               QHBoxLayout, QLabel, QLineEdit,
+                               QMainWindow, QMessageBox,
                                QProgressBar, QPushButton,
                                QTextBrowser, QVBoxLayout, QWidget)
 
@@ -28,8 +29,13 @@ from database_update.stock_list_model import stock_list_dict
 class SetupWindow:
     def __init__(ego, self) -> None:
         self.setWindowTitle('Stock Price Update')
-        self.setGeometry(0, 0, 900, 900)
-        self.mainbox = QVBoxLayout(self)
+        self.resize(900, 900)
+        self.central = QWidget()  
+        self.mainbox = QVBoxLayout(self.central)
+        self.setCentralWidget(self.central)
+        self.statusbar = self.statusBar()  
+        self.statusbar.showMessage('Ready')
+
 
 class BrowserRow:
     def __init__(ego, self) -> None:
@@ -81,7 +87,7 @@ class UpdateGrid:
 
         self.symbols_label = QLabel('SYMBOLS: ')
         self.symbols_lineedit = QLineEdit()
-        self.symbols_lineedit.setPlaceholderText('separated by spaces')
+        self.symbols_lineedit.setPlaceholderText('separated by spaces or commas')
         self.update_price_button = QPushButton('Update Price')
         self.update_price_button.setAccessibleName('update_price_button')
         self.update_technical_button = QPushButton('Update Technical')
@@ -117,7 +123,7 @@ class ProgressRow:
 
 
 
-class PriceUpdateView(QWidget):
+class PriceUpdateView(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         SetupWindow(self)  # mainbox is in SetupWindow() 
