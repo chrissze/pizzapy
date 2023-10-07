@@ -11,6 +11,7 @@ import sys;sys.path.append('..')
 from datetime import datetime
 from functools import partial
 import io
+import re
 import subprocess
 from timeit import timeit
 from typing import Any, Dict, List, Set, Union
@@ -163,6 +164,8 @@ def prepare_stock_list_file_content() -> str:
     DEPENDS ON: get_sp_500(), get_sp_nasdaq(), get_nasdaq_100(),  get_nasdaq_listed(), get_nasdaq_traded(), get_option_traded()
     IMPORTS: datetime
     USED BY: generate_stock_list_file() 
+
+    when I replace string BY re or replace('nan,', 'None,'), it will miss some items with special comma char, so I have to use ': nan'
     """
     current_time: datetime = datetime.now().replace(second=0, microsecond=0)
     file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_file() FUNCTION IN generate_file_model.py """'
@@ -170,13 +173,13 @@ def prepare_stock_list_file_content() -> str:
 
     sp_500_dict: Dict =  get_sp_500()
     sp_500_dict_comment: str = f'# {len(sp_500_dict)}'
-    sp_500_raw_variable: str = f'sp_500_dict: Dict = {sp_500_dict}'
-    sp_500_dict_variable: str = sp_500_raw_variable.replace('nan,', 'None,')
+    sp_500_raw_string: str = f'sp_500_dict: Dict = {sp_500_dict}'
+    sp_500_dict_variable: str = re.sub(': nan', ': None', sp_500_raw_string)
 
     sp_400_dict: Dict =  get_sp_400()
     sp_400_dict_comment: str = f'# {len(sp_400_dict)}'
-    sp_400_raw_variable: str = f'sp_400_dict: Dict = {sp_400_dict}'
-    sp_400_dict_variable: str = sp_400_raw_variable.replace('nan,', 'None,')
+    sp_400_raw_string: str = f'sp_400_dict: Dict = {sp_400_dict}'
+    sp_400_dict_variable: str = re.sub(': nan', ': None', sp_400_raw_string)
 
     nasdaq_100_dict: Dict =  get_nasdaq_100()
     nasdaq_100_dict_comment: str = f'# {len(nasdaq_100_dict)}'

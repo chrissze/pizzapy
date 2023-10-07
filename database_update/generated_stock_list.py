@@ -1,4 +1,4 @@
-""" THIS FILE IS GENERATED AT 2023-10-06 19:13:00 BY generate_stock_list_file() FUNCTION IN generate_file_model.py """
+""" THIS FILE IS GENERATED AT 2023-10-07 17:07:00 BY generate_stock_list_file() FUNCTION IN generate_file_model.py """
 
 
 from typing import Dict, List
@@ -9765,7 +9765,7 @@ sp_nasdaq_stocks: List[str] = [
 ]
 
 
-# 5107
+# 5112
 nasdaq_listed_stocks: List[str] = [
     "AACG",
     "AACI",
@@ -11427,6 +11427,9 @@ nasdaq_listed_stocks: List[str] = [
     "FBNC",
     "FBOT",
     "FBRX",
+    "FBYD",
+    "FBYDP",
+    "FBYDW",
     "FBZ",
     "FCA",
     "FCAL",
@@ -13558,6 +13561,7 @@ nasdaq_listed_stocks: List[str] = [
     "QDRO",
     "QDROU",
     "QDROW",
+    "QETAU",
     "QFIN",
     "QH",
     "QIPT",
@@ -14063,6 +14067,7 @@ nasdaq_listed_stocks: List[str] = [
     "SPFI",
     "SPGC",
     "SPI",
+    "SPKLU",
     "SPLK",
     "SPNS",
     "SPOK",
@@ -14877,7 +14882,7 @@ nasdaq_listed_stocks: List[str] = [
 ]
 
 
-# 11317
+# 11322
 nasdaq_traded_stocks: List[str] = [
     "A",
     "AA",
@@ -18501,6 +18506,9 @@ nasdaq_traded_stocks: List[str] = [
     "FBRX",
     "FBT",
     "FBY",
+    "FBYD",
+    "FBYDP",
+    "FBYDW",
     "FBZ",
     "FC",
     "FCA",
@@ -23221,6 +23229,7 @@ nasdaq_traded_stocks: List[str] = [
     "QDROW",
     "QEFA",
     "QEMM",
+    "QETAU",
     "QFIN",
     "QFTA",
     "QGEN",
@@ -24330,6 +24339,7 @@ nasdaq_traded_stocks: List[str] = [
     "SPIB",
     "SPIP",
     "SPIR",
+    "SPKLU",
     "SPKX",
     "SPKY",
     "SPLB",
