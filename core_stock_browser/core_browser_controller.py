@@ -156,7 +156,7 @@ def table_list_combobox_changed(self) -> None:
 
     """
     self.table_name = self.table_list_combobox.currentText()
-    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
+    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces or commas')
 
 
 def on_checkbox_changed(self, value: int, index: int) -> None:

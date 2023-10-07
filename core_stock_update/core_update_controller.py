@@ -82,12 +82,11 @@ def call_upsert(self, stockgen: Generator[str, None, None], progress_bar, progre
             #QCoreApplication.processEvents()  # this line will crash the progrom for 2+ active threads
     """
     func = table_function_dict.get(self.table_name) 
-    is_filled: bool = any(True for _ in stockgen) 
-    if is_filled:
-        for i, symbol in enumerate(stockgen, start=1): # if the list is too long, program will crash
-            result = try_str(func, symbol)
-            progress_bar.setValue(i)
-            progress_label.setText(f'{i}  {symbol} ')
+    for i, symbol in enumerate(stockgen, start=1): # if the list is too long, program will crash
+        print(i, symbol)
+        result = try_str(func, symbol)
+        progress_bar.setValue(i)
+        progress_label.setText(f'{i}  {symbol} ')
 
 
 
@@ -110,6 +109,8 @@ def start_thread(self, stock_list: List[str]) -> None:
     Keep those variables local, do not add self: list_length, progress_bar, progress_label, hbox, stockgen, thread_id, thread
 
     The hbox, progress_bar and progress_label will be deleted on thread_finished() call back function.
+
+    For empty line_edit, the stock_list will be ['']
     """
     thread_id: float = time.time()
     job_id: str = str(thread_id)[-3:]  
@@ -143,10 +144,11 @@ def update_core(self) -> None:
 
     I use stock_list as a start_thread second argument so that list decorator will work, 
     if I don't use decorator for upsert_core, I could simply make stock_list as self.stock_list, no second argument will be needed.
+    
+    In the stock_list line, I need to check lineedit_string by 'if lineedit_string', otherwise, re.split() will return ['']
     """
-    symbols_lineedit_string: str = self.symbols_lineedit.text()
-    stock_list: List[str] = re.split(r'[ ,]+', symbols_lineedit_string.strip())
-
+    lineedit_string: str = self.symbols_lineedit.text().strip()
+    stock_list: List[str] = re.split(r'[ ,]+', lineedit_string) if lineedit_string else []
     if stock_list:   # prevent empty lineedit
         start_thread(self, stock_list) 
     else:
@@ -184,7 +186,7 @@ def table_list_combobox_changed(self) -> None:
     """
     """
     self.table_name = self.table_list_combobox.currentText()
-    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces')
+    self.symbols_lineedit.setPlaceholderText(f'input SYMBOLS for {self.table_name}, separated by spaces or commas')
 
 
 def stock_list_combobox_changed(self) -> None:
