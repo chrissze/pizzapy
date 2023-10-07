@@ -131,8 +131,9 @@ def start_thread(self, stock_list: List[str]) -> None:
     self.threads_dict[thread_id] = thread
     thread.start()  # start the run() in QThread
     thread.wait(2) # prevent crash
-    self.statusbar.showMessage(f'Updateing {list_length} stocks')
-    self.browser.append(f'JOB {job_id}: Update {list_length} stocks ({self.table_name}) \n')
+    message = f'JOB {job_id}: Update {list_length} stocks ({self.table_name}) \n'
+    self.browser.append(message)
+    self.statusbar.showMessage(message)
 
 
 
