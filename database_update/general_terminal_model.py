@@ -18,8 +18,9 @@ from batterypy.control.trys import try_str
 
 
 # PROGRAM MODULES
-from database_update.stock_list_model import all_stocks, get_sp_500, get_nasdaq_100, get_sp_nasdaq, table_function_dict
+from database_update.stock_list_model import all_stocks, table_function_dict
 from database_update.postgres_read_model import view_vertical_terminal
+from database_update.generated_stock_list import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
 
@@ -132,9 +133,9 @@ def make_actions_dict(table: str) -> Dict[str, Any]:
     actions_dict: Dict[str, Any] = {
         '1': lambda: browse_symbol_loop(table),
         '2': lambda: upsert_symbol_loop(table),
-        '10': lambda: upsert_symbols_interactive(table, get_sp_500()),
-        '11': lambda: upsert_symbols_interactive(table, get_nasdaq_100()),
-        '12': lambda: upsert_symbols_interactive(table, get_sp_nasdaq()),
+        '10': lambda: upsert_symbols_interactive(table, sp_500_stocks),
+        '11': lambda: upsert_symbols_interactive(table, nasdaq_100_stocks),
+        '12': lambda: upsert_symbols_interactive(table, sp_nasdaq_stocks),
     }
     return actions_dict
 
