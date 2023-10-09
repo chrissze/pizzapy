@@ -73,23 +73,23 @@ def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[flo
     # filter out those words cannot be converted to numbers. 
     # growth_list (NVDA): ['11.70', '34.50', '25.70', '22.00']
     growth_list: list[str] = list(filter(lambda x: readf(x), tiny_strlist)) 
-    growth1y: Optional[float] = None if len(growth_list) < 1 else readf(growth_list[0])
-    growth3y: Optional[float] = None if len(growth_list) < 2 else readf(growth_list[1])
-    growth5y: Optional[float] = None if len(growth_list) < 3 else readf(growth_list[2])
-    growth10y: Optional[float] = None if len(growth_list) < 4 else readf(growth_list[3])
+    rev_growth_1y: Optional[float] = None if len(growth_list) < 1 else readf(growth_list[0])
+    rev_growth_3y: Optional[float] = None if len(growth_list) < 2 else readf(growth_list[1])
+    rev_growth_5y: Optional[float] = None if len(growth_list) < 3 else readf(growth_list[2])
+    rev_growth_10y: Optional[float] = None if len(growth_list) < 4 else readf(growth_list[3])
 
-    return growth1y, growth3y, growth5y, growth10y
+    return rev_growth_1y, rev_growth_3y, rev_growth_5y, rev_growth_10y
 
 
 
 
 def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """DEPENDS: try_get_guru_revenue_growths"""
-    growth1y, growth3y, growth5y, growth10y = get_guru_revenue_growths(symbol)
-    proxy['growth1y'] = growth1y if growth1y is not None else None
-    proxy['growth3y'] = growth3y if growth3y is not None else None
-    proxy['growth5y'] = growth5y if growth5y is not None else None
-    proxy['growth10y'] = growth10y if growth10y is not None else None
+    rev_growth_1y, rev_growth_3y, rev_growth_5y, rev_growth_10y = get_guru_revenue_growths(symbol)
+    proxy['rev_growth_1y'] = rev_growth_1y
+    proxy['rev_growth_3y'] = rev_growth_3y
+    proxy['rev_growth_5y'] = rev_growth_5y
+    proxy['rev_growth_10y'] = rev_growth_10y
     return proxy
 
 

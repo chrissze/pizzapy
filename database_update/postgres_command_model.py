@@ -55,10 +55,10 @@ guru_stock_create_table_command: str = """
     
     revenue_per_share   FLOAT8,    
     revenue_pc   FLOAT8,    
-    growth1y   FLOAT8,    
-    growth3y   FLOAT8,        
-    growth5y   FLOAT8,    
-    growth10y   FLOAT8,    
+    rev_growth_1y   FLOAT8,    
+    rev_growth_3y   FLOAT8,        
+    rev_growth_5y   FLOAT8,    
+    rev_growth_10y   FLOAT8,    
     
     strength   FLOAT8,    
     zscore   FLOAT8,
