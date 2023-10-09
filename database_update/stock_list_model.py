@@ -44,10 +44,6 @@ from stock_price_update.technical_update_database_model import upsert_recent_tec
 # need to comment out all_stocks when I use code to generate 
 all_stocks: List[str] = nasdaq_traded_stocks + ['FNMA', 'FMCC']
 
-#bank_stocks: List[str] = ['BAC', 'BK', 'C', 'CFG', 'CMA', 'COF', 'DFS', 'FITB', 'GS', 'JPM', 'HBAN', 'MS', 'MTB', 'NTRS', 'KEY', 'PNC', 'RF', 'SCHW', 'STT', 'SYF', 'TFC', 'USB', 'WFC', 'ZION']
-
-#bank_stocks_set: Set[str] = set(bank_stocks)
-
 stock_list_dict: Dict[str, List[str]] = {
     f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
     f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,

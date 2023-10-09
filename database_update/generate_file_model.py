@@ -33,7 +33,7 @@ from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 
 
 
-bank_stocks: List[str] = ['BAC', 'BK', 'C', 'CFG', 'CMA', 'COF', 'DFS', 'FITB', 'GS', 'JPM', 'HBAN', 'MS', 'MTB', 'NTRS', 'KEY', 'PNC', 'RF', 'SCHW', 'STT', 'SYF', 'TFC', 'USB', 'WFC', 'ZION']
+bank_stocks: List[str] = ['ASB', 'BAC', 'BK', 'C', 'CADE', 'CBSH', 'CFG', 'CFR', 'CMA', 'COF', 'COLB', 'DFS', 'EWBC', 'FFIN', 'FHN', 'FITB', 'FNB', 'GBCI', 'GS', 'HOMB', 'HWC', 'IBOC', 'JPM', 'HBAN', 'MS', 'MTB', 'NTRS', 'NYCB', 'KEY', 'ONB', 'OZK', 'PB', 'PNC', 'PNFP', 'RF', 'SCHW', 'SNV', 'SSB', 'STT', 'SYF', 'TCBI', 'TFC', 'UBSI', 'UMBF', 'USB', 'VLY', 'WBS', 'WFC', 'WTFC', 'ZION']
 
 bank_stocks_set: Set[str] = set(bank_stocks)
 
