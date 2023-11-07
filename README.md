@@ -9,11 +9,11 @@ Requirements to run PizzaPy
 3. a database connection file at local machine (mac or linux): /etc/config.json
 4. dimsumpy (custom library by Chris) at virtual environment's site-packages
    
-    pizzapy/ven/lib/python3.11/site-packages/dimsumpy
+    pizzapy/venv/lib/python3.11/site-packages/dimsumpy
    
 6. batterypy (custom library by Chris) at virtual environment's site-packages
    
-    pizzapy/ven/lib/python3.11/site-packages/batterypy
+    pizzapy/venv/lib/python3.11/site-packages/batterypy
    
 8. Linux or MacOS (Windows requires changing config.json file location source code) 
 
