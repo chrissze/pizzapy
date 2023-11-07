@@ -7,11 +7,11 @@ Requirements to run PizzaPy
 1. a virtual environment with python 3.10+ that contains dependency libraries in requirements.txt
 2. a running Postgresql Server
 3. a database connection file at local machine (mac or linux): /etc/config.json
-4. dimsumpy (custom library by Chris) at virtual environment's site-packages
+4. dimsumpy (custom library by Chris) at virtual environment's site-packages folder:
    
     pizzapy/venv/lib/python3.11/site-packages/dimsumpy
    
-6. batterypy (custom library by Chris) at virtual environment's site-packages
+6. batterypy (custom library by Chris) at virtual environment's site-packages folder:
    
     pizzapy/venv/lib/python3.11/site-packages/batterypy
    
