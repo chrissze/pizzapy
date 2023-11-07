@@ -8,10 +8,14 @@ Requirements to run PizzaPy
 2. a running Postgresql Server
 3. a database connection file at local machine (mac or linux): /etc/config.json
 4. dimsumpy (custom library by Chris) at virtual environment's site-packages
+   
     pizzapy/ven/lib/python3.11/site-packages/dimsumpy
-5. batterypy (custom library by Chris) at virtual environment's site-packages
+   
+6. batterypy (custom library by Chris) at virtual environment's site-packages
+   
     pizzapy/ven/lib/python3.11/site-packages/batterypy
-6. Linux or MacOS (Windows requires changing config.json file location source code) 
+   
+8. Linux or MacOS (Windows requires changing config.json file location source code) 
 
 sample /etc/config.json file for Postgres DB Server
 -----------------------------------------------
