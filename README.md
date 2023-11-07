@@ -20,11 +20,17 @@ Requirements to run PizzaPy
 sample /etc/config.json file for Postgres DB Server
 -----------------------------------------------
 {
+
 "POSTGRES_DB": "dbname",
+
 "POSTGRES_USER": "my_username",
+
 "POSTGRES_PASS": "my_password",
+
 "POSTGRES_HOST": "1.2.3.4",
+
 "POSTGRES_PORT": 5432
+
 }
 
 Contact
