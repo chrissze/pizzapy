@@ -35,4 +35,4 @@ sample /etc/config.json file for Postgres DB Server
 
 Contact
 -------------
-please contact me at 3chris at gmail.com for further questions.
+please contact me at 3chris at gmail.com / 96495943 for further questions.
