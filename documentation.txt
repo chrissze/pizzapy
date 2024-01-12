@@ -33,6 +33,10 @@ How to determine a WEAK stock by GURU analysis?
         VRSN FIS NCLH STX CCL WBD SBAC PCG T PEAK MTCH AES NI CME VTR D DUK CZR DXC RCL EIX EVRG CCI BXP EXC ICE FE LCID CHTR
 
 
+    Low increase50 stocks
+        increase50 ceiling: 0.16, decrease50 ceiling: -0.2
+        AIRC VZ UDR VFC DOC D EQR CPT MAA Q G ECL FR MMM ARE BALL WMT ICE TRMB CHH AVB LKQ WHR TROW TSN CLX AMT BAX PEAK ILMN CTSH FFIV EBAY EGP ESS WH EW RVTY
+
     I can select stocks with high interest payments (2023 OCT):
         AAL - American Airlines, 25%,  8 B
         CZR - Caesars Entertainment, 23%,  10 B
