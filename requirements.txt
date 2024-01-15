@@ -18,6 +18,8 @@ PySide6==6.5
 
 requests==2.31
 
+schedule
+
 SQLAlchemy
 
 wheel
@@ -25,8 +27,6 @@ wheel
 
 
 #cloudscraper
-
-
 
 # selenium
 
