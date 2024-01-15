@@ -26,11 +26,11 @@ from dimsumpy.qt.functions import closeEvent
 
 
 # PROGRAM MODULES
-from database_update.stock_list_model import stock_list_dict
-from database_update.postgres_connection_model import execute_pandas_read
+from ..database_update.stock_list_model import stock_list_dict
+from ..database_update.postgres_connection_model import execute_pandas_read
 
-from general_update.qt_model import MySortFilterProxyModel 
-from core_stock_browser.core_browser_view import CoreBrowserView
+from ..general_update.qt_model import MySortFilterProxyModel 
+from ..core_stock_browser.core_browser_view import CoreBrowserView
 
 
 def make_dataframe(self) -> None:

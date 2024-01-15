@@ -33,7 +33,7 @@ from dimsumpy.finance.technical import quantile, convert_to_changes, calculate_r
 
 
 # PROGRAM MODULES
-from stock_price_update.raw_price_model import get_price_odict
+from ..stock_price_update.raw_price_model import get_price_odict
 
 
 

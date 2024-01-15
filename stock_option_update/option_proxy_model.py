@@ -9,8 +9,8 @@ from typing import Any, List, Optional, Tuple, Union
 
 
 # PROGRAM MODULES
-from general_update.general_model import make_price_cap_proxy, initialize_proxy
-from stock_option_update.option_money_model import proxy_option_money
+from ..general_update.general_model import make_price_cap_proxy, initialize_proxy
+from ..stock_option_update.option_money_model import proxy_option_money
 
 
 

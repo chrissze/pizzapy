@@ -25,8 +25,8 @@ from batterypy.control.tools import trys
 from dimsumpy.database.postgres import upsert_many_psycopg, make_upsert_psycopg_query
 
 # PROGRAM MODULES
-from database_update.postgres_connection_model import make_psycopg_connection
-from guru_stock_update.guru_proxy_model import make_guru_proxy
+from ..database_update.postgres_connection_model import make_psycopg_connection
+from ..guru_stock_update.guru_proxy_model import make_guru_proxy
 
 
 def make_query() -> str:

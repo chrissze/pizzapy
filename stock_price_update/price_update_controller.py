@@ -38,13 +38,13 @@ from dimsumpy.qt.threads import MyThread
 
 
 # PROGRAM MODULES
-from database_update.stock_list_model import stock_list_dict
+from ..database_update.stock_list_model import stock_list_dict
 
-from stock_price_update.price_update_view import PriceUpdateView
+from ..stock_price_update.price_update_view import PriceUpdateView
 
-from stock_price_update.price_update_database_model import upsert_price
+from ..stock_price_update.price_update_database_model import upsert_price
 
-from stock_price_update.technical_update_database_model import upsert_technical
+from ..stock_price_update.technical_update_database_model import upsert_technical
 
 
 

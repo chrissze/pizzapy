@@ -20,9 +20,9 @@ from dimsumpy.database.postgres import upsert_many_dicts
 
 
 # PROGRAM MODULES
-from database_update.postgres_command_model import table_list_dict
-from database_update.postgres_connection_model import make_psycopg_connection
-from stock_price_update.technical_analysis_model import construct_technical_proxies
+from ..database_update.postgres_command_model import table_list_dict
+from ..database_update.postgres_connection_model import make_psycopg_connection
+from ..stock_price_update.technical_analysis_model import construct_technical_proxies
 
 
 

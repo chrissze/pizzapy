@@ -24,9 +24,9 @@ from dimsumpy.database.postgres import upsert_psycopg
 
 
 # PROGRAM MODULES
-from stock_option_update.option_proxy_model import make_option_proxy
-from database_update.postgres_command_model import table_list_dict
-from database_update.postgres_connection_model import make_psycopg_connection
+from ..stock_option_update.option_proxy_model import make_option_proxy
+from ..database_update.postgres_command_model import table_list_dict
+from ..database_update.postgres_connection_model import make_psycopg_connection
 
 
 

@@ -7,7 +7,7 @@ No need to import sys and sys.append in this module because this main.py module 
 """
 
 
-from gui_dock.main_dock_controller import main
+from .gui_dock.main_dock_controller import main
 
 
 

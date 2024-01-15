@@ -15,18 +15,18 @@ from batterypy.time.cal import get_trading_day_utc
 
 
 # PROGRAM MODULES
-from general_update.general_model import initialize_proxy, make_price_cap_proxy
-from guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
-from guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
-from guru_stock_update.guru_earn_model import proxy_guru_earn
-from guru_stock_update.guru_equity_model import proxy_guru_equity
-from guru_stock_update.guru_interest_model import proxy_guru_interest
-from guru_stock_update.guru_lynch_model import proxy_guru_lynch
-from guru_stock_update.guru_net_capital_model import proxy_guru_net_capital   # dataframes
-from guru_stock_update.guru_research_model import proxy_guru_research
-from guru_stock_update.guru_revenue_model import proxy_guru_revenue, proxy_guru_revenue_growths
-from guru_stock_update.guru_strength_model import proxy_guru_strength
-from guru_stock_update.guru_zscore_model import proxy_guru_zscore
+from ..general_update.general_model import initialize_proxy, make_price_cap_proxy
+from ..guru_stock_update.guru_book_value_model import proxy_guru_book_value   # dataframes
+from ..guru_stock_update.guru_debt_model import proxy_guru_debt   # dataframes
+from ..guru_stock_update.guru_earn_model import proxy_guru_earn
+from ..guru_stock_update.guru_equity_model import proxy_guru_equity
+from ..guru_stock_update.guru_interest_model import proxy_guru_interest
+from ..guru_stock_update.guru_lynch_model import proxy_guru_lynch
+from ..guru_stock_update.guru_net_capital_model import proxy_guru_net_capital   # dataframes
+from ..guru_stock_update.guru_research_model import proxy_guru_research
+from ..guru_stock_update.guru_revenue_model import proxy_guru_revenue, proxy_guru_revenue_growths
+from ..guru_stock_update.guru_strength_model import proxy_guru_strength
+from ..guru_stock_update.guru_zscore_model import proxy_guru_zscore
 
 
 

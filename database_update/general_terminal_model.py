@@ -18,9 +18,9 @@ from batterypy.control.trys import try_str
 
 
 # PROGRAM MODULES
-from database_update.stock_list_model import all_stocks, table_function_dict
-from database_update.postgres_read_model import view_vertical_terminal
-from database_update.generated_stock_list import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
+from ..database_update.stock_list_model import all_stocks, table_function_dict
+from ..database_update.postgres_read_model import view_vertical_terminal
+from ..database_update.generated_stock_list import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
 

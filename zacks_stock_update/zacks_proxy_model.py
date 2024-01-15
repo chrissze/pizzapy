@@ -9,9 +9,9 @@ from typing import Any, List, Optional, Tuple, Union
 
 
 # PROGRAM MODULES
-from general_update.general_model import initialize_proxy
-from zacks_stock_update.zacks_earnings_model import proxy_zacks_earnings
-from zacks_stock_update.zacks_scores_model import proxy_zacks_scores
+from ..general_update.general_model import initialize_proxy
+from ..zacks_stock_update.zacks_earnings_model import proxy_zacks_earnings
+from ..zacks_stock_update.zacks_scores_model import proxy_zacks_scores
 
 
 

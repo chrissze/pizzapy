@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (QApplication, QComboBox,
                                QTextBrowser, QVBoxLayout, QWidget)
 
 # PROGRAM MODULES
-from database_update.postgres_command_model import table_list_dict
-from database_update.stock_list_model import stock_list_dict
+from ..database_update.postgres_command_model import table_list_dict
+from ..database_update.stock_list_model import stock_list_dict
 
 
 class SetupWindow:
