@@ -6,6 +6,9 @@ test relative import
 
 """
 
+from ..brewing.zoo import animals
+
+
 
 fruits = ['apple', 'banana']
 
