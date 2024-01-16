@@ -10,6 +10,8 @@ from ..brewing.zoo import animals
 
 import bs4
 
+import numpy
+
 
 fruits = ['apple', 'banana']
 
