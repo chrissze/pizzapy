@@ -5,7 +5,7 @@ To get a price dataframe out of FROM TO date range.
 USED BY: price_update_database_model.py
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from collections import OrderedDict
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Tuple, Optional

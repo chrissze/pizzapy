@@ -10,7 +10,7 @@ This window has 4 horizontal boxes. These 4 boxes' sequence can be changed freel
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from typing import Tuple
 
 

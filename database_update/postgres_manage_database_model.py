@@ -14,7 +14,7 @@ SQL commands format in execute_pandas_read() and execute_psycopg_command():
 """
 
 # STANDARD LIB
-import sys; sys.path.append('..')
+
 import subprocess
 from typing import Any, Dict, List, Union
 

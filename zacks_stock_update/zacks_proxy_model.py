@@ -2,7 +2,7 @@
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 
 from multiprocessing.managers import DictProxy
 from typing import Any, List, Optional, Tuple, Union

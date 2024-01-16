@@ -14,7 +14,7 @@ I cannot place postgres execution functions in this module, as it will led to ci
 """
 
 # STANDARD LIB
-import sys; sys.path.append('..')
+
 import json
 from typing import Any, Dict
 

@@ -1,6 +1,6 @@
 
 # STANDARD LIBRARIES
-import sys; sys.path.append('..')
+
 from multiprocessing.managers import DictProxy
 from typing import Any, Dict, List, Optional, Tuple
 

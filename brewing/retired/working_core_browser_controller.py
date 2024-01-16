@@ -1,6 +1,6 @@
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from functools import partial
 
 # THIRD PARTY LIBS

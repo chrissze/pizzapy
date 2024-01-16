@@ -10,7 +10,7 @@ it is much faster to run 10 functions at the same time without nested try blocks
 """
 
 # STANDARD LIBRARIES
-import sys; sys.path.append('..')
+
 from multiprocessing.managers import DictProxy
 from typing import Any, List, Optional
 

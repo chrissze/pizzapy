@@ -4,7 +4,7 @@ USED BY: main.py
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from typing import Any, List
 
 

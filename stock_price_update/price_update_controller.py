@@ -15,7 +15,7 @@ I can start a 2nd operation when the 1st operation is still running by using thr
 
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date
 from itertools import dropwhile
 import re

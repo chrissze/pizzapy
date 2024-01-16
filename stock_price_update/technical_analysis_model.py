@@ -11,7 +11,7 @@ When I prepare an OrderedDict data source, I should use TODAY, not last trading 
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from collections import OrderedDict
 from datetime import date, datetime
 from functools import partial

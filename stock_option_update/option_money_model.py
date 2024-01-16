@@ -6,7 +6,7 @@ USED BY: option_proxy_model.py
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from itertools import dropwhile
 
 from multiprocessing import Pool

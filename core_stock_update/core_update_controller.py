@@ -9,7 +9,7 @@ USED BY: main_dock_controller.py
 
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from itertools import dropwhile
 import re
 import time

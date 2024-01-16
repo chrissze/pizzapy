@@ -1,7 +1,7 @@
 
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 
 from multiprocessing.managers import DictProxy
 

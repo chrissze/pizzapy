@@ -8,7 +8,7 @@ USED BY:
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 
 from multiprocessing import Pool
 from multiprocessing.managers import DictProxy

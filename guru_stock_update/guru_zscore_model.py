@@ -13,7 +13,7 @@ Morgan Stanley zscore is None, need further investigate
 
 
 # STANDARD LIBRARIES
-import sys; sys.path.append('..')
+
 from itertools import dropwhile
 from multiprocessing.managers import DictProxy
 from typing import Any, Dict, List, Optional, Tuple

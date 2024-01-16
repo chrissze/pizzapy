@@ -16,7 +16,7 @@ def make_upsert_psycopg_query(table: str, columns: List[str], primary_key_list: 
     
 """
 # STANDARD LIB
-import sys; sys.path.append('..')
+
 from typing import Any, Dict, List, Tuple
 
 

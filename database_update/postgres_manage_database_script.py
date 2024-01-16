@@ -6,7 +6,7 @@ USED BY: terminal_scripts/postgres_manage_database_script.py
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 import subprocess
 from typing import Any, Dict, List
 

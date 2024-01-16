@@ -1,4 +1,4 @@
-import sys; sys.path.append('..')
+
 
 from dimsumpy.qt5.dataframemodel import DataFrameModel
 from functools import partial

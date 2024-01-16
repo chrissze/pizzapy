@@ -2,7 +2,7 @@
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date, datetime
 
 

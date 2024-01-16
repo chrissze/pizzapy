@@ -6,7 +6,7 @@ DEPENDS ON: core_browser_view.py, qt_model.py
 USED BY: main_dock_controller.py
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from functools import partial
 import re
 from typing import Any, List, Tuple

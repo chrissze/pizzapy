@@ -8,7 +8,7 @@ USED BY: core_browser_controller.py
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 
 
 # THIRD PARTY LIBS

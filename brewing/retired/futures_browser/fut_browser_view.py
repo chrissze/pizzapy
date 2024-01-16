@@ -1,4 +1,4 @@
-import sys; sys.path.append('..')
+
 
 from PySide2.QtCore import QCoreApplication, QObject , QSortFilterProxyModel ,Qt
 from PySide2.QtGui import QCloseEvent, QIcon

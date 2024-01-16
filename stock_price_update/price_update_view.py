@@ -4,7 +4,7 @@ USED BY: price_update_controller.py
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date
 from typing import Tuple
 

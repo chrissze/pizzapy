@@ -6,7 +6,7 @@ DEPENDS ON: raw_price_model.py
 
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date, datetime, timezone
 from multiprocessing import Pool
 from multiprocessing.managers import DictProxy

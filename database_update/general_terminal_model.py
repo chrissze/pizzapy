@@ -5,7 +5,7 @@ USED BY:
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 
 from timeit import default_timer
 from typing import Any, Dict, List, Optional, Tuple, Union

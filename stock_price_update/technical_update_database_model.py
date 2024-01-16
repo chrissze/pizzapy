@@ -4,7 +4,7 @@
 
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 

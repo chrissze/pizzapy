@@ -8,7 +8,7 @@ https://www.gurufocus.com/term/RD/INTC/Research-&-Development
 
 
 # STANDARD LIBRARIES
-import sys; sys.path.append('..')
+
 from itertools import dropwhile
 from multiprocessing.managers import DictProxy
 from typing import Any, Dict, List, Optional, Tuple

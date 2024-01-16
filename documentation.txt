@@ -100,7 +100,7 @@ SECTION: CUSTOM LIBRARIES
 
     Sometimes, if I need to use modules in the same program, I need to append parent program folder to the sys.path.
 
-        import sys; sys.path.append('..')
+        
 
     I better keep this program to only 2-layer folder structure to simplify the imports.
 
@@ -128,7 +128,7 @@ SECTION: IMPORT
 
     Inside subfolder's modules like module1.py, I should not use relative imports because relative imports work only when I call them from program folder main.py or test.py, instead I should have the following sys.path line at the top of subfolders' modules, so that I could use if __name__ == '__main__': to test functions of that module
 
-        import sys; sys.path.append('..')
+        
 
     In main.py and test.py, I do not need to have above sys.path line.
 

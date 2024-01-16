@@ -10,7 +10,7 @@ https://www.gurufocus.com/term/per+share+rev/COIN/Revenue-per-Share/
 
 
 # STANDARD LIBRARIES
-import sys; sys.path.append('..')
+
 from itertools import dropwhile
 from multiprocessing.managers import DictProxy
 import re

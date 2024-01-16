@@ -4,7 +4,7 @@ This is a common module for guru_stock, zacks, stock_option
 """
 
 # STANDARD LIB
-import sys; sys.path.append('..')
+
 import subprocess
 from typing import Any, Dict, List, Union
 

@@ -2,7 +2,7 @@
 
 """
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 from datetime import date, datetime
 from multiprocessing.managers import DictProxy
 from typing import Any, List, Optional, Tuple, Union

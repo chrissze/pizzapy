@@ -9,7 +9,7 @@ In order for this script to work, the following must be satisfied:
 """
 
 # STANDARD LIBS
-import sys; sys.path.append('..')
+
 import subprocess
 from typing import List
 
