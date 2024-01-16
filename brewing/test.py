@@ -8,6 +8,7 @@ test relative import
 
 from ..brewing.zoo import animals
 
+import bs4
 
 
 fruits = ['apple', 'banana']
