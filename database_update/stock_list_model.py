@@ -7,21 +7,11 @@ USED BY:
 """
 
 # STANDARD LIBS
-import sys;sys.path.append('..')
-from datetime import datetime
-from functools import partial
-import io
-import subprocess
 from timeit import timeit
 from typing import Any, Dict, List, Set, Union
-import urllib.request as request
 
 
 # THIRD PARTY LIBS
-from bs4 import BeautifulSoup, ResultSet
-import pandas 
-from pandas.core.frame import DataFrame
-import requests
 
 # CUSTOM LIBS
 from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
