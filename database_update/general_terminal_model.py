@@ -20,7 +20,7 @@ from batterypy.control.trys import try_str
 # PROGRAM MODULES
 from ..database_update.stock_list_model import all_stocks, table_function_dict
 from ..database_update.postgres_read_model import view_vertical_terminal
-from ..database_update.generated_stock_list import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
+from ..database_update.generated_stock_list import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks
 
 
 
@@ -116,7 +116,8 @@ def make_text_menu(table: str) -> str:
         List operations:        
         10) Update {table} for S&P 500 
         11) Update {table} for Nasdaq 100
-        12) Update {table} for S&P 500 + Nasdaq 100
+        12) Update {table} for S&P 500 + S&P 400 + Nasdaq 100
+        13) Update {table} for Nasdaq Traded Stocks
         
         0)  quit
         Choose your action: """
@@ -136,6 +137,7 @@ def make_actions_dict(table: str) -> Dict[str, Any]:
         '10': lambda: upsert_symbols_interactive(table, sp_500_stocks),
         '11': lambda: upsert_symbols_interactive(table, nasdaq_100_stocks),
         '12': lambda: upsert_symbols_interactive(table, sp_nasdaq_stocks),
+        '13': lambda: upsert_symbols_interactive(table, nasdaq_traded_stocks),
     }
     return actions_dict
 
