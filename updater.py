@@ -1,4 +1,9 @@
 """
+Run the program:
+(venv) $ python3 -m pizzapy.updater
+
+
+
 In order for this script to work, the following must be satisfied:
     (1) each module in a subfolder must have sys.path.append('..')
 
