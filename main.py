@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
-
 """
+Run the program:
+(venv) $ python3 -m pizzapy.main
+
 Starting module of the whole program. I need to activate virtual environment before running this program module.
 
 No need to import sys and sys.append in this module because this main.py module is in the program folder.
