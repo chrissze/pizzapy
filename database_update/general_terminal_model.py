@@ -73,7 +73,7 @@ def browse_symbol_loop(table: str) -> None:
         elif SYMBOL in all_stocks:
             view_vertical_terminal(symbol=SYMBOL, table=table)
         else:
-            print('you have entered an invalid symbol - {symbol}')
+            print(f'you have entered an invalid symbol - {symbol}')
 
 
 
