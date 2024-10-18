@@ -1,4 +1,5 @@
-#  python3.11 works, python.12 does not
+# PIZZAPY  python3.11 works, python.12 does not
+#psycopg2-binary  #  for both Apple Silicon Mac and Intel Mac, not sure if I need this lib anymore
 
 beautifulsoup4~=4.0
 
@@ -11,8 +12,6 @@ lxml~=4.0
 pandas~=2.0.0
 
 psycopg[binary, pool]
-
-#psycopg2-binary  # For both Apple Silicon Mac and Intel Mac
 
 PySide6~=6.5.0
 

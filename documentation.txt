@@ -142,6 +142,16 @@ SECTION: IMPORT
 
 SECTION: requirements.txt
 ---------------------------
+    Working requirements.txt
+        python3 version 3.11
+        beautifulsoup4~=4.0
+        lxml~=4.0
+        pandas~=2.0.0        
+        PySide6~=6.5.0
+        requests~=2.0
+    
+    Q: Can I use python 3.12?
+        I tried 3.12 but some of the libraries in requirements cannot be installed.
 
     VIRTUAL ENVIRONMENT:
         # will install: pip, setuptools
