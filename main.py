@@ -12,12 +12,12 @@ Run the program:
 
     (venv) $ python3 -m pizzapy.main
     OR
-    (venv) $ python3 -m pizzapy.updater
+    (venv) $ python3 -m pizzapy.cli
 
     No need to import sys and sys.append in this main module because this main.py module is in the program folder.
 """
 
-from .gui_dock.main_dock_controller import main
+from pizzapy.gui_dock.main_dock_controller import main
 
 if __name__ == '__main__':
     main()

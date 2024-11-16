@@ -17,7 +17,7 @@ from typing import Any, List, Optional
 
 # THIRD PARTY LIBRARIES
 from pandas.core.frame import DataFrame
-import requests
+
 
 
 # CUSTOM LIBRARIES
@@ -25,7 +25,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
-from ..general_update.general_model import make_price_cap_proxy
+from pizzapy.general_update.general_model import make_price_cap_proxy
 
 
 

@@ -1,6 +1,6 @@
 """
 Run the program:
-(venv) $ python3 -m pizzapy.updater
+(venv) $ python3 -m pizzapy.cli
 
 
 
@@ -16,14 +16,16 @@ In order for this script to work, the following must be satisfied:
 # STANDARD LIBS
 
 import subprocess
+
 from typing import List
 
 # PROGRAM MODULES
-from .database_update.generate_file_model import generate_stock_list_file
 
-from .database_update.general_terminal_model import operate_stock_table
+from pizzapy.database_update.generate_file_model import generate_stock_list_file
 
-from .database_update.postgres_manage_database_script import manage_postgres_database
+from pizzapy.database_update.general_terminal_model import operate_stock_table
+
+from pizzapy.database_update.postgres_manage_database_script import manage_postgres_database
 
 
 

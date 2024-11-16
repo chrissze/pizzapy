@@ -1,0 +1,156 @@
+.
+├── README.md
+├── __pycache__
+│   ├── main.cpython-311.pyc
+│   └── updater.cpython-311.pyc
+├── brewing
+│   ├── job.py
+│   ├── reference_examples
+│   │   └── executemany_success.py
+│   ├── retired
+│   │   ├── ConduitTenancy1.txt
+│   │   ├── CustomFilter.py
+│   │   ├── available.txt
+│   │   ├── available_app.txt
+│   │   ├── available_com.txt
+│   │   ├── business-plan1.txt
+│   │   ├── copybrowserctrl.py
+│   │   ├── dailyfutopmodel.py
+│   │   ├── domain-available.txt
+│   │   ├── domain1.py
+│   │   ├── domain_checker.py
+│   │   ├── english.py
+│   │   ├── english10k.txt
+│   │   ├── english3000.txt
+│   │   ├── futures_browser
+│   │   │   ├── fut_browser_ctrl.py
+│   │   │   └── fut_browser_view.py
+│   │   ├── futures_update
+│   │   │   ├── fut_data_model.py
+│   │   │   ├── fut_update_ctrl.py
+│   │   │   ├── fut_update_view.py
+│   │   │   ├── ino_model.py
+│   │   │   └── page.html
+│   │   ├── hello.py
+│   │   ├── ocr.txt
+│   │   ├── old-pizzas.py
+│   │   ├── openvpn
+│   │   │   └── etc-config-openvpn.txt
+│   │   ├── stock_price_browser
+│   │   │   ├── price_browser_ctrl.py
+│   │   │   └── price_browser_view.py
+│   │   └── working_core_browser_controller.py
+│   ├── test.py
+│   └── zoo.py
+├── core_stock_browser
+│   ├── __pycache__
+│   │   ├── core_browser_controller.cpython-311.pyc
+│   │   └── core_browser_view.cpython-311.pyc
+│   ├── core_browser_controller.py
+│   └── core_browser_view.py
+├── core_stock_update
+│   ├── __pycache__
+│   │   ├── core_update_controller.cpython-311.pyc
+│   │   └── core_update_view.cpython-311.pyc
+│   ├── core_update_controller.py
+│   └── core_update_view.py
+├── database_update
+│   ├── __pycache__
+│   │   ├── general_terminal_model.cpython-311.pyc
+│   │   ├── generate_file_model.cpython-311.pyc
+│   │   ├── generated_stock_list.cpython-311.pyc
+│   │   ├── postgres_command_model.cpython-311.pyc
+│   │   ├── postgres_connection_model.cpython-311.pyc
+│   │   ├── postgres_manage_database_model.cpython-311.pyc
+│   │   ├── postgres_manage_database_script.cpython-311.pyc
+│   │   ├── postgres_read_model.cpython-311.pyc
+│   │   └── stock_list_model.cpython-311.pyc
+│   ├── general_terminal_model.py
+│   ├── generate_file_model.py
+│   ├── generated_stock_list.py
+│   ├── postgres_command_model.py
+│   ├── postgres_connection_model.py
+│   ├── postgres_manage_database_model.py
+│   ├── postgres_manage_database_script.py
+│   ├── postgres_read_model.py
+│   └── stock_list_model.py
+├── documentation.txt
+├── general_update
+│   ├── __pycache__
+│   │   ├── general_model.cpython-311.pyc
+│   │   └── qt_model.cpython-311.pyc
+│   ├── general_model.py
+│   └── qt_model.py
+├── gui_dock
+│   ├── __pycache__
+│   │   ├── main_dock_controller.cpython-311.pyc
+│   │   └── main_dock_view.cpython-311.pyc
+│   ├── main_dock_controller.py
+│   └── main_dock_view.py
+├── guru_stock_update
+│   ├── __pycache__
+│   │   ├── guru_book_value_model.cpython-311.pyc
+│   │   ├── guru_debt_model.cpython-311.pyc
+│   │   ├── guru_earn_model.cpython-311.pyc
+│   │   ├── guru_equity_model.cpython-311.pyc
+│   │   ├── guru_interest_model.cpython-311.pyc
+│   │   ├── guru_lynch_model.cpython-311.pyc
+│   │   ├── guru_net_capital_model.cpython-311.pyc
+│   │   ├── guru_proxy_model.cpython-311.pyc
+│   │   ├── guru_research_model.cpython-311.pyc
+│   │   ├── guru_revenue_model.cpython-311.pyc
+│   │   ├── guru_strength_model.cpython-311.pyc
+│   │   ├── guru_update_database_model.cpython-311.pyc
+│   │   └── guru_zscore_model.cpython-311.pyc
+│   ├── guru_book_value_model.py
+│   ├── guru_debt_model.py
+│   ├── guru_earn_model.py
+│   ├── guru_equity_model.py
+│   ├── guru_interest_model.py
+│   ├── guru_lynch_model.py
+│   ├── guru_net_capital_model.py
+│   ├── guru_proxy_model.py
+│   ├── guru_research_model.py
+│   ├── guru_revenue_model.py
+│   ├── guru_strength_model.py
+│   ├── guru_update_database_model.py
+│   └── guru_zscore_model.py
+├── main.py
+├── pbcopy
+├── requirements.txt
+├── stock_option_update
+│   ├── __pycache__
+│   │   ├── option_money_model.cpython-311.pyc
+│   │   ├── option_proxy_model.cpython-311.pyc
+│   │   └── option_update_database_model.cpython-311.pyc
+│   ├── option_money_model.py
+│   ├── option_proxy_model.py
+│   └── option_update_database_model.py
+├── stock_price_update
+│   ├── __pycache__
+│   │   ├── price_update_controller.cpython-311.pyc
+│   │   ├── price_update_database_model.cpython-311.pyc
+│   │   ├── price_update_view.cpython-311.pyc
+│   │   ├── raw_price_model.cpython-311.pyc
+│   │   ├── technical_analysis_model.cpython-311.pyc
+│   │   └── technical_update_database_model.cpython-311.pyc
+│   ├── price_update_controller.py
+│   ├── price_update_database_model.py
+│   ├── price_update_view.py
+│   ├── raw_price_model.py
+│   ├── technical_analysis_model.py
+│   └── technical_update_database_model.py
+├── updater.py
+├── working-requirements.txt
+└── zacks_stock_update
+    ├── __pycache__
+    │   ├── zacks_earnings_model.cpython-311.pyc
+    │   ├── zacks_proxy_model.cpython-311.pyc
+    │   ├── zacks_scores_model.cpython-311.pyc
+    │   └── zacks_update_database_model.cpython-311.pyc
+    ├── zacks_earnings_model.py
+    ├── zacks_proxy_model.py
+    ├── zacks_scores_model.py
+    └── zacks_update_database_model.py
+
+27 directories, 127 files
