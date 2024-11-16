@@ -11,7 +11,7 @@ import subprocess
 from typing import Any, Dict, List
 
 # PROGRAM MODULES
-from ..database_update.postgres_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
+from pizzapy.database_update.postgres_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
 
 
 postgres_menu_text: str = """\n

@@ -13,11 +13,11 @@ from PySide6.QtCore import Qt, QRegularExpression
 from dimsumpy.qt.dataframemodel import DataFrameModel
 
 # PROGRAM MODULES
-from ..database_update.stock_list_model import stock_list_dict
-from ..database_update.postgres_connection_model import execute_pandas_read
+from pizzapy.database_update.stock_list_model import stock_list_dict
+from pizzapy.database_update.postgres_connection_model import execute_pandas_read
 
-from ..general_update.qt_model import MySortFilterProxyModel 
-from ..core_stock_browser.core_browser_view import CoreBrowserView
+from pizzapy.general_update.qt_model import MySortFilterProxyModel 
+from pizzapy.core_stock_browser.core_browser_view import CoreBrowserView
 from typing import Any, List, Tuple
 
 

@@ -15,7 +15,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_soup
 
 # PROGRAM MODULES
-from ..general_update.general_model import make_price_cap_proxy
+from pizzapy.general_update.general_model import make_price_cap_proxy
 
 
 def get_guru_lynch(symbol: str) -> Optional[float]:

@@ -2,14 +2,6 @@
 Run the program:
 (venv) $ python3 -m pizzapy.cli
 
-
-
-In order for this script to work, the following must be satisfied:
-    (1) each module in a subfolder must have sys.path.append('..')
-
-    (2)  each module in a subfolder must have full path import even for same folder module,
-    see database_update/postgres_execution_model.py
-
     
 """
 

@@ -17,14 +17,14 @@ from typing import Any, Dict, List, Set, Union
 from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 
 # PROGRAM MODULES
-from ..database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks, sp_400_stocks, sp_500_stocks, sp_nasdaq_stocks
+from pizzapy.database_update.generated_stock_list import nasdaq_100_stocks, nasdaq_listed_stocks, nasdaq_traded_stocks, sp_400_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
-from ..guru_stock_update.guru_update_database_model import upsert_guru
-from ..stock_option_update.option_update_database_model import upsert_option
-from ..zacks_stock_update.zacks_update_database_model import upsert_zacks
-from ..stock_price_update.price_update_database_model import upsert_latest_price
-from ..stock_price_update.technical_update_database_model import upsert_recent_technical, upsert_technical_one
+from pizzapy.guru_stock_update.guru_update_database_model import upsert_guru
+from pizzapy.stock_option_update.option_update_database_model import upsert_option
+from pizzapy.zacks_stock_update.zacks_update_database_model import upsert_zacks
+from pizzapy.stock_price_update.price_update_database_model import upsert_latest_price
+from pizzapy.stock_price_update.technical_update_database_model import upsert_recent_technical, upsert_technical_one
 
 
 

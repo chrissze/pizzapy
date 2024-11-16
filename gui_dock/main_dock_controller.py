@@ -17,13 +17,13 @@ from PySide6.QtGui import QCloseEvent
 from dimsumpy.qt.functions import closeEvent
 
 # PROGRAM MODULES
-from ..gui_dock.main_dock_view import MainDockView
+from pizzapy.gui_dock.main_dock_view import MainDockView
 
-from ..core_stock_update.core_update_controller import CoreUpdateController
+from pizzapy.core_stock_update.core_update_controller import CoreUpdateController
 
-from ..core_stock_browser.core_browser_controller import CoreBrowserController
+from pizzapy.core_stock_browser.core_browser_controller import CoreBrowserController
 
-from ..stock_price_update.price_update_controller import PriceUpdateController
+from pizzapy.stock_price_update.price_update_controller import PriceUpdateController
 
 
 

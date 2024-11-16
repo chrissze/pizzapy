@@ -24,9 +24,9 @@ import pandas
 from pandas.core.frame import DataFrame
 
 # PROGRAM MODULES
-from ..database_update.postgres_command_model import table_list_dict
+from pizzapy.database_update.postgres_command_model import table_list_dict
 
-from ..database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
+from pizzapy.database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
         
 def show_databases() -> DataFrame:

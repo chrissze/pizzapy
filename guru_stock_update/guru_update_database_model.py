@@ -23,9 +23,9 @@ from batterypy.control.trys import try_str
 from dimsumpy.database.postgres import upsert_psycopg, execute_psycopg
 
 # PROGRAM MODULES
-from ..guru_stock_update.guru_proxy_model import make_guru_proxy
-from ..database_update.postgres_command_model import table_list_dict
-from ..database_update.postgres_connection_model import make_psycopg_connection
+from pizzapy.guru_stock_update.guru_proxy_model import make_guru_proxy
+from pizzapy.database_update.postgres_command_model import table_list_dict
+from pizzapy.database_update.postgres_connection_model import make_psycopg_connection
 
 
 

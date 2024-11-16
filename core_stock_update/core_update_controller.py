@@ -30,8 +30,8 @@ from dimsumpy.qt.functions import closeEvent
 from dimsumpy.qt.threads import MyThread
 
 # PROGRAM MODULES
-from ..core_stock_update.core_update_view import CoreUpdateView
-from ..database_update.stock_list_model import stock_list_dict, table_function_dict
+from pizzapy.core_stock_update.core_update_view import CoreUpdateView
+from pizzapy.database_update.stock_list_model import stock_list_dict, table_function_dict
 
 
 

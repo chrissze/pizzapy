@@ -32,10 +32,13 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 def get_guru_book_value(symbol: str) -> Optional[float]:
     """
     The returning value is Tangible Book Value Per Share.
+
+    https://www.gurufocus.com/term/tangibles-book-per-share/AMD
+    
     """
-    book_value_url: str = f'https://www.gurufocus.com/term/Tangibles_book_per_share/{symbol}/Tangible-Book-per-Share/'
+    book_value_url: str = f'https://www.gurufocus.com/term/tangibles-book-per-share/{symbol}'
     book_value_dfs: List[DataFrame] = get_html_dataframes(book_value_url)
-    book_value_str: Any = '' if len(book_value_dfs) < 3 or book_value_dfs[2].empty else book_value_dfs[2].iloc[-1, -1] 
+    book_value_str: Any = '' if len(book_value_dfs) < 3 or book_value_dfs[1].empty else book_value_dfs[1].iloc[-1, -1] 
     book_value: Optional[float] = readf(book_value_str)
     return book_value
 
@@ -69,6 +72,9 @@ def test_proxy_guru_book_value() -> None:
 
 
 
+def test() -> None:    
+    v = get_guru_book_value('AMD')
+    print(v)
 
 if __name__ == '__main__':    
-    test_proxy_guru_book_value()     
+    test_proxy_guru_book_value()

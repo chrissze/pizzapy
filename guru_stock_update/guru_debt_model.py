@@ -18,7 +18,7 @@ from batterypy.string.read import readf
 from dimsumpy.web.crawler import get_html_dataframes
 
 # PROGRAM MODULES
-from ..general_update.general_model import make_price_cap_proxy
+from pizzapy.general_update.general_model import make_price_cap_proxy
 
 
 def get_guru_debt_per_share(symbol: str) -> Optional[float]:
@@ -29,15 +29,17 @@ def get_guru_debt_per_share(symbol: str) -> Optional[float]:
     TTWO debt is 0.00 with tables, ttwo's debt is really 0.00
         USO is None
     
-        https://www.gurufocus.com/term/Total_Debt_Per_Share/nvda/Total-Debt-per-Share
-        will divert to
-        https://www.gurufocus.com/term/Total_Debt_Per_Share/NVDA/Total-Debt-per-Share/NVDA
+        https://www.gurufocus.com/term/total-debt-per-share/NVDA
 
     """
-    debt_url: str = f'https://www.gurufocus.com/term/Total_Debt_Per_Share/{symbol}/Total-Debt-per-Share'
+    debt_url: str = f'https://www.gurufocus.com/term/total-debt-per-share/{symbol}'
+
     debt_dfs: List[DataFrame] = get_html_dataframes(debt_url)
-    debt_str: Any = '' if len(debt_dfs) < 3 or debt_dfs[2].empty else debt_dfs[2].iloc[-1, -1] # can be str or float64 type
+
+    debt_str: Any = '' if len(debt_dfs) < 3 or debt_dfs[1].empty else debt_dfs[1].iloc[-1, -1] # can be str or float64 type
+
     debt_per_share: Optional[float] = readf(debt_str)
+
     return debt_per_share
 
 
@@ -58,9 +60,14 @@ def proxy_guru_debt(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
-if __name__ == '__main__':
+def test() -> None:
     
     stock = input('which stock do you want to check? ')
     x = get_guru_debt_per_share(stock)
     print(x)
     
+
+
+if __name__ == '__main__':
+    
+    test()

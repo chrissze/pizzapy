@@ -18,7 +18,7 @@ from batterypy.string.read import format_number_with_commas
 
 # PROGRAM MODULES
 
-from ..database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
+from pizzapy.database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
 
 

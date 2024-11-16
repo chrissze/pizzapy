@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QApplication, QCalendarWidget, QComboBox, QGridLa
 # CUSTOM LIBS
 
 # PROGRAM MODULES
-from ..database_update.stock_list_model import stock_list_dict
+from pizzapy.database_update.stock_list_model import stock_list_dict
 
 
 
