@@ -4,13 +4,14 @@
 USED BY: 
     central_script.py
 
+
 """
 
 # STANDARD LIBS
 import sys;sys.path.append('..')
 from datetime import datetime
 from functools import partial
-import io
+from io import StringIO
 import re
 import subprocess
 from timeit import timeit
@@ -80,7 +81,7 @@ def get_nasdaq_100() -> Any:
     nasdaq_100_url: str = 'https://en.wikipedia.org/wiki/NASDAQ-100'
     soup: BeautifulSoup = get_html_soup(nasdaq_100_url)
     soup_item: ResultSet = soup.find('table', id='constituents')
-    dfs: List[DataFrame] = pandas.read_html(str(soup_item), header=0)
+    dfs: List[DataFrame] = pandas.read_html(StringIO(str(soup_item)), header=0)
     df = dfs[0]
     df.columns = ['Company', 'Ticker', 'Sector', 'Industry']
     stocks_dict = df.set_index('Ticker').to_dict(orient='index')
@@ -118,7 +119,7 @@ def get_nasdaq_listed() -> List[str]:
     url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt'
     with request.urlopen(url1) as r:
         text = r.read().decode()
-    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    df_nasdaq: DataFrame = pandas.read_csv(StringIO(text), sep='|', header=0)
     initial_list: List[str] = list(df_nasdaq.iloc[:-1, 0])
     stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
     return stock_list
@@ -136,7 +137,7 @@ def get_nasdaq_traded() -> List[str]:
     url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt'
     with request.urlopen(url1) as r:
         text = r.read().decode()
-    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    df_nasdaq: DataFrame = pandas.read_csv(StringIO(text), sep='|', header=0)
     initial_list: List[str] = list(df_nasdaq.iloc[:-1, 1])
     stock_list:List[str] = [item for item in initial_list if isinstance(item, str)]
     return stock_list
@@ -152,7 +153,7 @@ def get_option_traded() -> List[str]:
     url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/options.txt'
     with request.urlopen(url1) as r:
         text = r.read().decode()
-    df_nasdaq: DataFrame = pandas.read_csv(io.StringIO(text), sep='|', header=0)
+    df_nasdaq: DataFrame = pandas.read_csv(StringIO(text), sep='|', header=0)
     stocks: List[str] = list(df_nasdaq.iloc[:-1, 0])
     option_stocks: List[str] = sorted(list(set(stocks)))
     return option_stocks
@@ -291,4 +292,4 @@ def test() -> None:
 
 
 if __name__ == '__main__':
-    test_generated()
+    test()

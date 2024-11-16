@@ -85,7 +85,7 @@ def make_sqlalchemy_engine() -> Engine:
     pg_host: str = config.get('POSTGRES_HOST')
     pg_port: int = config.get('POSTGRES_PORT')
     pg_db: str = config.get('POSTGRES_DB')
-    postgres_engine: Engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}', echo=None)
+    postgres_engine: Engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}', echo=None)
     return postgres_engine
 
 
