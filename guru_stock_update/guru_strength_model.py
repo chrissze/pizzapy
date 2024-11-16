@@ -1,6 +1,5 @@
 """
-    https://www.gurufocus.com/term/rank_balancesheet/NVDA/Financial-Strength/
-
+https://www.gurufocus.com/term/rank-balancesheet/NVDA
 """
 
 
@@ -28,9 +27,9 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 
 def get_guru_strength(symbol: str) -> Optional[float]:
     """
-
+    https://www.gurufocus.com/term/rank-balancesheet/NVDA
     """
-    strength_url: str = f'https://www.gurufocus.com/term/rank_balancesheet/{symbol}/Financial-Strength/'
+    strength_url: str = f'https://www.gurufocus.com/term/rank-balancesheet/{symbol}'
     strength_soup: BeautifulSoup = get_html_soup(strength_url)
     strength_soup_items: ResultSet = strength_soup.find_all('meta', attrs={'name': 'description'})
     content: str = '' if not strength_soup_items else strength_soup_items[0].get('content')
@@ -54,10 +53,11 @@ def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
-if __name__ == '__main__':
-    
+def test():
     stock = input('which stock do you want to check? ')
     proxy = make_price_cap_proxy(stock)
     x = proxy_guru_strength(stock, proxy=proxy)
     print(x)
     
+if __name__ == '__main__':
+    test()

@@ -115,11 +115,13 @@ def make_guru_proxy(symbol: str) -> DictProxy:
 
 
 
-if __name__ == '__main__':
-
+def test():
     stock = input('which stock do you want to check? ')
     
     x = make_guru_proxy(stock)
     
     print(x)
 
+
+if __name__ == '__main__':
+    test()

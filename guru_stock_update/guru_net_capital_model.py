@@ -21,12 +21,21 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 
 
 def get_guru_net_capital(symbol: str) -> Optional[float]:
-    """net_capital here is (cash equivalent + Receivable * certain percentage + inventory * percentage - total debt)"""
-    net_capital_url: str = f'https://www.gurufocus.com/term/NCAV/{symbol}/Net-Net-Working-Capital/'
+    """
+    net_capital here is (cash equivalent + Receivable * certain percentage + inventory * percentage - total debt)
+    
+    https://www.gurufocus.com/term/net-net-working-capital/NVDA
+    """
+    
+    net_capital_url: str = f'https://www.gurufocus.com/term/net-net-working-capital/{symbol}'
+    
     net_capital_dfs: List[DataFrame] = get_html_dataframes(net_capital_url)
+    
     # net_capital_value can be str or float64 type
-    net_capital_value: Any = '' if len(net_capital_dfs) < 3 or net_capital_dfs[2].empty else net_capital_dfs[2].iloc[-1, -1]
+    net_capital_value: Any = '' if len(net_capital_dfs) < 3 or net_capital_dfs[1].empty else net_capital_dfs[1].iloc[-1, -1]
+    
     net_capital: Optional[float] = readf(net_capital_value)
+    
     return net_capital
 
 
@@ -45,10 +54,12 @@ def proxy_guru_net_capital(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-if __name__ == '__main__':
+def test():
     
     stock = input('which stock do you want to check net_capital? ')
     proxy = make_price_cap_proxy(stock)
     x = proxy_guru_net_capital(stock, proxy=proxy)
     print(x)
     
+if __name__ == '__main__':
+    test()

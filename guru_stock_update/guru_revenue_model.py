@@ -34,8 +34,10 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
     """
     returns Revenue Per Share
+
+    https://www.gurufocus.com/term/revenue-per-share/NVDA
     """
-    revenue_url: str = f'https://www.gurufocus.com/term/per+share+rev/{symbol}/Revenue-per-Share/'
+    revenue_url: str = f'https://www.gurufocus.com/term/revenue-per-share/{symbol}'
     revenue_soup: BeautifulSoup = get_html_soup(revenue_url)
     soup_items: ResultSet = revenue_soup.find_all('meta', attrs={'name': 'description'})
     content: str = '' if not soup_items else soup_items[0].get('content')
@@ -48,7 +50,10 @@ def get_guru_revenue_per_share(symbol: str) -> Optional[float]:
 
 
 def proxy_guru_revenue(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    """DEPENDS: try_get_guru_revenue > get_guru_revenue"""
+    """
+    DEPENDS: try_get_guru_revenue > get_guru_revenue
+    
+    """
     revenue_per_share: Optional[float] = get_guru_revenue_per_share(symbol)   
     proxy['revenue_per_share'] = revenue_per_share
     
@@ -61,7 +66,7 @@ def get_guru_revenue_growths(symbol: str) -> Tuple[Optional[float], Optional[flo
     """    
     returns Revenue Growths in years
     """
-    revenue_url: str = f'https://www.gurufocus.com/term/per+share+rev/{symbol}/Revenue-per-Share/'
+    revenue_url: str = f'https://www.gurufocus.com/term/revenue-per-share/{symbol}'
     html_text: str = get_html_text(revenue_url)
     # the + sign matches multiple occurrence of the same character, such as <<, >>, %%%, commonly use when there are spaces.
     # strlist is the result of spliting a whole page of html text.
@@ -93,11 +98,12 @@ def proxy_guru_revenue_growths(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-
-if __name__ == '__main__':
+def test():
     stock = input('which stock do you want to check revenue? ')
     proxy = make_price_cap_proxy(stock)
     proxy2 = proxy_guru_revenue(stock, proxy=proxy)
     proxy3 = proxy_guru_revenue_growths(stock, proxy=proxy2)
     print(proxy3)
     
+if __name__ == '__main__':
+    test()

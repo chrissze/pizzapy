@@ -23,9 +23,10 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 
 def get_guru_equity(SYMBOL: str) -> Optional[float]:
     """
-        
+
+    https://www.gurufocus.com/term/total-stockholders-equity/NVDA
     """
-    equity_url: str = f'https://www.gurufocus.com/term/Total+Equity/{SYMBOL}/Total-Stockholders-Equity/'
+    equity_url: str = f'https://www.gurufocus.com/term/total-stockholders-equity/{SYMBOL}'
     equity_soup: BeautifulSoup = get_html_soup(equity_url)
     equity_soup_items: ResultSet = equity_soup.find_all('meta', attrs={'name': 'description'})
     
@@ -51,7 +52,7 @@ def proxy_guru_equity(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-if __name__ == '__main__':
+def test():
     
     stock = input('which stock do you want to check equity? ')
     proxy = make_price_cap_proxy(stock)
@@ -59,3 +60,6 @@ if __name__ == '__main__':
     x = proxy_guru_equity(stock, proxy)
     print(x)
     
+
+if __name__ == '__main__':
+    test()

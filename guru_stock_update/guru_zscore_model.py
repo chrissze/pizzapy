@@ -4,10 +4,10 @@ When Altman Z-Score is LESS THAN 1.8, it is in Distress Zones.
 When Altman Z-Score is between 1.8 and 3, it is in Grey Zones.
 When Altman Z-Score GREATER THAN 3, it is in Safe Zones.
 
-https://www.gurufocus.com/term/zscore/NVDA/Altman-Z-Score/
+Morgan Stanley zscore is None, because guru website states that
+Altman Z-Score does not apply to banks and insurance companies.
 
-Morgan Stanley zscore is None, need further investigate
-
+https://www.gurufocus.com/term/zscore/NVDA
 
 """
 
@@ -38,9 +38,9 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 def get_guru_zscore(symbol: str) -> Optional[float]:
     """
 
-    Morgan Stanley zscore is None, need further investigate
+    https://www.gurufocus.com/term/zscore/NVDA
     """
-    zscore_url: str = f'https://www.gurufocus.com/term/zscore/{symbol}/Altman-Z-Score/'
+    zscore_url: str = f'https://www.gurufocus.com/term/zscore/{symbol}'
     zscore_soup: BeautifulSoup = get_html_soup(zscore_url)
     zscore_soup_items: ResultSet = zscore_soup.find_all('meta', attrs={'name': 'description'})
     content: str = '' if not zscore_soup_items else zscore_soup_items[0].get('content')
@@ -61,10 +61,11 @@ def proxy_guru_zscore(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
-
-if __name__ == '__main__':
+def test():
     stock = input('which stock do you want to check zscore? ')
     proxy = make_price_cap_proxy(stock)
     x = proxy_guru_zscore(stock, proxy=proxy)
     print(x)
     
+if __name__ == '__main__':
+    test()

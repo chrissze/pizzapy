@@ -1,4 +1,5 @@
 #  python3.11 works, python.12 does not
+#
 
 beautifulsoup4~=4.0
 
@@ -25,6 +26,7 @@ schedule
 SQLAlchemy
 
 wheel
+
 
 
 

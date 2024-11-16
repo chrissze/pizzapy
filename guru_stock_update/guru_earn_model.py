@@ -29,11 +29,11 @@ from pizzapy.general_update.general_model import make_price_cap_proxy
 def get_guru_earn_per_share(symbol: str, d: DictProxy={}) -> Optional[float]:
     """
     REQUIRES: beautifulsoup4
-    
-    https://www.gurufocus.com/term/eps_nri/NVDA/EPS-without-NRI/
+
+    https://www.gurufocus.com/term/eps-without-nri/NVDA
     
     """
-    earn_url: str = f'https://www.gurufocus.com/term/eps_nri/{symbol}/EPS-without-NRI/'
+    earn_url: str = f'https://www.gurufocus.com/term/eps-without-nri/{symbol}'
     earn_soup: BeautifulSoup = get_html_soup(earn_url)
     earn_soup_items: ResultSet = earn_soup.find_all('meta', attrs={'name': 'description'})
     content: str = '' if not earn_soup_items else earn_soup_items[0].get('content')
@@ -57,10 +57,14 @@ def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
-if __name__ == '__main__':
+def test():
     
     stock = input('which stock do you want to check? ')
     proxy = make_price_cap_proxy(stock)
     x = proxy_guru_earn(stock, proxy=proxy)
     print(x)
     
+
+
+if __name__ == '__main__':
+    test()
