@@ -33,11 +33,11 @@ def make_psycopg_connection() -> Connection:
     """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
-    pg_db: str = config.get('POSTGRES_DB')
-    pg_user: str = config.get('POSTGRES_USER')
-    pg_pass: str = config.get('POSTGRES_PASS')
-    pg_host: str = config.get('POSTGRES_HOST')
-    pg_port: int = config.get('POSTGRES_PORT')
+    pg_host: str = config.get('POSTGRESQL_MASTER_HOST')
+    pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
+    pg_db: str = config.get('POSTGRESQL_DATABASE')
+    pg_user: str = config.get('POSTGRESQL_USERNAME')
+    pg_pass: str = config.get('POSTGRESQL_PASSWORD')
     return connect(dbname=pg_db, user=pg_user, password=pg_pass, host=pg_host, port=pg_port)
 
 
@@ -80,11 +80,11 @@ def make_sqlalchemy_engine() -> Engine:
     """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
-    pg_user: str = config.get('POSTGRES_USER')
-    pg_pass: str = config.get('POSTGRES_PASS')
-    pg_host: str = config.get('POSTGRES_HOST')
-    pg_port: int = config.get('POSTGRES_PORT')
-    pg_db: str = config.get('POSTGRES_DB')
+    pg_host: str = config.get('POSTGRESQL_MASTER_HOST')
+    pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
+    pg_db: str = config.get('POSTGRESQL_DATABASE')
+    pg_user: str = config.get('POSTGRESQL_USERNAME')
+    pg_pass: str = config.get('POSTGRESQL_PASSWORD')
     postgres_engine: Engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}', echo=None)
     return postgres_engine
 
