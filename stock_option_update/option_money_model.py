@@ -5,24 +5,31 @@
 USED BY: option_proxy_model.py
 
 """
-# STANDARD LIBS
 
+# STANDARD LIBS
 from itertools import dropwhile
 
 from multiprocessing import Pool
+
 from multiprocessing.managers import DictProxy
 
 import os
+
+import re
+
 from typing import Any, List, Optional, Tuple, Union
 
 
 # THIRD PARTY LIBS
 from pandas import DataFrame
+    
+from bs4 import BeautifulSoup
+
 
 # CUSTOM LIBS
 from batterypy.string.read import float0
 
-from dimsumpy.web.crawler import get_html_dataframes, get_html_text
+from dimsumpy.web.crawler import get_html_dataframes, get_html_text, get_selenium_text
 
 
 # PROGRAM MODULES
@@ -76,11 +83,19 @@ def calculate_page_premiums(xs: List[Any]) -> Tuple[float, float, float, float, 
     DEPENDS ON: calculate_premiums()
     IMPORTS: get_html_dataframes(), pandas
     USED BY: get_total_premiums()
-    https://finance.yahoo.com/quote/AMD/options?date=1695945600
+
+    
+        https://finance.yahoo.com/quote/NVDA/options?date=1734652800
+
     """
     page = xs[0]
+    
     price = xs[1]
+    
     page_dfs: List[DataFrame] = get_html_dataframes(page)
+
+
+
     good_status: bool = len(page_dfs) > 1
     call_df: DataFrame = page_dfs[0] if good_status else DataFrame()
     put_df: DataFrame = page_dfs[1] if good_status else DataFrame()
@@ -93,17 +108,51 @@ def calculate_page_premiums(xs: List[Any]) -> Tuple[float, float, float, float, 
 
 
 
+def extract_unix_dates(symbol: str) -> List[str]:
+    """
+    IMPORTS: bs4, re, get_selenium_text()
+    
+    USED BY: prepare_urls()
+    
+    https://finance.yahoo.com/quote/NVDA/options'
+    """
+
+    url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
+
+    html_content = get_selenium_text(url)
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    all_data_values = [tag['data-value'] for tag in soup.find_all(attrs={'data-value': True})]
+
+    unix_timestamp_pattern = re.compile(r'^\d{10,}$')
+
+
+    filtered_unix_dates = [value for value in all_data_values if unix_timestamp_pattern.match(value)]
+
+    return filtered_unix_dates
+
+
+
+
 def prepare_urls(symbol: str) -> List[str]:
     """
-        IMPORTS: get_html_text()
+
+        DEPENDS ON: extract_unix_dates()
+
         USED BY: get_total_premiums()
+
+        https://finance.yahoo.com/quote/NVDA/options
+
+        https://finance.yahoo.com/quote/AMD/options/
+
+        https://finance.yahoo.com/quote/NVDA/options?date=1734652800
+
+        starting test this page
     """
-    option_url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
-    html_text: str = get_html_text(option_url)
-    raw_string_list: List[str] = html_text.split('"')
-    short_string_list: List[str] = list(dropwhile(lambda s: s != 'expirationDates', raw_string_list))
-    dates_str: str = short_string_list[1][2:-2] if len(short_string_list) > 1 else ''
-    unix_dates: List[str] = dates_str.split(',')
+
+    unix_dates: List[str] = extract_unix_dates(symbol)
+
     expiry_urls: List[str] = [f'https://finance.yahoo.com/quote/{symbol}/options?date={unix_date}' for unix_date in unix_dates]
     return expiry_urls
 
@@ -144,7 +193,9 @@ def get_total_premiums(price: Optional[float], symbol: str) -> Tuple[float, floa
 def proxy_option_money(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
         DEPENDS ON: get_total_premiums()
+
         USED BY: make_option_proxy()
+        
         Optionally rely on make_price_cap_proxy() to create a DictProxy in make_option_proxy()
 
         Hypothesis:
@@ -189,13 +240,23 @@ def proxy_option_money(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
-def test() -> None:
-    symbol = input('What SYMBOL do you want to input? ')
+def test2() -> None:
+    """
+            https://finance.yahoo.com/quote/NVDA/options?date=1734652800
+
+    """
+    dfs = get_html_dataframes('https://finance.yahoo.com/quote/NVDA/options?date=1734652800')
+    print(dfs)
+
+def test3() -> None:
     
-    option_proxy: DictProxy = proxy_option_money(symbol)
-    print(option_proxy)    
+    
+    p = proxy_option_money('NVDA')
+
+    print(p)
+
 
 
 
 if __name__ == '__main__':
-    test()
+    test2()

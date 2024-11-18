@@ -1,22 +1,21 @@
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
+# Set up headless Firefox
+options = Options()
+options.add_argument("--headless")
+driver = webdriver.Firefox(options=options)
 
-"""
-test relative import
+# Navigate to the URL
+url = "https://finance.yahoo.com/quote/NVDA/options"
+driver.get(url)
 
+# Wait for the page to load (optional)
+driver.implicitly_wait(1)
 
-"""
+# Get the page source
+html = driver.page_source
+print(html)
 
-from ..brewing.zoo import animals
-
-import bs4
-
-
-
-
-fruits = ['apple', 'banana']
-
-
-
-if __name__ == '__main__':
-    print('et')
-    
+# Close the browser
+driver.quit()
