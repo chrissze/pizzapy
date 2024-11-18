@@ -35,8 +35,12 @@ from dimsumpy.web.crawler import get_html_dataframes, get_html_text
 
 def get_grades(dfs: List[DataFrame]) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
     """
-    * INDEPENDENT *
+    * INDEPENDENT - helper of get_zacks_scores()*
+
     USED BY: get_zacks_scores()
+
+    input dfs is from get_zacks_scores().
+
     Value Growth Momentum, grading A B C D F
     averge_grade is the average of Value, Growth and Momentum
     """
@@ -64,6 +68,8 @@ def get_price_ratios(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[fl
     IMPORTS: batterypy(readf)
     USED BY: get_zacks_scores()
 
+    helper of get_zacks_scores()
+    input dfs is from get_zacks_scores().
     """
     low_frames: bool = len(dfs) < 12
 
@@ -95,6 +101,9 @@ def get_changes(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[float],
     """
     IMPORTS: batterypy(readf)
     USED BY: get_zacks_scores()
+    
+    helper of get_zacks_scores()
+    input dfs is from get_zacks_scores().
 
     """
     low_frames: bool = len(dfs) < 12
@@ -120,8 +129,13 @@ def get_changes(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[float],
 def get_zacks_scores(symbol: str) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     """
     DEPENDS ON: get_grades(), get_price_ratios(), get_changes()
+
     IMPORTS: dimsumpy(get_html_dataframes)
+    
     USED BY: proxy_zacks_scores()
+
+    https://www.zacks.com/stock/research/NVDA/stock-style-scores
+    https://www.zacks.com/stock/research/INTC/stock-style-scores
     """
 
     url: str = f'https://www.zacks.com/stock/research/{symbol}/stock-style-scores'
@@ -141,8 +155,8 @@ def get_zacks_scores(symbol: str) -> Tuple[Optional[str], Optional[str], Optiona
 def proxy_zacks_scores(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
     DEPENDS ON: get_zacks_scores()
-    USED BY: zacks_proxy_model.py
 
+    USED BY: zacks_proxy_model.py
     """
     average_grade, value_grade, growth_grade, momentum_grade, \
         pe, earning_yield, pe_growth_ratio, psales, pbook, pcashflow, cash_pc, \

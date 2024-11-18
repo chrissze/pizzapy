@@ -28,6 +28,8 @@ def get_next_earning_date(dfs: List[DataFrame]) -> Optional[date]:
     """
     
     earning_date_str: Any = '' if len(dfs) < 11 else dfs[2].iloc[0, -1]
+
+
     earning_date_invalid: bool = (not isinstance(earning_date_str, str)) or '/' not in earning_date_str  
     earning_date: Optional[date] = None if earning_date_invalid else datetime.strptime(earning_date_str.replace('*AMC','').replace('*BMO',''), '%m/%d/%y').date()
     return earning_date
@@ -43,11 +45,17 @@ def get_zacks_earnings(symbol: str) -> Tuple[Optional[date], Optional[float], Op
     eps_ttm is the DILUTED eps for the past 12 months.
 
     broker_rating scale is 1 to 5: 1 is strong buy, 5 is strong sell
+
+    https://www.zacks.com/stock/quote/NVDA/detailed-earning-estimates
+
+    Need to Use US VPN
     """
 
-    url: str = f'https://www.zacks.com/stocks/quote/{symbol}/detailed-estimates'
+    url: str = f'https://www.zacks.com/stock/quote/{symbol}/detailed-earning-estimates'
     dfs: List[DataFrame] = get_html_dataframes(url)
     low_frames: bool = len(dfs) < 11
+
+    #print(dfs)
 
     next_earning_date: Optional[date] = get_next_earning_date(dfs)
 
@@ -85,10 +93,18 @@ def proxy_zacks_earnings(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-def test() -> None:
+def full_test() -> None:
     symbol: str = input('What SYMBOL do you want to check? ')
     x = proxy_zacks_earnings(symbol)
     print(x)
 
+
+
+
+def test() -> None:
+    symbol: str = input('What SYMBOL do you want to check? ')
+    x = get_zacks_earnings(symbol)
+    print(x)
+
 if __name__ == '__main__':
-    test()
+    full_test()
