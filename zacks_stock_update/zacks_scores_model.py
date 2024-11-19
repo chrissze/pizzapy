@@ -1,5 +1,7 @@
 """
 
+profit_margin also appears on Zacks' Comparison to Industry page.
+
 """
 # STANDARD LIBS
 
@@ -62,6 +64,20 @@ def get_grades(dfs: List[DataFrame]) -> Tuple[Optional[str], Optional[str], Opti
 
 
 
+def get_profits(df: DataFrame) -> Optional[float]:
+    """
+    IMPORTS: batterypy(readf)
+    USED BY: get_zacks_scores()
+
+    helper of get_zacks_scores()
+    input dfs is from get_zacks_scores().
+    """
+    low_rows: bool = len(df) < 15
+
+    profit_margin_str: str = '' if low_rows else df.iloc[15, 1]
+    profit_margin: Optional[float] = readf(profit_margin_str)
+    return profit_margin
+
 
 def get_price_ratios(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     """
@@ -97,7 +113,7 @@ def get_price_ratios(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[fl
 
 
 
-def get_changes(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
+def get_changes(df: DataFrame) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]:
     """
     IMPORTS: batterypy(readf)
     USED BY: get_zacks_scores()
@@ -106,21 +122,21 @@ def get_changes(dfs: List[DataFrame]) -> Tuple[Optional[float], Optional[float],
     input dfs is from get_zacks_scores().
 
     """
-    low_frames: bool = len(dfs) < 12
+    low_rows: bool = len(df) < 13
 
-    chg_1d_str: str = '' if low_frames else dfs[6].iloc[9, 1]
+    chg_1d_str: str = '' if low_rows else df.iloc[9, 1]
     chg_1d: Optional[float] = readf(chg_1d_str[:-1])
 
-    chg_5d_str: str = '' if low_frames else dfs[6].iloc[10, 1]
+    chg_5d_str: str = '' if low_rows else df.iloc[10, 1]
     chg_5d: Optional[float] = readf(chg_5d_str[:-1])
 
-    chg_1m_str: str = '' if low_frames else dfs[6].iloc[11, 1]
+    chg_1m_str: str = '' if low_rows else df.iloc[11, 1]
     chg_1m: Optional[float] = readf(chg_1m_str[:-1])
 
-    chg_3m_str: str = '' if low_frames else dfs[6].iloc[12, 1]
+    chg_3m_str: str = '' if low_rows else df.iloc[12, 1]
     chg_3m: Optional[float] = readf(chg_3m_str[:-1])
 
-    chg_1y_str: str = '' if low_frames else dfs[6].iloc[13, 1]
+    chg_1y_str: str = '' if low_rows else df.iloc[13, 1]
     chg_1y: Optional[float] = readf(chg_1y_str[:-1])
     return chg_1d, chg_5d, chg_1m, chg_3m, chg_1y
 
@@ -143,10 +159,12 @@ def get_zacks_scores(symbol: str) -> Tuple[Optional[str], Optional[str], Optiona
 
     average_grade, value_grade, growth_grade, momentum_grade = get_grades(dfs)
     pe, earning_yield, pe_growth_ratio, psales, pbook, pcashflow, cash_pc = get_price_ratios(dfs)
-    chg_1d, chg_5d, chg_1m, chg_3m, chg_1y = get_changes(dfs)
+    profit_margin = get_profits(dfs[4])
+    chg_1d, chg_5d, chg_1m, chg_3m, chg_1y = get_changes(dfs[6])
 
     return average_grade, value_grade, growth_grade, momentum_grade, \
            pe, earning_yield, pe_growth_ratio, psales, pbook, pcashflow, cash_pc, \
+           profit_margin, \
            chg_1d, chg_5d, chg_1m, chg_3m, chg_1y
 
 
@@ -160,6 +178,7 @@ def proxy_zacks_scores(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """
     average_grade, value_grade, growth_grade, momentum_grade, \
         pe, earning_yield, pe_growth_ratio, psales, pbook, pcashflow, cash_pc, \
+        profit_margin, \
         chg_1d, chg_5d, chg_1m, chg_3m, chg_1y = get_zacks_scores(symbol)
     
     proxy['average_grade'] = average_grade
@@ -174,6 +193,8 @@ def proxy_zacks_scores(symbol: str, proxy: DictProxy={}) -> DictProxy:
     proxy['pbook'] = pbook
     proxy['pcashflow'] = pcashflow
     proxy['cash_pc'] = cash_pc
+    
+    proxy['profit_margin'] = profit_margin
 
     proxy['chg_1d'] = chg_1d
     proxy['chg_5d'] = chg_5d
@@ -183,11 +204,17 @@ def proxy_zacks_scores(symbol: str, proxy: DictProxy={}) -> DictProxy:
     return proxy
 
 
-def test() -> None:
+def test1() -> None:
+    #symbol: str = input('What SYMBOL do you want to check? ')
+    x = get_zacks_scores('NVDA')
+    print(x)
+
+
+def test2() -> None:
     symbol: str = input('What SYMBOL do you want to check? ')
     proxy = proxy_zacks_scores(symbol)
     print(proxy)
 
 
 if __name__ == '__main__':
-    test()
+    test2()

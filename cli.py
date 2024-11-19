@@ -2,7 +2,9 @@
 Run the program:
 (venv) $ python3 -m pizzapy.cli
 
-    
+
+generate_file_model cannot be directly run in this CLI module because the auto generated file is a component of this CLI program, we cannot overwrite it when CLI is running.
+
 """
 
 # STANDARD LIBS
@@ -12,8 +14,6 @@ import subprocess
 from typing import List
 
 # PROGRAM MODULES
-
-from pizzapy.database_update.generate_file_model import generate_stock_list_file
 
 from pizzapy.database_update.general_terminal_model import operate_stock_table
 
@@ -29,7 +29,6 @@ def start():
         '4': lambda: operate_stock_table('stock_technical'),
         '5': lambda: operate_stock_table('technical_one'),
         '9': lambda: manage_postgres_database(),
-        '10': generate_stock_list_file,
         '0': lambda: exit(),
     }
     while True:
@@ -42,7 +41,6 @@ def start():
             4) Operate Stock Technical
             5) Operate Technical One
             9) Manage Database, create or drop tables
-            10) CREATE database_update/generated_stock_list.py
             0) Exit the program
             
         please choose your action: """)

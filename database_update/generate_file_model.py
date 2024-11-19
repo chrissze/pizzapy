@@ -1,8 +1,9 @@
 """
 *** INDEPENDENT MODULE ***
 
-USED BY: 
-    central_script.py
+I can run this mode directly:
+
+    (venv) $ python3 generate_file_model.py
 
 
 """
@@ -59,6 +60,8 @@ def get_sp_500() -> Dict:
     * INDEPENDENT *
     IMPORTS: dimsumpy
     execution time: 1 second
+
+    The S&P 500 index undergoes a quarterly rebalancing to ensure it accurately reflects the U.S. large-cap equity market. These rebalancing events typically occur after third Friday of March, June, September, and December. 
     """
     sp_500_url: str = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
     dfs: List[DataFrame] = get_html_dataframes(sp_500_url)
@@ -77,6 +80,12 @@ def get_nasdaq_100() -> Any:
 
     Note: 
     I could not simply use get_html_dataframes() in this function, the html source structure is different.
+
+    Nasdaq-100 Index undergoes an annual reconstitution in year end, usually November and December.
+    2023 Additions: TTWO (20231218)
+    2024 Additions: APP(20241118), PLTR(20241126)
+
+
     """
     nasdaq_100_url: str = 'https://en.wikipedia.org/wiki/NASDAQ-100'
     soup: BeautifulSoup = get_html_soup(nasdaq_100_url)
@@ -292,4 +301,5 @@ def test() -> None:
 
 
 if __name__ == '__main__':
+    #test_generated()
     test()

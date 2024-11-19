@@ -50,6 +50,8 @@ guru_stock_create_table_command: str = """
     net_capital   FLOAT8,    
     net_capital_pc   FLOAT8, 
 
+    net_margin   FLOAT8, 
+
     research   FLOAT8, 
     research_pc   FLOAT8,    
     
@@ -93,6 +95,7 @@ zacks_stock_create_table_command: str = """
     psales   FLOAT8,    
     pbook   FLOAT8,    
     pcashflow   FLOAT8,    
+    profit_margin   FLOAT8,    
     cash_pc   FLOAT8,    
     
     chg_1d   FLOAT8,    
