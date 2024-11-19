@@ -115,6 +115,8 @@ def extract_unix_dates(symbol: str) -> List[str]:
     USED BY: prepare_urls()
     
     https://finance.yahoo.com/quote/NVDA/options
+
+    Yahoo Finance website needs requests headers with Accept field.
     """
 
     url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
@@ -264,7 +266,6 @@ def test3() -> None:
     p = proxy_option_money('NVDA', {'price': 140, 'cap': 3400000000000})
 
     print(p)
-
 
 
 
