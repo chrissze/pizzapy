@@ -114,19 +114,18 @@ def extract_unix_dates(symbol: str) -> List[str]:
     
     USED BY: prepare_urls()
     
-    https://finance.yahoo.com/quote/NVDA/options'
+    https://finance.yahoo.com/quote/NVDA/options
     """
 
     url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
 
-    html_content = get_selenium_text(url)
+    html_content = get_html_text(url)
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
     all_data_values = [tag['data-value'] for tag in soup.find_all(attrs={'data-value': True})]
 
     unix_timestamp_pattern = re.compile(r'^\d{10,}$')
-
 
     filtered_unix_dates = [value for value in all_data_values if unix_timestamp_pattern.match(value)]
 
@@ -240,6 +239,15 @@ def proxy_option_money(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 
+def test1() -> None:
+    """
+            https://finance.yahoo.com/quote/NVDA/options
+
+    """
+    xs = extract_unix_dates('NVDA')
+    print(xs)
+
+
 def test2() -> None:
     """
             https://finance.yahoo.com/quote/NVDA/options?date=1734652800
@@ -248,10 +256,12 @@ def test2() -> None:
     dfs = get_html_dataframes('https://finance.yahoo.com/quote/NVDA/options?date=1734652800')
     print(dfs)
 
+
+
 def test3() -> None:
     
     
-    p = proxy_option_money('NVDA')
+    p = proxy_option_money('NVDA', {'price': 140, 'cap': 3400000000000})
 
     print(p)
 
@@ -259,4 +269,4 @@ def test3() -> None:
 
 
 if __name__ == '__main__':
-    test2()
+    test3()
