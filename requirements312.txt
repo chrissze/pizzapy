@@ -1,0 +1,32 @@
+# DO not specify pandas version, so that pizza can work on python 3.9.
+
+# python3.11 works, python.12 does not
+
+
+beautifulsoup4~=4.0
+
+black~=24.0
+
+html5lib~=1.1.0
+
+lxml~=4.0
+
+pandas
+
+psycopg[binary, pool]
+
+PySide6
+
+requests~=2.0
+
+schedule~=1.2.0
+
+selenium~=4.2.0
+
+SQLAlchemy~=2.0
+
+wheel
+
+
+
+
