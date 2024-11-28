@@ -63,6 +63,16 @@ guru_stock_create_table_command: str = """
     rev_growth_10y   FLOAT8,    
     
     strength   FLOAT8,    
+    x1   FLOAT8,
+    x2   FLOAT8,
+    x3   FLOAT8,
+    x4   FLOAT8,
+    x5   FLOAT8,
+    z1   FLOAT8,
+    z2   FLOAT8,
+    z3   FLOAT8,
+    z4   FLOAT8,
+    z5   FLOAT8,
     zscore   FLOAT8,
     
     wealth_pc   FLOAT8,  
