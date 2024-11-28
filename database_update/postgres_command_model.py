@@ -51,7 +51,9 @@ guru_stock_create_table_command: str = """
     net_capital_pc   FLOAT8, 
 
     net_margin   FLOAT8, 
-
+    
+    nocapz   FLOAT8,
+    
     research   FLOAT8, 
     research_pc   FLOAT8,    
     
@@ -68,6 +70,12 @@ guru_stock_create_table_command: str = """
     x3   FLOAT8,
     x4   FLOAT8,
     x5   FLOAT8,
+    
+    year1z   FLOAT8,
+    year2z   FLOAT8,
+    year3z   FLOAT8,
+
+
     z1   FLOAT8,
     z2   FLOAT8,
     z3   FLOAT8,
