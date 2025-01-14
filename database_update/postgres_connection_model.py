@@ -80,7 +80,7 @@ def make_sqlalchemy_engine() -> Engine:
     """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
-    pg_host: str = config.get('POSTGRESQL_MASTER_HOST')
+    pg_host: str = config.get('POSTGRESQL_HOST')
     pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
     pg_db: str = config.get('POSTGRESQL_DATABASE')
     pg_user: str = config.get('POSTGRESQL_USERNAME')
@@ -107,9 +107,10 @@ def execute_pandas_read(cmd: str) -> DataFrame:
 if __name__ == '__main__':
 
     cmd1 = 'SELECT now()'
-    cmd2 = 'SELECT 2+2'
+    cmd2 = 'SELECT 2+3'
     cmd3 = 'SELECT version()'
-    s = input('What string do you want to input? ')
-    x = get_html_dataframes(s)
+    
+    df = execute_pandas_read(cmd2)
+    x = df.iloc[-1, -1]
     print(x)
     print('done')
