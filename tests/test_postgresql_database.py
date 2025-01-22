@@ -4,7 +4,7 @@
 Run pystest in terminal:
 
     (venv) $ cd ~/github/pizza_project
-    (venv) $ python3 -m pytest -v pizzapy/tests/
+    (venv) $ python3 -m pytest -v pizzapy/tests/test_postgresql_database.py
 
 
 """
