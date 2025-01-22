@@ -33,7 +33,7 @@ def make_psycopg_connection() -> Connection:
     """
     with open('/etc/config.json', 'r') as f:
         config: Dict[str, Union[str, int]] = json.load(f)
-    pg_host: str = config.get('POSTGRESQL_MASTER_HOST')
+    pg_host: str = config.get('POSTGRESQL_HOST')
     pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
     pg_db: str = config.get('POSTGRESQL_DATABASE')
     pg_user: str = config.get('POSTGRESQL_USERNAME')
@@ -43,23 +43,29 @@ def make_psycopg_connection() -> Connection:
 
 def make_psycopg_cursor() -> Cursor: 
     """
-    DEPENDS: make_postgres_connection()
+    DEPENDS: make_postgres_connection(), /etc/config.json FILE
+
     If I want to return a Cursor, the make_connection function cannot be put into a with clause
+    
+    Not sure if I can do conn.commit() 
     """
     return make_psycopg_connection().cursor()
 
 
 
-def execute_psycopg_command(cmd: str) -> None: 
+
+
+def execute_psycopg_command(cmd: str) -> list: 
     """
-    DEPENDS: make_psycopg_connection()
+    
+    DEPENDS: make_postgres_connection(), /etc/config.json FILE
 
     I must include conn.commit(), otherwise the cmd will not be executed.
     cur.excute(cmd) returns None
     
     In psycopg 3, the connection object can directly execute SQL commands
-    without creating a cursor object, because execute() function returns the cursor
-    object itself, so we can chain commands.
+    without creating a cursor object, The conn.execute() function returns a cursor object, 
+    so we can access the execution result by this cursor object
 
     Optional to include semicolon at the end of the SQL command in psycopg.
     sample cmd: 'DROP TABLE emptytable1'
@@ -67,10 +73,42 @@ def execute_psycopg_command(cmd: str) -> None:
     compare with - pandas.read_sql(sql=cmd, con=make_postgres_connection())
     pandas.read_sql returns a DataFrame which contains results.
     """
+    
     with make_psycopg_connection() as conn:
-        conn.execute(cmd)
+        cursor = conn.execute(cmd)
+        result = cursor.fetchall() if cursor.description else [] 
         conn.commit()
-        
+        return result
+
+
+def execute_psycopg_cursor_command(cmd: str) -> list: 
+    """
+
+    DEPENDS: make_postgres_connection(), /etc/config.json FILE
+
+    psycopg cursor can return the execution result such as 
+
+    [(5,)]
+    [('mydb',)]
+
+    I have made a pytest in pizzapy/tests/
+
+    The execute_psycopg_cursor_command() and execute_psycopg_command()
+    are functionally equivalent.
+
+    """
+    with make_psycopg_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(cmd)
+            if cursor.description:
+                result = cursor.fetchall() 
+            else:
+                result = []
+            conn.commit()
+            return result
+
+
+
 
 def make_sqlalchemy_engine() -> Engine:
     """

@@ -29,6 +29,17 @@ from pizzapy.database_update.postgres_command_model import table_list_dict
 from pizzapy.database_update.postgres_connection_model import execute_pandas_read, execute_psycopg_command
 
         
+def show_current_database() -> DataFrame:
+    """
+    * INDEPENDENT *
+    IMPORTS: execute_pandas_read()
+    
+    """
+    cmd: str = "SELECT current_database()"
+    df: DataFrame = execute_pandas_read(cmd)
+    return df
+
+
 def show_databases() -> DataFrame:
     """
     * INDEPENDENT *

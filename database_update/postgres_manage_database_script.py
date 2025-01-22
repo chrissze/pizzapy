@@ -11,7 +11,7 @@ import subprocess
 from typing import Any, Dict, List
 
 # PROGRAM MODULES
-from pizzapy.database_update.postgres_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_databases, show_tables
+from pizzapy.database_update.postgres_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_execute_sql, loop_show_table, loop_show_table_rows, show_current_database, show_databases, show_tables
 
 
 postgres_menu_text: str = """\n
@@ -22,6 +22,7 @@ postgres_menu_text: str = """\n
         4) loop_show_table()
         5) loop_drop_table()
         6) loop_show_table_rows()
+        7) show_current_database()
 
         9) Run a custom SQL command - loop_execute_sql()
         10) Print content of /etc/config.json            
@@ -43,6 +44,7 @@ actions_dict: Dict[str, Any] = {
     '4': lambda: loop_show_table(),
     '5': lambda: loop_drop_table(),
     '6': lambda: loop_show_table_rows(),
+    '7': lambda: print(show_current_database()),
 
     '9': lambda: loop_execute_sql(),
     '10': lambda: subprocess.run('cat /etc/config.json', stdin=True, shell=True),                             

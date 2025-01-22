@@ -85,7 +85,7 @@ guru_stock_create_table_command: str = """
     
     wealth_pc   FLOAT8,  
     PRIMARY KEY (symbol)
-    )
+    );
     """
 
 
