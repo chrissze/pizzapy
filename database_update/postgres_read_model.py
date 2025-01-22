@@ -80,14 +80,18 @@ def view_vertical(symbol: str, table: str) -> DataFrame:
     There will a '0' at the top of the returning DataFrame, it just mean there is no DataFrame name.
     
     I need to_frame() to convert the Series to a DataFrame, 
-    so that I can use DataFrame's applymap() method.
+    so that I can use DataFrame's map() method.
     exapmle:
         view_vertical('amd', 'guru_stock')
+
+    .applymap() will be deprecated in future releases.
+    
     """
     SYMBOL: str = symbol.upper()
     series_result: Series = get_symbol_row_result(symbol=SYMBOL, table=table)
     if not series_result.empty:
-        commas_df: DataFrame = series_result.to_frame().applymap(format_number_with_commas)
+        #commas_df: DataFrame = series_result.to_frame().applymap(format_number_with_commas)
+        commas_df: DataFrame = series_result.to_frame().map(format_number_with_commas)
         return commas_df
     else:
         return DataFrame()
