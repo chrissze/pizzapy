@@ -35,7 +35,7 @@ def make_psycopg_connection() -> Connection:
     pg_port: Optional[str] = os.getenv('PGPORT')
     pg_db: Optional[str] = os.getenv('PGDATABASE')
     pg_user: Optional[str] = os.getenv('PGHOST')
-    pg_pass: Optional[str] = os.getenv('PGPASS')
+    pg_pass: Optional[str] = os.getenv('PGPASSWORD')
     return connect(dbname=pg_db, user=pg_user, password=pg_pass, host=pg_host, port=pg_port)
 
 
@@ -118,7 +118,7 @@ def make_sqlalchemy_engine() -> Engine:
     pg_port: Optional[str] = os.getenv('PGPORT')
     pg_db: Optional[str] = os.getenv('PGDATABASE')
     pg_user: Optional[str] = os.getenv('PGUSER')
-    pg_pass: Optional[str] = os.getenv('PGPASS')
+    pg_pass: Optional[str] = os.getenv('PGPASSWORD')
     postgres_engine: Engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}', echo=None)
     return postgres_engine
 
