@@ -9,8 +9,8 @@ I cannot place postgres execution functions in this module, as it will led to ci
 
 # STANDARD LIB
 
-import json
-from typing import Any, Dict, List, Union
+import os
+from typing import Any, Dict, List, Optional, Union
 
 # THIRD PARTY LIB
 import pandas
@@ -28,16 +28,14 @@ from dimsumpy.database.postgres import make_upsert_psycopg_query, upsert_psycopg
 
 def make_psycopg_connection() -> Connection:
     """
-    DEPENDS: json, /etc/config.json FILE
-    DO NOT put with open config.json at the global scope, other it will run everytime we import this module
+    DEPENDS: os, postgresql environment variables
+    
     """
-    with open('/etc/config.json', 'r') as f:
-        config: Dict[str, Union[str, int]] = json.load(f)
-    pg_host: str = config.get('POSTGRESQL_HOST')
-    pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
-    pg_db: str = config.get('POSTGRESQL_DATABASE')
-    pg_user: str = config.get('POSTGRESQL_USERNAME')
-    pg_pass: str = config.get('POSTGRESQL_PASSWORD')
+    pg_host: Optional[str] = os.getenv('PGHOST')
+    pg_port: Optional[str] = os.getenv('PGPORT')
+    pg_db: Optional[str] = os.getenv('PGDATABASE')
+    pg_user: Optional[str] = os.getenv('PGHOST')
+    pg_pass: Optional[str] = os.getenv('PGPASS')
     return connect(dbname=pg_db, user=pg_user, password=pg_pass, host=pg_host, port=pg_port)
 
 
