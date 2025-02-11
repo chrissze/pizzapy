@@ -41,7 +41,7 @@ def make_psycopg_connection() -> Connection:
 
 def make_psycopg_cursor() -> Cursor: 
     """
-    DEPENDS: make_postgres_connection(), /etc/config.json FILE
+    DEPENDS: make_postgres_connection(), os
 
     If I want to return a Cursor, the make_connection function cannot be put into a with clause
     
@@ -56,7 +56,7 @@ def make_psycopg_cursor() -> Cursor:
 def execute_psycopg_command(cmd: str) -> list: 
     """
     
-    DEPENDS: make_postgres_connection(), /etc/config.json FILE
+    DEPENDS: make_postgres_connection(), os
 
     I must include conn.commit(), otherwise the cmd will not be executed.
     cur.excute(cmd) returns None
@@ -110,17 +110,15 @@ def execute_psycopg_cursor_command(cmd: str) -> list:
 
 def make_sqlalchemy_engine() -> Engine:
     """
-    DEPENDS: sqlalchemy, json, FILE /etc/config.json
-    DO NOT put with open config.json at the global scope, other it will run everytime we import this module
+    DEPENDS: sqlalchemy, os
+    
     used in pandas - read_sql() ; echo='debug' is for verbose debugging; echo=None to surpress verbose terminal info.
     """
-    with open('/etc/config.json', 'r') as f:
-        config: Dict[str, Union[str, int]] = json.load(f)
-    pg_host: str = config.get('POSTGRESQL_HOST')
-    pg_port: int = config.get('POSTGRESQL_PORT_NUMBER')
-    pg_db: str = config.get('POSTGRESQL_DATABASE')
-    pg_user: str = config.get('POSTGRESQL_USERNAME')
-    pg_pass: str = config.get('POSTGRESQL_PASSWORD')
+    pg_host: Optional[str] = os.getenv('PGHOST')
+    pg_port: Optional[str] = os.getenv('PGPORT')
+    pg_db: Optional[str] = os.getenv('PGDATABASE')
+    pg_user: Optional[str] = os.getenv('PGUSER')
+    pg_pass: Optional[str] = os.getenv('PGPASS')
     postgres_engine: Engine = create_engine(f'postgresql+psycopg://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}', echo=None)
     return postgres_engine
 
