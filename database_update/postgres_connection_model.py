@@ -34,7 +34,7 @@ def make_psycopg_connection() -> Connection:
     pg_host: Optional[str] = os.getenv('PGHOST')
     pg_port: Optional[str] = os.getenv('PGPORT')
     pg_db: Optional[str] = os.getenv('PGDATABASE')
-    pg_user: Optional[str] = os.getenv('PGHOST')
+    pg_user: Optional[str] = os.getenv('PGUSER')
     pg_pass: Optional[str] = os.getenv('PGPASSWORD')
     return connect(dbname=pg_db, user=pg_user, password=pg_pass, host=pg_host, port=pg_port)
 
