@@ -1,13 +1,25 @@
 
-"""
+r"""
 
 
 USED BY: option_proxy_model.py
 
+        all_data_values = [tag['expirationDates'] for tag in soup.find_all(attrs={'expirationDates': True})]
+
+
+        print(f"Extracted data values: {all_data_values}")
+
+        unix_timestamp_pattern = re.compile(r'^\d{10,}$')
+
+        filtered_unix_dates = [value for value in all_data_values if unix_timestamp_pattern.match(value)]
+
+        return filtered_unix_dates
 """
 
 # STANDARD LIBS
 from itertools import dropwhile
+
+import json
 
 from multiprocessing import Pool
 
@@ -117,6 +129,12 @@ def extract_unix_dates(symbol: str) -> List[str]:
     https://finance.yahoo.com/quote/NVDA/options
 
     Yahoo Finance website needs requests headers with Accept field.
+
+    i. Get last unix timestamps from the browser by clicking on last year.
+     
+    ii. Search source code on that date, say 1829001600
+     
+
     """
 
     url: str = f"https://finance.yahoo.com/quote/{symbol}/options"
@@ -125,14 +143,35 @@ def extract_unix_dates(symbol: str) -> List[str]:
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
-    all_data_values = [tag['data-value'] for tag in soup.find_all(attrs={'data-value': True})]
 
-    unix_timestamp_pattern = re.compile(r'^\d{10,}$')
 
-    filtered_unix_dates = [value for value in all_data_values if unix_timestamp_pattern.match(value)]
+    script_tag = soup.find('script', {
+        'type': 'application/json',
+        'data-sveltekit-fetched': True
+    })
 
-    return filtered_unix_dates
+    if script_tag:
+        # Extract JSON string from the script tag
+        json_str = script_tag.string
+        
+        print(json_str) 
 
+
+        # Parse the outer JSON
+        outer_data = json.loads(json_str)
+        
+        # Extract and parse the inner JSON from the 'body' field
+        inner_data = json.loads(outer_data['body'])
+        
+        # Navigate to expirationDates
+        #expiration_dates = inner_data['optionChain']['result'][0]['expirationDates']
+        #print(expiration_dates)
+    else:
+        print("Script tag not found!")
+
+
+
+    
 
 
 
@@ -270,4 +309,4 @@ def test3() -> None:
 
 
 if __name__ == '__main__':
-    test3()
+    test1()
