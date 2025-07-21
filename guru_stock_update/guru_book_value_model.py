@@ -37,6 +37,7 @@ def get_guru_book_value(symbol: str) -> Optional[float]:
     
     """
     book_value_url: str = f'https://www.gurufocus.com/term/tangibles-book-per-share/{symbol}'
+    
     book_value_dfs: List[DataFrame] = get_html_dataframes(book_value_url)
     book_value_str: Any = '' if len(book_value_dfs) < 3 or book_value_dfs[1].empty else book_value_dfs[1].iloc[-1, -1] 
     book_value: Optional[float] = readf(book_value_str)
@@ -72,9 +73,9 @@ def test_proxy_guru_book_value() -> None:
 
 
 
-def test() -> None:    
+def test1() -> None:    
     v = get_guru_book_value('AMD')
     print(v)
 
 if __name__ == '__main__':    
-    test_proxy_guru_book_value()
+    test1()

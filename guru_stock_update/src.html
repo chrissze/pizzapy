@@ -1,0 +1,15 @@
+
+    interest_soup: BeautifulSoup = get_html_soup(interest_url)
+    
+    interest_soup_items: ResultSet = interest_soup.find_all('meta', attrs={'name': 'description'})
+    
+    content: str = '' if not interest_soup_items else interest_soup_items[0].get('content')
+    
+    interest_strlist: List[str] = content.split()
+    
+    interest_strlist_shortened: List[str] = list(dropwhile(lambda x: x != 'is', interest_strlist))    
+
+    negative_interest_in_million: Optional[float] = None if len(interest_strlist_shortened) < 3 else readf(interest_strlist_shortened[1])
+    
+    interest: Optional[float] = None if negative_interest_in_million is None else abs(negative_interest_in_million) * 1000000.0
+    

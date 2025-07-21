@@ -28,7 +28,13 @@ schedule~=1.2.0
 
 selenium~=4.2.0
 
+selenium-stealth
+
+tenacity
+
 SQLAlchemy~=2.0
+
+webdriver-manager
 
 wheel
 

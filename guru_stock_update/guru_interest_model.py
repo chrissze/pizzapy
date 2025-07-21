@@ -13,10 +13,11 @@ import requests
 
 # CUSTOM LIBRARIES
 from batterypy.string.read import readf
-from dimsumpy.web.crawler import get_html_soup
+from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 
 # PROGRAM MODULES
 from pizzapy.general_update.general_model import make_price_cap_proxy
+
 
 
 
@@ -29,21 +30,16 @@ def get_guru_interest(symbol: str) -> Optional[float]:
 
     interest_url: str = f'https://www.gurufocus.com/term/interest-expense/{symbol}'
     
-    interest_soup: BeautifulSoup = get_html_soup(interest_url)
-    
-    interest_soup_items: ResultSet = interest_soup.find_all('meta', attrs={'name': 'description'})
-    
-    content: str = '' if not interest_soup_items else interest_soup_items[0].get('content')
-    
-    interest_strlist: List[str] = content.split()
-    
-    interest_strlist_shortened: List[str] = list(dropwhile(lambda x: x != 'is', interest_strlist))    
+    interest_dfs: List[DataFrame] = get_html_dataframes(interest_url)
 
-    negative_interest_in_million: Optional[float] = None if len(interest_strlist_shortened) < 3 else readf(interest_strlist_shortened[1])
+    interest_str: Any = '' if len(interest_dfs) < 3 or interest_dfs[0].empty else interest_dfs[0].iloc[-1, -1] 
     
+    negative_interest_in_million: Optional[float] = readf(interest_str)
+
     interest: Optional[float] = None if negative_interest_in_million is None else abs(negative_interest_in_million) * 1000000.0
     
     return interest
+
 
 
 
