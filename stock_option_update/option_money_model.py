@@ -120,7 +120,7 @@ def calculate_page_premiums(xs: List[Any]) -> Tuple[float, float, float, float, 
 
 
 
-def extract_unix_dates(symbol: str) -> List[str]:
+def extract_unix_dates(symbol: str) -> list[str]:
     """
     IMPORTS: bs4, re, get_selenium_text()
     
@@ -144,35 +144,27 @@ def extract_unix_dates(symbol: str) -> List[str]:
     soup = BeautifulSoup(html_content, 'html.parser')
 
 
+    script_tags = soup.find_all("script")
 
-    script_tag = soup.find('script', {
-        'type': 'application/json',
-        'data-sveltekit-fetched': True
-    })
-
-    if script_tag:
-        # Extract JSON string from the script tag
-        json_str = script_tag.string
-        
-        print(json_str) 
-
-
-        # Parse the outer JSON
-        outer_data = json.loads(json_str)
-        
-        # Extract and parse the inner JSON from the 'body' field
-        inner_data = json.loads(outer_data['body'])
-        
-        # Navigate to expirationDates
-        #expiration_dates = inner_data['optionChain']['result'][0]['expirationDates']
-        #print(expiration_dates)
-    else:
-        print("Script tag not found!")
-
-
-
+    json_string = None
     
+    for script in script_tags:
+        if script.string and "expirationDates" in script.string:
+            json_string = script.string
+            break
 
+    if not json_string:
+        raise ValueError("Could not find script tag containing expirationDates")
+
+    # Parse the JSON string
+
+    converted_dict: dict = json.loads(json_string)
+
+    body_dict: dict = json.loads(converted_dict.get('body'))
+    
+    date_list: list[str] = body_dict.get('optionChain').get('result')[0].get('expirationDates')
+    
+    return date_list
 
 
 def prepare_urls(symbol: str) -> List[str]:
@@ -309,4 +301,4 @@ def test3() -> None:
 
 
 if __name__ == '__main__':
-    test1()
+    test3()

@@ -8,6 +8,8 @@ beautifulsoup4~=4.0
 
 black~=24.0
 
+cloudscraper
+
 html5lib~=1.1.0
 
 lxml~=5.0

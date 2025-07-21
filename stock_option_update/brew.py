@@ -76,11 +76,12 @@ def extract_unix_dates(symbol: str) -> List[str]:
         raise ValueError("Could not find script tag containing expirationDates")
 
     # Parse the JSON string
-    data = json.loads(json_string)
 
-    expiration_dates = data.get('body', {})
-    expiration_dates = data.get('body', {})
-    print(expiration_dates)
+    converted_dict: dict = json.loads(json_string)
+
+    body_dict: dict = json.loads(converted_dict.get('body'))
+    
+    date_list: list[str] = body_dict.get('optionChain').get('result')[0].get('expirationDates')
 
 
 
@@ -90,7 +91,7 @@ def test1() -> None:
             https://finance.yahoo.com/quote/NVDA/options
 
     """
-    xs = extract_unix_dates('NVDA')
+    xs = extract_unix_dates('QBTS')
     print(xs)
 
 

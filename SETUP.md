@@ -24,6 +24,8 @@ Requirements to run PizzaPy
 
     $ ln -s /opt/github/pizza_project/batterypy batterypy
 
+    $ ln -s /opt/github/pizza_project/pizzapy pizzapy  (need for direct test of modules)
+
 6. Test run pizzapy CLI
 
     (venv) $ cd /opt/github/pizza_project
