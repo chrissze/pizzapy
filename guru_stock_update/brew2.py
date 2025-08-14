@@ -1,64 +1,42 @@
 """
-https://www.gurufocus.com/term/rank-balancesheet/NVDA
+adding code to print src code below
 """
-
-
-# STANDARD LIBRARIES
-
-from itertools import dropwhile
-from multiprocessing.managers import DictProxy
-from typing import Any, Dict, List, Optional, Tuple
-
-
-# THIRD PARTY LIBRARIES
-
-from bs4 import BeautifulSoup
-from bs4.element import ResultSet
 import requests
+from bs4 import BeautifulSoup
 
+url = "https://m.macrotrends.net/stocks/charts/NVDA/nvidia/shares-outstanding"
+headers = {'User-Agent': 'Mozilla/5.0'}
 
-# CUSTOM LIBRARIES
-from batterypy.string.read import readf
-from dimsumpy.web.crawler import get_html_soup
-
-# PROGRAM MODULES
-from pizzapy.general_update.general_model import make_price_cap_proxy
-
-
-def get_guru_strength(symbol: str) -> Optional[float]:
-    """
-    https://www.gurufocus.com/term/rank-balancesheet/NVDA
-    """
-    strength_url: str = f'https://www.gurufocus.com/term/rank-balancesheet/{symbol}'
-
-    strength_soup: BeautifulSoup = get_html_soup(strength_url)
+try:
+    # Fetch webpage
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
     
-    strength_soup_items: ResultSet = strength_soup.find_all('meta', attrs={'name': 'description'})
+    # Get HTML content
+    html_content = response.text
+    soup = BeautifulSoup(html_content, 'html.parser')
     
-    content: str = '' if not strength_soup_items else strength_soup_items[0].get('content')
-
-    strength_strlist: List[str] = content.split()
-    strength_strlist_shortened: List[str] = list(dropwhile(lambda x: x != 'is', strength_strlist))    
-    strength: Optional[float] = None if strength_strlist_shortened.__len__() < 3 else readf(strength_strlist_shortened[1])
-    return strength
-
-
-
-
-
-
-def proxy_guru_strength(symbol: str, proxy: DictProxy={}) -> DictProxy:
-    """DEPENDS: try_get_guru_strength > get_guru_strength"""
-    strength: Optional[float] = get_guru_strength(symbol)
-    proxy['strength'] = strength
-    return proxy
-
-
-
-
-def test():
-    x = get_guru_strength('NVDA')
-    print(x)
+    # Extract meta description
+    meta_description = soup.find('meta', attrs={'name': 'description'})
+    if meta_description:
+        print("\nMeta Description Found:")
+        print(meta_description.get('content'))
+    else:
+        print("\nMeta description not found.")
     
-if __name__ == '__main__':
-    test()
+    # Print source code preview
+    print("\nSource Code Preview (first 2000 characters):")
+    print("-" * 50)
+    print(html_content[:2000])
+    print("-" * 50)
+    print(f"... [truncated] Total length: {len(html_content)} characters")
+    
+    # Save full source to file
+    with open("page_source.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("\nFull source code saved to 'page_source.html'")
+
+except requests.exceptions.RequestException as e:
+    print(f"\nRequest failed: {e}")
+except Exception as e:
+    print(f"\nError occurred: {e}")

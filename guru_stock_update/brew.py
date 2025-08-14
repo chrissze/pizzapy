@@ -192,9 +192,9 @@ def get_guru_payout_yield(symbol: str, d: DictProxy={}) -> Optional[float]:
 
     payout_yield: Optional[float] = readf(strlist2[0][:-1]) if strlist2 else None
     
-    print(f'{content=}')
-    print(f'{strlist2=}')
-    print(f'{payout_yield=}')
+    #print(f'{content=}')
+    #print(f'{strlist2=}')
+    #print(f'{payout_yield=}')
     return payout_yield
 
 
@@ -285,6 +285,49 @@ def get_guru_wacc(symbol: str, d: DictProxy={}) -> Optional[float]:
 
 
 
+def get_share_change(symbol: str, d: DictProxy={}) -> Optional[float]:
+    """
+    REQUIRES: 
+
+    https://macrotrends.net/stocks/charts/NVDA/x/shares-outstanding
+
+    share_change_url: str = f'https://macrotrends.net/stocks/charts/{symbol}/x/shares-outstanding'
+    soup: BeautifulSoup = get_html_soup(share_change_url)
+    
+    soup_items: ResultSet = soup.find('meta', attrs={'name': 'description'})
+    
+    content: str = '' if not soup_items else soup_items.get('content')
+
+    strlist: List[str] = content.split()
+
+    strlist2: List[str] = list(filter(lambda x: '%' in x, strlist))
+
+    share_change: Optional[float] = readf(strlist2[0][:-1]) if strlist2 else None
+    
+    print(f'{soup_items=}')
+    print(f'{content=}')
+    print(f'{strlist=}')
+    print(f'{strlist2=}')
+    print(f'{share_change=}')
+    return share_change
+    """
+
+
+    url = "https://m.macrotrends.net/stocks/charts/NVDA/nvidia/shares-outstanding"
+    headers = {'User-Agent': 'Mozilla/5.0'}  # Simulate a browser request
+
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    meta_description = soup.find('meta', attrs={'name': 'description'})
+    if meta_description:
+        print(meta_description.get('content'))
+    else:
+        print("Meta description not found.")
+
+
+
+
 def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     """DEPENDS: try_get_guru_earn_per_share > get_guru_earn_per_share"""
 
@@ -306,6 +349,7 @@ def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     proxy['roic'] = get_guru_roic(symbol)
     proxy['shareholder_yield'] = get_guru_shareholder_yield(symbol)
     proxy['wacc'] = get_guru_wacc(symbol)
+    proxy['share_change'] = get_share_change(symbol)
     return proxy
 
 
@@ -319,6 +363,9 @@ def test():
     print(x)
     
 
+def test1():
+    get_share_change('NVDA')
 
 if __name__ == '__main__':
-    test()
+    
+    test1()
