@@ -6,7 +6,7 @@ USED BY:
 
 # STANDARD LIBS
 
-
+from time import sleep
 from timeit import default_timer
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -24,17 +24,20 @@ from pizzapy.database_update.generated_stock_list import nasdaq_100_stocks, sp_5
 
 
 
-def upsert_symbols_terminal(table: str, symbols: List[str]) -> None:
+def upsert_symbols_terminal(table: str, symbols: List[str], delay=0) -> None:
     """
     IMPORTS: table_function_dict
     USED BY: upsert_symbols_interactive()
     """
+    if table == 'stock_option':
+        delay = 30 
     length: int = len(symbols)
     func = table_function_dict.get(table)
     for i, symbol in enumerate(symbols, start=1):
         result: str = try_str(func, symbol)
         output: str = f'{i} / {length} {symbol} {result}'
         print(output)
+        sleep(delay)
 
 
 
