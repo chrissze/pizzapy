@@ -1,14 +1,14 @@
 """
 * INDEPENDENT MODULE *
 
-USED BY: 
+USED BY:
     guru_stock_update/
 
 This module contains variables and dictionaries only, line below is for copy and paste:
 
                 guru_stock_create_table_command, zacks_stock_create_table_command, stock_option_create_table_command, stock_price_create_table_command, stock_technical_create_table_command, futures_option_create_table_command
 
-    
+
 I cannot place postgres execution functions in this module, as it will led to circular imports.
 
 """
@@ -25,20 +25,24 @@ guru_stock_create_table_command: str = """
     t   TIMESTAMP,                    
     td   DATE,              
     symbol   VARCHAR(10),         
-    
+
     price   FLOAT8,
     cap   FLOAT8,    
     cap_str   VARCHAR(15),
 
-    book_value   FLOAT8,    
-    book_value_pc   FLOAT8,    
+    book_value   FLOAT8,
+    book_value_pc   FLOAT8,
+    buyback_yield   FLOAT8,
 
     debt_per_share   FLOAT8,    
-    debt_pc   FLOAT8,    
-    earn_per_share   FLOAT8,  
-    earn_pc   FLOAT8,    
+    debt_pc   FLOAT8,
+    dividend_yield   FLOAT8,
+    earn_per_share   FLOAT8,
+    earn_pc   FLOAT8,
+    earn_yield   FLOAT8,
+    fcf_yield   FLOAT8,
 
-    interest   FLOAT8,    
+    interest   FLOAT8,
     interest_pc   FLOAT8,  
 
     equity   FLOAT8,    
@@ -46,14 +50,16 @@ guru_stock_create_table_command: str = """
 
     lynch   FLOAT8,    
     lynch_move_pc   FLOAT8,    
-    
+
     net_capital   FLOAT8,    
     net_capital_pc   FLOAT8, 
 
     net_margin   FLOAT8, 
-    
+
     nocapz   FLOAT8,
-    
+    pay_debt_yield   FLOAT8,
+    payout_yield   FLOAT8,
+
     research   FLOAT8, 
     research_pc   FLOAT8,    
     
@@ -62,15 +68,20 @@ guru_stock_create_table_command: str = """
     rev_growth_1y   FLOAT8,    
     rev_growth_3y   FLOAT8,        
     rev_growth_5y   FLOAT8,    
-    rev_growth_10y   FLOAT8,    
-    
-    strength   FLOAT8,    
+    rev_growth_10y   FLOAT8,
+
+    roic   FLOAT8,
+
+    shareholder_yield   FLOAT8,
+
+    strength   FLOAT8,
     x1   FLOAT8,
     x2   FLOAT8,
     x3   FLOAT8,
     x4   FLOAT8,
     x5   FLOAT8,
-    
+    wacc   FLOAT8,
+
     year1z   FLOAT8,
     year2z   FLOAT8,
     year3z   FLOAT8,

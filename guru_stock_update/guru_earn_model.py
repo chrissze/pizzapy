@@ -250,7 +250,6 @@ def get_guru_roic(symbol: str, d: DictProxy={}) -> Optional[float]:
     strlist2: List[str] = list(filter(lambda x: '%.' in x, strlist))
 
     roic: Optional[float] = readf(strlist2[0][:-1]) if strlist2 else None
-    
     #print(f'{content=}')
     #print(f'{strlist2=}')
     #print(f'{roic=}')
@@ -261,7 +260,7 @@ def get_guru_roic(symbol: str, d: DictProxy={}) -> Optional[float]:
 
 def get_guru_wacc(symbol: str, d: DictProxy={}) -> Optional[float]:
     """
-    REQUIRES: 
+    REQUIRES:
 
     https://www.gurufocus.com/term/wacc/META
 
@@ -276,7 +275,6 @@ def get_guru_wacc(symbol: str, d: DictProxy={}) -> Optional[float]:
     strlist2: List[str] = list(filter(lambda x: '%.' in x, strlist))
 
     wacc: Optional[float] = readf(strlist2[0][:-1]) if strlist2 else None
-    
     #print(f'{content=}')
     #print(f'{strlist2=}')
     #print(f'{wacc=}')
@@ -291,12 +289,9 @@ def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
     earn_per_share: Optional[float]  = get_guru_earn_per_share(symbol)
 
     proxy['earn_per_share'] = earn_per_share
-    
-    
     earn_pc: Optional[float] = round((earn_per_share / proxy['price'] * 100.0), 2) if (proxy.get('price') and earn_per_share) else None
 
-    proxy['earn_pc'] = earn_pc 
-    
+    proxy['earn_pc'] = earn_pc
     proxy['buyback_yield'] = get_guru_buyback_yield(symbol)
     proxy['dividend_yield'] = get_guru_dividend_yield(symbol)
     proxy['earn_yield'] = get_guru_earn_yield(symbol)
@@ -312,12 +307,10 @@ def proxy_guru_earn(symbol: str, proxy: DictProxy={}) -> DictProxy:
 
 
 def test():
-    
     stock = input('which stock do you want to check? ')
     proxy = make_price_cap_proxy(stock)
     x = proxy_guru_earn(stock, proxy=proxy)
     print(x)
-    
 
 
 if __name__ == '__main__':
