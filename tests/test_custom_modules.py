@@ -13,6 +13,14 @@ import os
 import site
 
 
+import batterypy
+
+import dimsumpy
+
+import pizzapy
+
+
+
 def test_batterypy_dimsumpy_available_in_site_packages():
 
     site_packages_dir = site.getsitepackages()
