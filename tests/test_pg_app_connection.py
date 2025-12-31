@@ -26,17 +26,21 @@ def test_asyncpg_env() -> None:
     pgport = os.environ.get('PGPORT')
 
     pgdatabase = os.environ.get('PGDATABASE')
+    
     pguser = os.environ.get('PGUSER')
 
-    assert pghost in ['localhost', 'fuji.220122.xyz'], f"Invalid PGHOST: {pghost} "
-    assert pgport == '5432', f"Invalid PGPORT: {pgport} "
-    assert pgdatabase == 'mydb', f"Invalid PGDATABASE: {pgdatabase} "
-    assert pguser == 'postgres', f"Invalid PGDATABASE: {pguser} "
+    assert pghost in ['localhost', 'fuji.220122.xyz'], f"Invalid PGHOST: {pghost}"
+    
+    assert pgport == '5432', f"Invalid PGPORT: {pgport}"
+
+    assert pgdatabase == 'mydb', f"Invalid PGDATABASE: {pgdatabase}"
+
+    assert pguser == 'postgres', f"Invalid PGUSER: {pguser}"
 
 
 
 @pytest.mark.asyncio
-async def test_pg_connection() -> None:
+async def test_asyncpg_connection() -> None:
     
     e = None
     conn = None
@@ -68,6 +72,4 @@ async def test_pg_connection() -> None:
             await conn.close()
 
 
-if __name__ == '__main__':
-    asyncio.run(test_pg())
 
