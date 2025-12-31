@@ -30,4 +30,7 @@ def test_batterypy_dimsumpy_available_in_site_packages():
 
     assert any("dimsumpy" in s for s in packages)
 
+    assert any("pizzapy" in s for s in packages)
+
+
 
