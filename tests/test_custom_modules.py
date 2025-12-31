@@ -14,15 +14,20 @@ import site
 
 
 def test_batterypy_dimsumpy_available_in_site_packages():
+
     site_packages_dir = site.getsitepackages()
+
     packages = []
     
     for directory in site_packages_dir:
         packages = packages + os.listdir(directory)
     
     print(site_packages_dir)
+
     print(packages)
 
-    assert 'batterypy' in packages
-    assert 'dimsumpy' in packages 
+    assert any("batterypy" in s for s in packages)
+
+    assert any("dimsumpy" in s for s in packages)
+
 

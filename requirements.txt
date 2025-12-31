@@ -48,6 +48,7 @@ wheel
 
 # -e means editable, any changes in dimsumpy and batterypy will reflect immediately
 
-
 -e ../batterypy
+
+-e ../dimsumpy
 
