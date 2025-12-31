@@ -52,3 +52,5 @@ wheel
 
 -e ../dimsumpy
 
+-e .    # install pizzapy; for pizzapy imports to work in tests/
+
