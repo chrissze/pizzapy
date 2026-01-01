@@ -1,17 +1,21 @@
 
 """
+DEPENDS: pg_model.py
 
 USED BY: 
 
 """
 
 # STANDARD LIBS
+import asyncio
 
-from typing import Any, Dict
+from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.pg_app.pg_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_show_table, loop_show_table_rows, show_current_database, show_databases, show_tables
+from pizzapy.pg_app.pg_model import print_current_db
+
+from pizzapy.pg_app.pg_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_show_table, loop_show_table_rows, show_databases, show_tables
 
 
 postgres_menu_text: str = """\n
@@ -22,7 +26,7 @@ postgres_menu_text: str = """\n
         4) loop_show_table()
         5) loop_drop_table()
         6) loop_show_table_rows()
-        7) show_current_database()
+        7) print_current_db()
 
         
         
@@ -37,14 +41,14 @@ postgres_menu_text: str = """\n
     Choose your action: """
 
 
-actions_dict: Dict[str, Any] = {
+actions_dict: dict[str, Any] = {
     '1': lambda: print(show_databases()),
     '2': lambda: create_new_postgres_db(),
     '3': lambda: print(show_tables()),
     '4': lambda: loop_show_table(),
     '5': lambda: loop_drop_table(),
     '6': lambda: loop_show_table_rows(),
-    '7': lambda: print(show_current_database()),
+    '7': lambda: asyncio.run(print_current_db()),
                             
     '11': lambda: create_table('guru_stock'),
     '12': lambda: create_table('zacks_stock'),
@@ -55,7 +59,7 @@ actions_dict: Dict[str, Any] = {
     }
 
 
-def pg_cli_main(): 
+def pg_cli(): 
     """
     DEPENDS ON: postgres_menu_text, actions_dict
     """
@@ -72,5 +76,5 @@ def pg_cli_main():
 
 
 if __name__ == '__main__':
-    pg_cli_main()
+    pg_cli()
 
