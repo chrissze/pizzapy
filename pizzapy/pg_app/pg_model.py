@@ -21,6 +21,8 @@ from typing import Any
 # THIRD PARTY LIB
 import asyncpg
 
+from asyncpg import Record
+
 
 
 
@@ -316,6 +318,69 @@ table_list_dict: dict[str, Any] = {
 ##################
 
 
+
+
+
+async def get_databases() -> Any:
+    """
+    * INDEPENDENT *
+    IMPORTS: asyncpg
+
+    """
+    cmd: str = "SELECT datname FROM pg_database WHERE datistemplate = false"
+    try:
+        conn = await asyncpg.connect()
+        databases: list[Record] = await conn.fetch(cmd)
+    finally:
+        await conn.close()    
+    
+    return databases
+
+
+
+
+async def print_databases() -> str:
+    databases: list[Record] = await get_databases()
+
+    for db in databases:
+        db_dict: dict = dict(db)
+        print(db_dict.get('datname'))
+
+
+
+
+
+
+
+async def get_tables() -> Any:
+    """
+    * INDEPENDENT *
+    IMPORTS: asyncpg
+
+    """
+    cmd = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+    try:
+        conn = await asyncpg.connect()
+        tables: list[Record] = await conn.fetch(cmd)
+    finally:
+        await conn.close()    
+    
+    return tables
+
+
+
+async def print_tables() -> str:
+    tables: list[Record] = await get_tables()
+
+    for table in tables:
+        print(table.get('table_name'))
+
+
+
+
+
+
+
 async def get_current_db() -> str:
     """
     * INDEPENDENT *
@@ -340,6 +405,19 @@ async def print_current_db() -> str:
     print(current_db, type(current_db))
 
 
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     asyncio.run(print_current_db())
+    asyncio.run(print_tables())
+    asyncio.run(print_databases())
     print('done')
