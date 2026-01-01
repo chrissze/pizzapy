@@ -15,7 +15,7 @@ from typing import Any
 
 from pizzapy.pg_app.pg_model import drop_pg_table, print_current_db, print_databases, print_tables
 
-from pizzapy.pg_app.pg_manage_database_model import create_table, loop_show_table, loop_show_table_rows
+
 
 
 postgres_menu_text: str = """\n
@@ -45,19 +45,20 @@ actions_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(print_databases()),
     
     '3': lambda: asyncio.run(print_tables()),
-    '4': lambda: loop_show_table(),
+
+    '4': lambda:  asyncio.run(print_databases()), #
 
     '5': lambda: asyncio.run(drop_pg_table()),
 
-    '6': lambda: loop_show_table_rows(),
+    '6': lambda:  asyncio.run(print_databases()), #
     '7': lambda: asyncio.run(print_current_db()),
-                            
-    '11': lambda: create_table('guru_stock'),
-    '12': lambda: create_table('zacks_stock'),
-    '13': lambda: create_table('stock_option'),
-    '14': lambda: create_table('stock_price'),
-    '15': lambda: create_table('stock_technical'),
-    '16': lambda: create_table('technical_one'),
+
+    '11': lambda:  asyncio.run(print_databases()), # create_table('guru_stock'),
+    '12': lambda:  asyncio.run(print_databases()), #create_table('zacks_stock'),
+    '13': lambda:  asyncio.run(print_databases()), #create_table('stock_option'),
+    '14': lambda:  asyncio.run(print_databases()), #create_table('stock_price'),
+    '15': lambda:  asyncio.run(print_databases()), #create_table('stock_technical'),
+    '16': lambda:  asyncio.run(print_databases()), #create_table('technical_one'),
     }
 
 
@@ -78,6 +79,6 @@ def cli():
 
 
 if __name__ == '__main__':
-    #cli()
+    cli()
     print('DONE')
 
