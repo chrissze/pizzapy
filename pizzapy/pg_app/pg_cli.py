@@ -15,13 +15,13 @@ from typing import Any
 
 from pizzapy.pg_app.pg_model import print_current_db, print_databases, print_tables
 
-from pizzapy.pg_app.pg_manage_database_model import create_new_postgres_db, create_table,  loop_drop_table, loop_show_table, loop_show_table_rows
+from pizzapy.pg_app.pg_manage_database_model import create_table,  loop_drop_table, loop_show_table, loop_show_table_rows
 
 
 postgres_menu_text: str = """\n
     Which action do you want to do? 
         1) print_databases()   
-        2) create_new_postgres_db()
+        
         3) print_tables()
         4) loop_show_table()
         5) loop_drop_table()
@@ -43,7 +43,7 @@ postgres_menu_text: str = """\n
 
 actions_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(print_databases()),
-    '2': lambda: create_new_postgres_db(),
+    
     '3': lambda: asyncio.run(print_tables()),
     '4': lambda: loop_show_table(),
     '5': lambda: loop_drop_table(),
