@@ -13,9 +13,9 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.pg_app.pg_model import print_current_db, print_databases, print_tables
+from pizzapy.pg_app.pg_model import drop_pg_table, print_current_db, print_databases, print_tables
 
-from pizzapy.pg_app.pg_manage_database_model import create_table,  loop_drop_table, loop_show_table, loop_show_table_rows
+from pizzapy.pg_app.pg_manage_database_model import create_table, loop_show_table, loop_show_table_rows
 
 
 postgres_menu_text: str = """\n
@@ -24,7 +24,7 @@ postgres_menu_text: str = """\n
         
         3) print_tables()
         4) loop_show_table()
-        5) loop_drop_table()
+        5) drop_pg_table()
         6) loop_show_table_rows()
         7) print_current_db()
 
@@ -46,7 +46,9 @@ actions_dict: dict[str, Any] = {
     
     '3': lambda: asyncio.run(print_tables()),
     '4': lambda: loop_show_table(),
-    '5': lambda: loop_drop_table(),
+
+    '5': lambda: asyncio.run(drop_pg_table()),
+
     '6': lambda: loop_show_table_rows(),
     '7': lambda: asyncio.run(print_current_db()),
                             
@@ -59,7 +61,7 @@ actions_dict: dict[str, Any] = {
     }
 
 
-def pg_cli(): 
+def cli(): 
     """
     DEPENDS ON: postgres_menu_text, actions_dict
     """
@@ -76,5 +78,5 @@ def pg_cli():
 
 
 if __name__ == '__main__':
-    pg_cli()
+    cli()
 
