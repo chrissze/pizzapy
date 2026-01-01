@@ -406,6 +406,28 @@ async def print_current_db() -> str:
 
 
 
+def drop_pg_table():
+    """
+    DEPENDS ON: show_tables()
+    IMPORTS:  table_list_dict, execute_psycopg_command()
+    """
+    
+    table_name: str = input("\nWhich table do you want to DROP? Input the TABLE NAME or '0' to cancel: ")
+    
+    drop_table_cmd: str = f'DROP TABLE IF EXISTS {table_name}'
+    
+    if table_name == '0':
+        return
+    elif table_name in table_list_dict:
+        reply = input(f"\nYou are going to DROP TABLE '{table_name}', it is a CRITICAL TABLE in table_list_dict, do you really want to drop this table (y/N)?")
+        if reply == 'y':
+            execute_psycopg_command(drop_table_cmd)
+        elif table_name:
+            execute_psycopg_command(drop_table_cmd)
+        else:
+            print('invalid table name')
+
+
 
 
 
