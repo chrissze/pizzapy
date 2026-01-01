@@ -23,7 +23,7 @@ import asyncpg
 
 from asyncpg import Record
 
-from pandas import DataFrame
+#from pandas import DataFrame
 
 
 
@@ -453,9 +453,13 @@ async def print_table_columns() -> None:
         print(f'Table name `{table_name}` is not in table_list_dict')
         return
     
-    df = DataFrame(records)
+    cols = [dict(x) for x in records]
 
-    print(df)
+    for col in cols:
+        print(col)
+        
+    #df = DataFrame(records)
+    #print(df)
 
 
 
