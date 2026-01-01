@@ -29,53 +29,6 @@ from pizzapy.pg_app.pg_command_model import table_list_dict
 from pizzapy.pg_app.pg_connection_model import execute_pandas_read, execute_psycopg_command
 
         
-def show_current_database() -> DataFrame:
-    """
-    * INDEPENDENT *
-    IMPORTS: execute_pandas_read()
-    
-    """
-    cmd: str = "SELECT current_database()"
-    df: DataFrame = execute_pandas_read(cmd)
-    return df
-
-
-def show_databases() -> DataFrame:
-    """
-    * INDEPENDENT *
-    IMPORTS: execute_pandas_read()
-    I can delete a database in psql, no need to create drop_database
-    because there should be a few databases only.
-    """
-    cmd: str = "SELECT datname FROM pg_database WHERE datistemplate = false"
-    df: DataFrame = execute_pandas_read(cmd)
-    return df
-
-
-def create_new_postgres_db() -> None:
-    """
-    DEPENDS ON: show_databases()
-    IMPORTS: subprocess
-    """
-    print('\nCurrent available databases in Postgresql: \n')
-    print(show_databases())
-    initial_reply = input(f'\n\nDo you want to create a new database in Postgresql (y/N)? ')
-    if initial_reply != 'y':
-        return
-    
-    new_database_name = input('\nPlease input the desired database name then press ENTER: ')
-    confirmation_reply = input(f'\nDo you want to create a new database - {new_database_name} (y/N)? ')
-    
-    if confirmation_reply == 'y':
-        createdb_cmd = f'createdb {new_database_name} -U postgres'
-        subprocess.run(createdb_cmd, stdin=True, shell=True)
-        print(f'Just created a database -- {new_database_name}')
-        print(show_databases())
-    
-    else:
-        print('no database is created')
-
-
 def show_table(table_name: str) -> DataFrame:
     """
     * INDEPENDENT *
@@ -91,15 +44,6 @@ def show_table(table_name: str) -> DataFrame:
     df: DataFrame = execute_pandas_read(cmd)
     return df
 
-
-def show_tables() -> DataFrame:
-    """
-    * INDEPENDENT *
-    IMPORTS: execute_pandas_read()
-    """
-    cmd = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
-    df: DataFrame = execute_pandas_read(cmd)
-    return df
 
 
 

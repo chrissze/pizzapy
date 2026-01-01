@@ -23,6 +23,7 @@ import asyncpg
 
 from asyncpg import Record
 
+from pandas import DataFrame
 
 
 
@@ -321,6 +322,39 @@ table_list_dict: dict[str, Any] = {
 
 
 
+async def create_table(table_name:str) -> None:
+    """
+    DEPENDS ON: show_table(), show_tables()
+    IMPORTS: table_list_dict, execute_psycopg_command()
+    """
+    if table_name in table_list_dict:
+
+        cmd: str = table_list_dict[table_name].get('command')
+        try:
+            conn = await asyncpg.connect()
+
+            result = await conn.execute(cmd)
+
+            print(result)
+
+            await conn.close()
+        except Exception as e:
+            print(e)
+    
+        try:
+            print('\nLatest available tables in Postgresql database: \n')
+            await print_tables()
+        except Exception as e:
+            print(e)
+    
+    else:
+        print(f"\nYour input `{table_name}` is not in table_list_dict")
+
+
+
+
+
+
 async def get_databases() -> Any:
     """
     * INDEPENDENT *
@@ -352,7 +386,7 @@ async def print_databases() -> str:
 
 
 
-async def get_tables() -> Any:
+async def get_tables() -> list[Record]:
     """
     * INDEPENDENT *
     IMPORTS: asyncpg
@@ -362,14 +396,15 @@ async def get_tables() -> Any:
     try:
         conn = await asyncpg.connect()
         tables: list[Record] = await conn.fetch(cmd)
-    finally:
         await conn.close()    
+    except Exception as e:
+        return []
     
     return tables
 
 
 
-async def print_tables() -> str:
+async def print_tables() -> None:
     tables: list[Record] = await get_tables()
 
     for table in tables:
@@ -377,7 +412,55 @@ async def print_tables() -> str:
 
 
 
+async def get_table_columns(table_name: str) -> list[Record]:
+    """
+    * INDEPENDENT *
+    IMPORTS: 
+    
+    {table_name} in the cmd needs to be single quoted. Semicolon at the end is optional.
+    
+    full_cmd: str = f"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
 
+    empty tables without any column will have empty dataframe result.
+    """
+    
+    cmd: str = f"SELECT column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
+    try:
+        conn = await asyncpg.connect()
+        records: list[Record] = await conn.fetch(cmd)
+        await conn.close()    
+    except Exception as e:
+        print(e)
+    
+    return records
+
+
+
+
+async def print_table_columns() -> None:
+    """
+    df = DataFrame(dict(x) for x in records)      # handle edge cases better
+    df = DataFrame(records)
+    """
+    
+    await print_tables()
+
+    table_name: str = input("\nInput a TABLE NAME to print details or '0' to cancel: ")
+    
+    if table_name in table_list_dict:
+        records: list[Record] = await get_table_columns(table_name)
+    else:
+        print(f'Table name `{table_name}` is not in table_list_dict')
+        return
+    
+    df = DataFrame(records)
+
+    print(df)
+
+
+
+
+    
 
 
 
