@@ -673,13 +673,15 @@ def get_option_traded() -> list[str]:
     execution time: 2 minutes
     file size is about 50mb, need several minutes to process, unique symbols are about 3129
     """
+    print('Start downloading option file ...', datetime.now())
+
     url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/options.txt'
     with request.urlopen(url1) as r:
         text = r.read().decode()
 
     print('ftp option file downloaded', datetime.now())
 
-    df_nasdaq: DataFrame = pl.read_csv(StringIO(text), sep='|', header=0)
+    df_nasdaq: DataFrame = pd.read_csv(StringIO(text), sep='|', header=0)
 
     stocks: list[str] = list(df_nasdaq.iloc[:-1, 0])
 
