@@ -730,9 +730,9 @@ def prepare_stock_list_file_content() -> str:
     sp_nasdaq_comment: str = f'# {len(sp_nasdaq)}'
     sp_nasdaq_variable: str = f'sp_nasdaq_stocks: list[str] = {sp_nasdaq}'
 
-    option_traded: list[str] = get_option_traded()
-    option_traded_comment: str = f'# {len(option_traded)}'
-    option_traded_variable: str = f'option_traded_stocks: list[str] = {option_traded}'
+    #option_traded: list[str] = get_option_traded()
+    #option_traded_comment: str = f'# {len(option_traded)}'
+    #option_traded_variable: str = f'option_traded_stocks: list[str] = {option_traded}'
     
     content: str = f'''
 {file_comment}\n\n
@@ -758,11 +758,6 @@ def prepare_stock_list_file_content() -> str:
 
 {sp_nasdaq_comment}
 {sp_nasdaq_variable}\n\n
-
-{option_traded_comment}
-{option_traded_variable}\n\n
-
-
 '''
     return content
 
