@@ -25,6 +25,8 @@ from asyncpg import Record
 
 import pandas as pd
 
+import polars as pl
+
 
 ####################################
 # COMPUTER GENERATED FILE IMPORTS  #
@@ -674,7 +676,10 @@ def get_option_traded() -> list[str]:
     url1 = 'ftp://ftp.nasdaqtrader.com/SymbolDirectory/options.txt'
     with request.urlopen(url1) as r:
         text = r.read().decode()
-    df_nasdaq: DataFrame = pd.read_csv(StringIO(text), sep='|', header=0)
+
+    print('ftp option file downloaded', datetime.now())
+
+    df_nasdaq: DataFrame = pl.read_csv(StringIO(text), sep='|', header=0)
 
     stocks: list[str] = list(df_nasdaq.iloc[:-1, 0])
 
@@ -684,6 +689,8 @@ def get_option_traded() -> list[str]:
     filtered_stocks : list[str] = [x for x in set(stocks) if isinstance(x, str)]
 
     option_stocks: list[str] = sorted(filtered_stocks)
+
+    print('Filtering done', datetime.now())
 
     return option_stocks
 
@@ -829,4 +836,8 @@ if __name__ == '__main__':
     ##asyncio.run(print_tables())
     #asyncio.run(print_databases())
     #asyncio.run(drop_table())
-    ask_generate_stock_list_file()
+    #ask_generate_stock_list_file()
+
+    xs = get_option_traded()
+
+    print(xs)
