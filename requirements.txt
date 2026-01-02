@@ -1,6 +1,7 @@
-# DO not specify pandas version, so that pizza can work on python 3.9.
 
-# Mac nix python 3.13 works
+
+
+alpha_vantage
 
 asyncpg
 
@@ -16,9 +17,9 @@ lxml   #~=5.0
 
 
 
-pandas
+# pandas  # hide for fuji
 
-polars[rtcompat]
+polars
 
 psycopg[binary, pool]
 
