@@ -11,7 +11,7 @@ from typing import Literal
 
 
 
-from battarypy.string.read import is_floatable, readf
+from batterypy.string.read import is_floatable, readf
 
 @dataclass
 class OptionPosition:
@@ -64,8 +64,11 @@ class OptionPosition:
     
     @property
     def money(self) -> float | None:
-        if is_floatable(self.last) and is_floatable(self.open_interest):
-            round_money = round(self.last * self.open_interest * 100.0)
+        """
+        if ndigits=0 is not provided, the return type will be int. 
+        """
+        if isinstance(self.last, float) and isinstance(self.open_interest, float):
+            round_money = round(self.last * self.open_interest * 100.0, ndigits=0)
             return round_money
         else:
             return None
@@ -124,8 +127,8 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     call_positions: list[OptionPosition] = [x for x in position_list if x.type == 'call']
     put_positions: list[OptionPosition] = [x for x in position_list if x.type == 'put']
     
-    call_money_list: list[float] = [ x.money for x in call_positions]
-    put_money_list: list[float] = [ x.money for x in put_positions]
+    call_money_list: list[float] = [ x.money for x in call_positions if isinstance(x.money, float)]
+    put_money_list: list[float] = [ x.money for x in put_positions if isinstance(x.money, float)]
 
     call_money: float = sum(call_money_list)
     put_money: float = sum(put_money_list)
