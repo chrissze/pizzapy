@@ -9,6 +9,10 @@ from decimal import Decimal
 from typing import Literal
 
 
+
+
+from battarypy.string.read import is_floatable, readf
+
 @dataclass
 class OptionPosition:
     contractID: str
@@ -16,14 +20,14 @@ class OptionPosition:
     expiration: date
     strike: Decimal
     type: Literal["call", "put"]
-    last: float
+    last: float | None
     mark: Decimal
     bid: Decimal
     bid_size: int
     ask: Decimal
     ask_size: int
     volume: int
-    open_interest: float
+    open_interest: float | None
     date: date
     implied_volatility: float
     delta: float
@@ -39,7 +43,7 @@ class OptionPosition:
             contractID=data["contractID"] if data.get('contractID') is not None else None,
             symbol=data["symbol"] if data.get('symbol') is not None else None,
             expiration=date.fromisoformat(data["expiration"]) if data.get('expiration') is not None else None,
-            strike=float(data["strike"]) if data.get('strike') is not None else None,
+            strike=readf(data.get("strike")),
             type=data["type"] if data.get('type') is not None else None,
             last=float(data["last"]) if data.get('last') is not None else None,
             mark=Decimal(data["mark"]) if data.get('mark') is not None else None,
@@ -48,7 +52,7 @@ class OptionPosition:
             ask=Decimal(data["ask"]) if data.get('ask') is not None else None,
             ask_size=int(data["ask_size"]) if data.get('ask_size') is not None else None,
             volume=int(data["volume"]) if data.get('volume') is not None else None,
-            open_interest=float(data["open_interest"]) if data.get('open_interest') is not None else None,
+            open_interest=readf(data.get("open_interest")),
             date=date.fromisoformat(data["date"]) if data.get('date') is not None else None,
             implied_volatility=float(data["implied_volatility"]) if data.get('implied_volatility') is not None else None,
             delta=float(data["delta"]) if data.get('delta') is not None else None,
@@ -59,10 +63,12 @@ class OptionPosition:
         )
     
     @property
-    def money(self) -> float:
-        round_money = round(self.last * self.open_interest * 100.0)
-        return round_money
-
+    def money(self) -> float | None:
+        if is_floatable(self.last) and is_floatable(self.open_interest):
+            round_money = round(self.last * self.open_interest * 100.0)
+            return round_money
+        else:
+            return None
 
 
 
@@ -124,8 +130,14 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     call_money: float = sum(call_money_list)
     put_money: float = sum(put_money_list)
 
+    call_oi: list[float] = sum([ x.open_interest for x in call_positions if isinstance(x.open_interest, float)])
+    put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
+
+
     print(call_money)
     print(put_money)
+    print(call_oi)
+    print(put_oi)
 
 
 
