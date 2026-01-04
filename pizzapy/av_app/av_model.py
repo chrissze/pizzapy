@@ -1,17 +1,30 @@
 
 
-import requests
 
+# STANDARD LIB
 
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+import os
+from time import sleep
 from typing import Literal
 
 
+# THIRD
 
+from alpha_vantage.fundamentaldata import FundamentalData
 
+from alpha_vantage.timeseries import TimeSeries
+
+import requests
+
+#CUSTOM
 from batterypy.string.read import is_floatable, readf
+
+
+
+API_KEY = os.getenv('AV_API_KEY')
 
 @dataclass
 class OptionPosition:
@@ -74,7 +87,29 @@ class OptionPosition:
             return None
 
 
+def get_close_price(symbol: str) -> float | None:
 
+    ts = TimeSeries(key=API_KEY)
+    data, meta = ts.get_daily(symbol=symbol)
+
+    # Get the most recent date's closing price
+    latest_date = list(data.keys())[0]
+    previous_close = data[latest_date]['4. close']
+
+    print(f"Previous Close ({latest_date}): ${previous_close}")
+
+    return previous_close
+
+
+def get_cap(symbol: str) -> float | None:
+
+    fd = FundamentalData(key=API_KEY)
+    
+    overview, _ = fd.get_company_overview(symbol=symbol)
+    
+    cap = overview["MarketCapitalization"]
+
+    print(f"Market Cap: {readf(cap):,}")
 
 
 def get_hist_option_data(symbol:str) -> tuple[list, list]:
@@ -148,4 +183,6 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
 
     
 if __name__ == '__main__':
-    get_option_positions('IBM') 
+    #get_cap('NVDA')
+    sleep(1)
+    

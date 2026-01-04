@@ -44,7 +44,7 @@ def test_get_sp_nasdaq():
     assert l >= 900
 
 
-def test_get_option_traded():
+def five_min_test_get_option_traded():
     stocks: list[str] = get_option_traded()
     l = len(stocks)
     assert l >= 111900
