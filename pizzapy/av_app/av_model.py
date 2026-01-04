@@ -90,15 +90,18 @@ class OptionPosition:
 def get_close_price(symbol: str) -> float | None:
 
     ts = TimeSeries(key=API_KEY)
-    data, meta = ts.get_daily(symbol=symbol)
+    data_dict, meta = ts.get_daily(symbol=symbol)
+    
+    td, ohlcv_dict: tuple[Any, dict[str, str]] = list(data_dict.items())[0]
 
+    close_price = ohlcv_dict.get('4. close')
+    
     # Get the most recent date's closing price
-    latest_date = list(data.keys())[0]
-    previous_close = data[latest_date]['4. close']
-
+    #latest_date = list(data.keys())[0]
+    #previous_close = data[latest_date]['4. close']
     #print(f"Previous Close ({latest_date}): ${previous_close}")
 
-    return readf(previous_close)
+    return close_price
 
 
 def get_cap(symbol: str) -> float | None:
@@ -227,7 +230,8 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
 
     
 if __name__ == '__main__':
-    get_option_positions('IBM')
+    #get_option_positions('IBM')
     #get_cap('IBM')
-    sleep(1)
+    x = get_close_price('IBM')
+    print(x)
     
