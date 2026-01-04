@@ -96,9 +96,9 @@ def get_close_price(symbol: str) -> float | None:
     latest_date = list(data.keys())[0]
     previous_close = data[latest_date]['4. close']
 
-    print(f"Previous Close ({latest_date}): ${previous_close}")
+    #print(f"Previous Close ({latest_date}): ${previous_close}")
 
-    return previous_close
+    return readf(previous_close)
 
 
 def get_cap(symbol: str) -> float | None:
@@ -109,7 +109,7 @@ def get_cap(symbol: str) -> float | None:
     
     cap = overview["MarketCapitalization"]
 
-    print(f"Market Cap: {readf(cap):,}")
+    return readf(cap)
 
 
 def get_hist_option_data(symbol:str) -> tuple[list, list]:
@@ -146,19 +146,14 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     """
     
     """
-
+    
     data: dict = get_hist_option_data('IBM') 
 
     option_list: list[dict[str, str]] = data.get('data')
 
     position_list: list[OptionPosition] = [OptionPosition.from_dict(x) for x in option_list]
 
-    print(position_list)
-
-    op0 = position_list[0]
-
-    print(op0.money)
-
+    
     call_positions: list[OptionPosition] = [x for x in position_list if x.type == 'call']
     put_positions: list[OptionPosition] = [x for x in position_list if x.type == 'put']
     
@@ -166,14 +161,63 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     put_money_list: list[float] = [ x.money for x in put_positions if isinstance(x.money, float)]
 
     call_money: float = sum(call_money_list)
+    
     put_money: float = sum(put_money_list)
+    
+    total_money: float = call_money + put_money
+
+    print(call_money)
+    
 
     call_oi: list[float] = sum([ x.open_interest for x in call_positions if isinstance(x.open_interest, float)])
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
+    sleep(1)
 
-    print(call_money)
-    print(put_money)
+    close_price: float | None = get_close_price(symbol)
+
+    sleep(2)    
+
+    cap: float | None = get_cap(symbol)
+
+
+    call_pct = call_money / cap
+    
+    put_pct = put_money / cap
+    
+    call_ratio = call_money / total_money
+    
+    put_ratio = put_money / total_money
+    
+    call_itm_premiums = sum([ x.money for x in call_positions if x.strike <= close_price and isinstance(x.money, float)])
+
+    call_otm_premiums = sum([ x.money for x in call_positions if x.strike > close_price and isinstance(x.money, float)])
+
+    put_itm_premiums = sum([ x.money for x in put_positions if x.strike >= close_price and isinstance(x.money, float)])
+
+    put_otm_premiums = sum([ x.money for x in put_positions if x.strike < close_price and isinstance(x.money, float)])
+    
+    call_itm_ratio = call_itm_premiums / call_money
+    call_otm_ratio = call_otm_premiums / call_money
+
+    put_itm_ratio = put_itm_premiums / put_money
+    put_otm_ratio = put_otm_premiums / put_money
+
+
+    print(call_pct)
+    print(put_pct)
+    
+    print(call_ratio)
+    print(put_ratio)
+    
+
+    print(call_itm_ratio)
+    print(call_otm_ratio)
+    
+    print(put_itm_ratio)
+    print(put_otm_ratio)
+    
+    
     print(call_oi)
     print(put_oi)
 
@@ -183,6 +227,7 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
 
     
 if __name__ == '__main__':
-    #get_cap('NVDA')
+    get_option_positions('IBM')
+    #get_cap('IBM')
     sleep(1)
     
