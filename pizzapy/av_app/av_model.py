@@ -2,13 +2,19 @@
 
 
 # STANDARD LIB
+import asyncio
 
 from dataclasses import dataclass
-from datetime import date
+
+from datetime import datetime, date
+
 from decimal import Decimal
+
 import os
+
 from time import sleep
-from typing import Literal
+
+from typing import Any, Literal, Optional
 
 
 # THIRD
@@ -17,10 +23,183 @@ from alpha_vantage.fundamentaldata import FundamentalData
 
 from alpha_vantage.timeseries import TimeSeries
 
+import asyncpg
+
+from pydantic import BaseModel, Field, validator
+
 import requests
 
 #CUSTOM
 from batterypy.string.read import is_floatable, readf
+
+
+
+class OptionRatio(BaseModel):
+    """
+    Pydantic model for stock option data with validation.
+    Represents options market sentiment and money flow metrics.
+    """
+    # Primary identifiers
+    option_id: Optional[int] = Field(None, description="Auto-generated ID")
+    t: Optional[datetime] = Field(None, description="Timestamp of data collection")
+    td: date = Field(..., description="Trading date (part of primary key)")
+    symbol: str = Field(..., min_length=1, max_length=10, description="Stock ticker symbol")
+    
+    # Market cap data
+    cap_str: Optional[str] = Field(None, max_length=15, description="Market cap string representation")
+    cap: Optional[float] = Field(None, ge=0, description="Market capitalization")
+    
+    # Price and money flow
+    price: Optional[float] = Field(None, gt=0, description="Current stock price")
+    call_money: Optional[float] = Field(None, ge=0, description="Total call option money flow")
+    put_money: Optional[float] = Field(None, ge=0, description="Total put option money flow")
+    
+    # Open interest
+    call_oi: Optional[float] = Field(None, ge=0, description="Call open interest")
+    put_oi: Optional[float] = Field(None, ge=0, description="Put open interest")
+    
+    # Money ratios
+    call_money_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call money as ratio of total")
+    put_money_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put money as ratio of total")
+    
+    # Premium ratios
+    call_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call ITM premium ratio")
+    call_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call OTM premium ratio")
+    put_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put ITM premium ratio")
+    put_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put OTM premium ratio")
+    
+    # Put/Call ratios
+    call_pc: Optional[float] = Field(None, ge=0, description="Call put/call ratio")
+    put_pc: Optional[float] = Field(None, ge=0, description="Put put/call ratio")
+    
+    @validator('symbol')
+    def normalize_symbol(cls, v):
+        """Normalize ticker symbol to uppercase and strip whitespace"""
+        if v:
+            return v.upper().strip()
+        return v
+    
+    @validator('td', pre=True)
+    def parse_trade_date(cls, v):
+        """Parse trading date from various formats"""
+        if isinstance(v, date):
+            return v
+        if isinstance(v, datetime):
+            return v.date()
+        if isinstance(v, str):
+            # Try common date formats
+            for fmt in ['%Y-%m-%d', '%Y/%m/%d', '%m/%d/%Y']:
+                try:
+                    return datetime.strptime(v, fmt).date()
+                except ValueError:
+                    continue
+        return v
+    
+    @validator('t', pre=True)
+    def parse_timestamp(cls, v):
+        """Parse timestamp from various formats"""
+        if v is None or isinstance(v, datetime):
+            return v
+        if isinstance(v, str):
+            try:
+                return datetime.fromisoformat(v.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+        return v
+    
+    @validator('call_money_ratio', 'put_money_ratio')
+    def validate_money_ratios(cls, v, values):
+        """Ensure money ratios sum to approximately 1.0"""
+        if v is not None and 'call_money_ratio' in values and 'put_money_ratio' in values:
+            call_ratio = values.get('call_money_ratio')
+            put_ratio = values.get('put_money_ratio')
+            if call_ratio is not None and put_ratio is not None:
+                total = call_ratio + put_ratio
+                if not (0.99 <= total <= 1.01):  # Allow small floating point errors
+                    # Warning: could raise ValueError if you want strict validation
+                    pass
+        return v
+    
+    @validator('cap')
+    def validate_cap_positive(cls, v):
+        """Ensure market cap is positive if provided"""
+        if v is not None and v < 0:
+            raise ValueError('Market cap cannot be negative')
+        return v
+    
+    class Config:
+        # Enable validation on assignment
+        validate_assignment = True
+        
+        # Allow datetime objects
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            date: lambda v: v.isoformat(),
+        }
+        
+        # Example for documentation
+        schema_extra = {
+            "example": {
+                "td": "2024-01-05",
+                "symbol": "AAPL",
+                "cap_str": "3.0T",
+                "cap": 3000000000000,
+                "price": 185.50,
+                "call_money": 1500000000,
+                "put_money": 800000000,
+                "call_oi": 500000,
+                "put_oi": 300000,
+                "call_money_ratio": 0.65,
+                "put_money_ratio": 0.35,
+                "call_pc": 1.67,
+                "put_pc": 0.60
+            }
+        }
+
+
+# Usage example with asyncpg
+async def upsert_option_ratio(symbol: str):
+    """Insert an OptionRatio record into the database"""
+
+    conn = await asyncpg.connect()
+
+    option = get_option_ratio(symbol)
+
+    await conn.execute('''
+        INSERT INTO stock_option (
+            t, td, symbol, cap_str, cap, price,
+            call_money, put_money, call_oi, put_oi,
+            call_money_ratio, put_money_ratio,
+            call_itm_premium_ratio, call_otm_premium_ratio,
+            put_itm_premium_ratio, put_otm_premium_ratio,
+            call_pc, put_pc
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        ON CONFLICT (symbol, td) DO UPDATE SET
+            t = EXCLUDED.t,
+            cap_str = EXCLUDED.cap_str,
+            cap = EXCLUDED.cap,
+            price = EXCLUDED.price,
+            call_money = EXCLUDED.call_money,
+            put_money = EXCLUDED.put_money,
+            call_oi = EXCLUDED.call_oi,
+            put_oi = EXCLUDED.put_oi,
+            call_money_ratio = EXCLUDED.call_money_ratio,
+            put_money_ratio = EXCLUDED.put_money_ratio,
+            call_itm_premium_ratio = EXCLUDED.call_itm_premium_ratio,
+            call_otm_premium_ratio = EXCLUDED.call_otm_premium_ratio,
+            put_itm_premium_ratio = EXCLUDED.put_itm_premium_ratio,
+            put_otm_premium_ratio = EXCLUDED.put_otm_premium_ratio,
+            call_pc = EXCLUDED.call_pc,
+            put_pc = EXCLUDED.put_pc
+    ''', 
+        option.t, option.td, option.symbol,
+        option.cap_str, option.cap, option.price,
+        option.call_money, option.put_money, option.call_oi, option.put_oi,
+        option.call_money_ratio, option.put_money_ratio,
+        option.call_itm_premium_ratio, option.call_otm_premium_ratio,
+        option.put_itm_premium_ratio, option.put_otm_premium_ratio,
+        option.call_pc, option.put_pc
+    )
 
 
 
@@ -94,18 +273,20 @@ def get_close_price(symbol: str) -> float | None:
     ts = TimeSeries(key=API_KEY)
     data_dict, meta = ts.get_daily(symbol=symbol)
     
-    td: str
+    td: str     # 'YYYY-MM-DD' '2026-01-02'
     ohlcv_dict: dict[str, str]
     td, ohlcv_dict = list(data_dict.items())[0]
 
-    close_price = ohlcv_dict.get('4. close')
+    close_price = readf(ohlcv_dict.get('4. close'))
     
     # Get the most recent date's closing price
     #latest_date = list(data.keys())[0]
     #previous_close = data[latest_date]['4. close']
     #print(f"Previous Close ({latest_date}): ${previous_close}")
 
-    return close_price
+    #print(type(td))
+    print(td, close_price)
+    return td, close_price
 
 
 
@@ -158,7 +339,7 @@ def get_hist_option_data(symbol:str) -> tuple[list, list]:
 
 
 
-def get_option_positions(symbol:str) -> tuple[list, list]:
+def get_option_ratio(symbol:str) -> OptionRatio:
     """
     
     """
@@ -190,16 +371,18 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
 
     sleep(1)
 
-    close_price: float | None = get_close_price(symbol)
+    td: str
+    close_price: float | None
+    td, close_price = get_close_price(symbol)
 
     sleep(2)    
 
     cap: float | None = get_cap(symbol)
 
-
-    call_pct = call_money / cap
+ 
+    call_pc = call_money / cap * 100.0
     
-    put_pct = put_money / cap
+    put_pc = put_money / cap * 100.0
     
     call_money_ratio = call_money / total_money
     
@@ -220,8 +403,8 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     put_otm_premium_ratio = put_otm_premiums / put_money
 
 
-    print(call_pct)
-    print(put_pct)
+    print(call_pc)
+    print(put_pc)
     
     print(call_money_ratio)
     print(put_money_ratio)
@@ -236,14 +419,36 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     print(call_oi)
     print(put_oi)
 
+    option_obj = OptionRatio(
+        t=datetime.now(),
+        td=td,
+        symbol=symbol,
+        price=close_price,
+        cap=cap,
+        call_money=call_money, 
+        put_money=put_money, 
+        call_money_ratio=call_money_ratio, 
+        put_money_ratio=put_money_ratio, 
+        call_pc=call_pc,
+        put_pc=put_pc,
+        call_oi=call_oi,
+        put_oi=put_oi,
+        call_itm_premium_ratio=call_itm_premium_ratio,
+        call_otm_premium_ratio=call_otm_premium_ratio,
+        put_itm_premium_ratio=put_itm_premium_ratio,
+        put_otm_premium_ratio=put_otm_premium_ratio,
+
+    )
+
+    return option_obj
 
 
 
 
-    
-if __name__ == '__main__':
-    #get_option_positions('IBM')
-    #get_cap('IBM')
-    x = get_close_price('IBM')
-    print(x)
-    
+
+
+# Example usage
+if __name__ == "__main__":
+    #op_obj = get_option_ratio('IBM')
+    #print(op_obj)
+    asyncio.run(upsert_option_ratio('IBM'))

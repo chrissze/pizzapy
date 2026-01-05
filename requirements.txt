@@ -23,6 +23,8 @@ lxml   #~=5.0
 
 polars
 
+pydantic
+
 psycopg[binary, pool]
 
 PySide6   # ~=6.8.0
