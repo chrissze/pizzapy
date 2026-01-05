@@ -87,12 +87,16 @@ class OptionPosition:
             return None
 
 
+
+
 def get_close_price(symbol: str) -> float | None:
 
     ts = TimeSeries(key=API_KEY)
     data_dict, meta = ts.get_daily(symbol=symbol)
     
-    td, ohlcv_dict: tuple[Any, dict[str, str]] = list(data_dict.items())[0]
+    td: str
+    ohlcv_dict: dict[str, str]
+    td, ohlcv_dict = list(data_dict.items())[0]
 
     close_price = ohlcv_dict.get('4. close')
     
@@ -104,6 +108,8 @@ def get_close_price(symbol: str) -> float | None:
     return close_price
 
 
+
+
 def get_cap(symbol: str) -> float | None:
 
     fd = FundamentalData(key=API_KEY)
@@ -113,6 +119,9 @@ def get_cap(symbol: str) -> float | None:
     cap = overview["MarketCapitalization"]
 
     return readf(cap)
+
+
+
 
 
 def get_hist_option_data(symbol:str) -> tuple[list, list]:
@@ -143,6 +152,10 @@ def get_hist_option_data(symbol:str) -> tuple[list, list]:
     # print(type(data))
 
     return data
+
+
+
+
 
 
 def get_option_positions(symbol:str) -> tuple[list, list]:
@@ -188,9 +201,9 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
     
     put_pct = put_money / cap
     
-    call_ratio = call_money / total_money
+    call_money_ratio = call_money / total_money
     
-    put_ratio = put_money / total_money
+    put_money_ratio = put_money / total_money
     
     call_itm_premiums = sum([ x.money for x in call_positions if x.strike <= close_price and isinstance(x.money, float)])
 
@@ -200,26 +213,25 @@ def get_option_positions(symbol:str) -> tuple[list, list]:
 
     put_otm_premiums = sum([ x.money for x in put_positions if x.strike < close_price and isinstance(x.money, float)])
     
-    call_itm_ratio = call_itm_premiums / call_money
-    call_otm_ratio = call_otm_premiums / call_money
+    call_itm_premium_ratio = call_itm_premiums / call_money
+    call_otm_premium_ratio = call_otm_premiums / call_money
 
-    put_itm_ratio = put_itm_premiums / put_money
-    put_otm_ratio = put_otm_premiums / put_money
+    put_itm_premium_ratio = put_itm_premiums / put_money
+    put_otm_premium_ratio = put_otm_premiums / put_money
 
 
     print(call_pct)
     print(put_pct)
     
-    print(call_ratio)
-    print(put_ratio)
+    print(call_money_ratio)
+    print(put_money_ratio)
     
 
-    print(call_itm_ratio)
-    print(call_otm_ratio)
+    print(call_itm_premium_ratio)
+    print(call_otm_premium_ratio)
     
-    print(put_itm_ratio)
-    print(put_otm_ratio)
-    
+    print(put_itm_premium_ratio)
+    print(put_otm_premium_ratio)
     
     print(call_oi)
     print(put_oi)
