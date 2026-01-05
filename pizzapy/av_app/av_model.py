@@ -30,7 +30,7 @@ from pydantic import BaseModel, Field, validator
 import requests
 
 #CUSTOM
-from batterypy.string.read import is_floatable, readf
+from batterypy.string.read import formatlarge, readf
 
 
 
@@ -370,7 +370,7 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
     sleep(1)
-
+    t = datetime.now()
     td: str
     close_price: float | None
     td, close_price = get_close_price(symbol)
@@ -379,7 +379,8 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
     cap: float | None = get_cap(symbol)
 
- 
+    cap_str=formatlarge(cap)
+
     call_pc = call_money / cap * 100.0
     
     put_pc = put_money / cap * 100.0
@@ -420,11 +421,12 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     print(put_oi)
 
     option_obj = OptionRatio(
-        t=datetime.now(),
+        t=t,
         td=td,
         symbol=symbol,
         price=close_price,
         cap=cap,
+        cap_str=cap_str,
         call_money=call_money, 
         put_money=put_money, 
         call_money_ratio=call_money_ratio, 
