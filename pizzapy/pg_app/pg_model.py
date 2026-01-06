@@ -845,10 +845,36 @@ def ask_generate_stock_list_file() -> None:
 ########################
 
 
-async def get_latest_row(symbol: str, table: str ) -> DataFrame:
+
+async def fetch_df(cmd: str) -> DataFrame:
     """
     * INDEPENDENT *
     IMPORTS: 
+    
+    USED BY: 
+    
+    Note:
+    (1) the table name MUST be available in the database, otherwise there will be exception.
+    (2) The symbol can be non-exist in the table, conn.fetch() returns an empty list [] if no rows match.
+
+
+    """    
+    conn = await asyncpg.connect()
+    
+    rows: list[Record] = await conn.fetch(cmd)
+    
+    await conn.close()
+    
+    df: DataFrame = pd.DataFrame([dict(x) for x in rows])
+                
+    return df       
+    
+
+
+async def get_latest_row(symbol: str, table: str ) -> DataFrame:
+    """
+    
+    DEPENDS: fetch_df 
     USED BY: 
     
     Note:
@@ -859,11 +885,7 @@ async def get_latest_row(symbol: str, table: str ) -> DataFrame:
     """    
     cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
     
-    conn = await asyncpg.connect()
-    
-    rows: list[Record] = await conn.fetch(cmd)
-    
-    await conn.close()
+    rows: list[Record] = await fetch_df(cmd)
     
     first_row_list: list[Record] = rows[:1]  # can be an empty list
     

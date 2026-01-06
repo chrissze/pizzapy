@@ -31,6 +31,7 @@ from dimsumpy.qt.functions import closeEvent
 
 # PROGRAM MODULES
 from pizzapy.pg_app.pg_model import stock_list_dict
+#from pizzapy.pg_app.pg_model import fetch_df
 
 from pizzapy.pg_app.postgres_connection_model import execute_pandas_read
 
@@ -118,7 +119,7 @@ def load_stock_table(self) -> None:
         self.symbols_list needs to have self to share its value so that it can be accessed by make_dataframe()
     """
     lineedit_str: str = self.symbols_lineedit.text().upper().strip()
-    self.symbols_list: List[str] = re.split(r'[ ,]+', lineedit_str) if lineedit_str else []
+    self.symbols_list: list[str] = re.split(r'[ ,]+', lineedit_str) if lineedit_str else []
     if self.symbols_list:      # prevent empty lineedit string
         make_dataframe(self)
         make_tableview(self)
@@ -135,7 +136,7 @@ def load_list_table(self) -> None:
     USED BY: CoreBrowserController
     """
     list_name: str = self.stock_list_combobox.currentText()
-    self.symbols_list: List[str] = stock_list_dict.get(list_name)
+    self.symbols_list: list[str] = stock_list_dict.get(list_name)
     make_dataframe(self)
     make_tableview(self)
     make_grid(self)    

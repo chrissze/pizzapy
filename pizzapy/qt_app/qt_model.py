@@ -11,12 +11,12 @@ Custom Sort Filter Example:
 
 """
 # STANDARD LIBS
-import sys;sys.path.append('..')
-from typing import Any, Dict, List, Set, Union
+
+from typing import Dict, Union
 
 
 # THIRD PARTY LIBS
-from PySide6.QtCore import (QModelIndex, QRegularExpression ,QSortFilterProxyModel)
+from PySide6.QtCore import (QModelIndex, QRegularExpression , QSortFilterProxyModel)
 
 
 # CUSTOM LIBS
