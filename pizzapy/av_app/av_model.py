@@ -25,12 +25,26 @@ from alpha_vantage.timeseries import TimeSeries
 
 import asyncpg
 
+from asyncpg import Record
+
+import pandas as pd
+
+from pandas import DataFrame
+
 from pydantic import BaseModel, Field, validator
 
 import requests
 
 #CUSTOM
 from batterypy.string.read import formatlarge, readf
+
+
+
+
+API_KEY = os.getenv('AV_API_KEY')
+
+
+
 
 
 
@@ -156,54 +170,6 @@ class OptionRatio(BaseModel):
             }
         }
 
-
-# Usage example with asyncpg
-async def upsert_option_ratio(symbol: str):
-    """Insert an OptionRatio record into the database"""
-
-    conn = await asyncpg.connect()
-
-    option = get_option_ratio(symbol)
-
-    await conn.execute('''
-        INSERT INTO stock_option (
-            t, td, symbol, cap_str, cap, price,
-            call_money, put_money, call_oi, put_oi,
-            call_money_ratio, put_money_ratio,
-            call_itm_premium_ratio, call_otm_premium_ratio,
-            put_itm_premium_ratio, put_otm_premium_ratio,
-            call_pc, put_pc
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
-        ON CONFLICT (symbol, td) DO UPDATE SET
-            t = EXCLUDED.t,
-            cap_str = EXCLUDED.cap_str,
-            cap = EXCLUDED.cap,
-            price = EXCLUDED.price,
-            call_money = EXCLUDED.call_money,
-            put_money = EXCLUDED.put_money,
-            call_oi = EXCLUDED.call_oi,
-            put_oi = EXCLUDED.put_oi,
-            call_money_ratio = EXCLUDED.call_money_ratio,
-            put_money_ratio = EXCLUDED.put_money_ratio,
-            call_itm_premium_ratio = EXCLUDED.call_itm_premium_ratio,
-            call_otm_premium_ratio = EXCLUDED.call_otm_premium_ratio,
-            put_itm_premium_ratio = EXCLUDED.put_itm_premium_ratio,
-            put_otm_premium_ratio = EXCLUDED.put_otm_premium_ratio,
-            call_pc = EXCLUDED.call_pc,
-            put_pc = EXCLUDED.put_pc
-    ''', 
-        option.t, option.td, option.symbol,
-        option.cap_str, option.cap, option.price,
-        option.call_money, option.put_money, option.call_oi, option.put_oi,
-        option.call_money_ratio, option.put_money_ratio,
-        option.call_itm_premium_ratio, option.call_otm_premium_ratio,
-        option.put_itm_premium_ratio, option.put_otm_premium_ratio,
-        option.call_pc, option.put_pc
-    )
-
-
-
-API_KEY = os.getenv('AV_API_KEY')
 
 @dataclass
 class OptionPosition:
@@ -446,6 +412,122 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
 
 
+# Usage example with asyncpg
+async def upsert_av_option(symbol: str):
+    """Insert an OptionRatio record into the database"""
+
+    conn = await asyncpg.connect()
+
+    option = get_option_ratio(symbol)
+
+    await conn.execute('''
+        INSERT INTO stock_option (
+            t, td, symbol, cap_str, cap, price,
+            call_money, put_money, call_oi, put_oi,
+            call_money_ratio, put_money_ratio,
+            call_itm_premium_ratio, call_otm_premium_ratio,
+            put_itm_premium_ratio, put_otm_premium_ratio,
+            call_pc, put_pc
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        ON CONFLICT (symbol, td) DO UPDATE SET
+            t = EXCLUDED.t,
+            cap_str = EXCLUDED.cap_str,
+            cap = EXCLUDED.cap,
+            price = EXCLUDED.price,
+            call_money = EXCLUDED.call_money,
+            put_money = EXCLUDED.put_money,
+            call_oi = EXCLUDED.call_oi,
+            put_oi = EXCLUDED.put_oi,
+            call_money_ratio = EXCLUDED.call_money_ratio,
+            put_money_ratio = EXCLUDED.put_money_ratio,
+            call_itm_premium_ratio = EXCLUDED.call_itm_premium_ratio,
+            call_otm_premium_ratio = EXCLUDED.call_otm_premium_ratio,
+            put_itm_premium_ratio = EXCLUDED.put_itm_premium_ratio,
+            put_otm_premium_ratio = EXCLUDED.put_otm_premium_ratio,
+            call_pc = EXCLUDED.call_pc,
+            put_pc = EXCLUDED.put_pc
+    ''', 
+        option.t, option.td, option.symbol,
+        option.cap_str, option.cap, option.price,
+        option.call_money, option.put_money, option.call_oi, option.put_oi,
+        option.call_money_ratio, option.put_money_ratio,
+        option.call_itm_premium_ratio, option.call_otm_premium_ratio,
+        option.put_itm_premium_ratio, option.put_otm_premium_ratio,
+        option.call_pc, option.put_pc
+    )
+
+
+
+
+
+
+
+async def get_latest_row(symbol: str, table: str ) -> Record | None:
+    """
+    * INDEPENDENT *
+    IMPORTS: 
+    USED BY: view_vertical()    
+    
+    Note:
+    (1) the table name MUST be available in the database, otherwise there will be exception.
+    (2) The symbol can be non-exist in the table, the result will be just an empty Series for non-exist symbol. So I do not need to test if the symbol's row is present.
+    (3) The targeted table MUST have a t column, so the result will be the latest row.
+
+    When I call this function, I might put table as keyword argument,
+    so I put it on the second place.
+
+    No need to uppercase symbol, it will be changed in later function.
+
+    This function will be a common function for guru, zacks, option, technical, in both terminal and GUI.
+    """    
+    cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
+    
+    conn = await asyncpg.connect()
+    
+    rows: list[Record] = await conn.fetch(cmd)
+    
+    await conn.close()
+    
+    first_row: Record | None = rows[0] if rows else None
+
+    return first_row
+    
+
+
+async def view_vertical(symbol: str, table: str) -> DataFrame:
+    """
+    DEPENDS ON: get_latest_row()
+    IMPORTS: batterypy(format_number_with_commas)
+    
+    
+    This function will be a common function for guru, zacks, option, technical in terminal scripts.
+
+    There will a '0' at the top of the returning DataFrame, it just mean there is no DataFrame name.
+    
+    
+    exapmle:
+        view_vertical('amd', 'stock_option')
+
+    
+    
+    """
+    SYMBOL: str = symbol.upper()
+    row: Record | None = await get_latest_row(symbol=SYMBOL, table=table)
+    if row is not None:
+        df: DataFrame = pd.DataFrame([dict(row)])
+        
+        formatters = {col: '{:,.4f}' if col in df.columns[-2:] else '{:,.2f}' for col in df.columns}
+        
+        df.style.format(formatters)
+        #pd.options.display.float_format = '{:,.2f}'.format
+        
+        print(df.T)
+
+    else:
+        print(f'No result for {SYMBOL} in {table}')
+
+
+
 
 
 
@@ -453,4 +535,4 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 if __name__ == "__main__":
     #op_obj = get_option_ratio('IBM')
     #print(op_obj)
-    asyncio.run(upsert_option_ratio('IBM'))
+    asyncio.run(view_vertical('IBM', 'stock_option'))

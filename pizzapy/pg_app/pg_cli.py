@@ -63,7 +63,7 @@ actions_dict: dict[str, Any] = {
     }
 
 
-def cli(): 
+def pg_cli(): 
     """
     DEPENDS ON: postgres_menu_text, actions_dict
     """
@@ -80,6 +80,6 @@ def cli():
 
 
 if __name__ == '__main__':
-    cli()
+    pg_cli()
     print('DONE')
 
