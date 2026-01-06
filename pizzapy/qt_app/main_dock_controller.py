@@ -19,11 +19,11 @@ from dimsumpy.qt.functions import closeEvent
 # PROGRAM MODULES
 from pizzapy.qt_app.main_dock_view import MainDockView
 
-from pizzapy.core_stock_update.core_update_controller import CoreUpdateController
 
-from pizzapy.core_stock_browser.core_browser_controller import CoreBrowserController
 
-from pizzapy.stock_price_update.price_update_controller import PriceUpdateController
+from pizzapy.qt_app.core_browser_controller import CoreBrowserController
+
+
 
 
 
@@ -44,8 +44,8 @@ class MakeConnects:
     """
     def __init__(ego, self) -> None:        
         self.core_browser_button.clicked.connect(lambda: open_external_window(self.windows, CoreBrowserController))
-        self.core_updater_button.clicked.connect(lambda: open_external_window(self.windows, CoreUpdateController))
-        self.price_updater_button.clicked.connect(lambda: open_external_window(self.windows, PriceUpdateController))
+        #self.core_updater_button.clicked.connect(lambda: open_external_window(self.windows, CoreUpdateController))
+        #self.price_updater_button.clicked.connect(lambda: open_external_window(self.windows, PriceUpdateController))
         self.quit_button.clicked.connect(self.close)        
 
 
