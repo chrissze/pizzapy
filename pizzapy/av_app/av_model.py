@@ -514,14 +514,17 @@ async def view_vertical(symbol: str, table: str) -> DataFrame:
     SYMBOL: str = symbol.upper()
     row: Record | None = await get_latest_row(symbol=SYMBOL, table=table)
     if row is not None:
-        df: DataFrame = pd.DataFrame([dict(row)])
+        df_one_row: DataFrame = pd.DataFrame([dict(row)])
+        
         
         formatters = {col: '{:,.4f}' if col in df.columns[-2:] else '{:,.2f}' for col in df.columns}
         
-        df.style.format(formatters)
+        df_one_row.style.format(formatters)
+        
+        df = df_one_row.T
         #pd.options.display.float_format = '{:,.2f}'.format
         
-        print(df.T)
+        print(df)
 
     else:
         print(f'No result for {SYMBOL} in {table}')
