@@ -13,9 +13,9 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.av_app.av_model import upsert_av_option
+from pizzapy.av_app.av_model import print_av_option, upsert_av_option, upsert_av_options
 
-
+from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
 
@@ -41,10 +41,43 @@ async def browse_upsert_option_interactive() -> None:
             revised_symbol = SYMBOL[1:]
             result: str = await upsert_av_option(revised_symbol)
             print(result)
-            view_vertical_terminal(symbol=revised_symbol, table=table)
+            await print_av_option(symbol=revised_symbol)
 
         else:
-            view_vertical_terminal(symbol=SYMBOL, table=table)
+            await print_av_option(symbol=SYMBOL)
+
+
+
+
+
+async def upsert_options_interactive(stock_list: list[str]) -> None:
+    """
+    DEPENDS ON: upsert_av_options()
+    
+    """
+    table: str = 'stock_option'
+    length: int = len(stock_list)
+    reply: str = input(f'\n\nAre you really want to UPSERT {length} stocks to {table} table (yes/no)? ')
+    REPLY: str = reply.lower()
+    if REPLY == 'yes':
+        await upsert_av_options(stock_list)
+    else:
+        print(f'{table} - {length} stocks upsert cancelled.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -60,9 +93,9 @@ def make_text_menu(table: str) -> str:
         1)  Browse or upsert {table} (loop)
         
         List operations:        
-        10) Update {table} for S&P 500 
-        11) Update {table} for Nasdaq 100
-        12) Update {table} for S&P 500 + S&P 400 + Nasdaq 100
+        2) Upsert {table} for S&P 500 
+        3) Upsert {table} for Nasdaq 100
+        4) Upsert {table} for S&P 500 + S&P 400 + Nasdaq 100
         
         0)  quit
         Choose your action: """
@@ -71,12 +104,9 @@ def make_text_menu(table: str) -> str:
 
 action_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(browse_upsert_option_interactive()),
-
-    '4': lambda:  asyncio.run(),
-
-    '5': lambda: asyncio.run(),
-
-    
+    '2': lambda: asyncio.run(upsert_options_interactive(sp_500_stocks)),
+    '3': lambda: asyncio.run(upsert_options_interactive(nasdaq_100_stocks)),
+    '4': lambda: asyncio.run(upsert_options_interactive(sp_nasdaq_stocks)),
     }
 
 

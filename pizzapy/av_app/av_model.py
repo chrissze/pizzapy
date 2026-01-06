@@ -1,4 +1,7 @@
+"""
+DEPENDS: pg_model.py
 
+"""
 
 
 # STANDARD LIB
@@ -36,6 +39,9 @@ from pydantic import BaseModel, Field, validator
 import requests
 
 #CUSTOM
+
+from pizzapy.pg_app.pg_model import get_latest_row
+
 from batterypy.string.read import formatlarge, readf
 
 
@@ -73,14 +79,14 @@ class OptionRatio(BaseModel):
     put_oi: Optional[float] = Field(None, ge=0, description="Put open interest")
     
     # Money ratios
-    call_money_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call money as ratio of total")
-    put_money_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put money as ratio of total")
+    call_money_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Call money as ratio of total")
+    put_money_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Put money as ratio of total")
     
     # Premium ratios
-    call_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call ITM premium ratio")
-    call_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Call OTM premium ratio")
-    put_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put ITM premium ratio")
-    put_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=1, description="Put OTM premium ratio")
+    call_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Call ITM premium ratio")
+    call_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Call OTM premium ratio")
+    put_itm_premium_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Put ITM premium ratio")
+    put_otm_premium_ratio: Optional[float] = Field(None, ge=0, le=100.0, description="Put OTM premium ratio")
     
     # Put/Call ratios
     call_pc: Optional[float] = Field(None, ge=0, description="Call put/call ratio")
@@ -129,7 +135,7 @@ class OptionRatio(BaseModel):
             put_ratio = values.get('put_money_ratio')
             if call_ratio is not None and put_ratio is not None:
                 total = call_ratio + put_ratio
-                if not (0.99 <= total <= 1.01):  # Allow small floating point errors
+                if not (99.0 <= total <= 100.0):  # Allow small floating point errors
                     # Warning: could raise ValueError if you want strict validation
                     pass
         return v
@@ -347,13 +353,13 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
     cap_str=formatlarge(cap)
 
-    call_pc = call_money / cap * 100.0
+    call_pc = round(call_money / cap * 100.0, ndigits=4)
     
-    put_pc = put_money / cap * 100.0
+    put_pc = round(put_money / cap * 100.0, ndigits=4)
     
-    call_money_ratio = call_money / total_money
+    call_money_ratio = round(call_money / total_money * 100.0, ndigits=2)
     
-    put_money_ratio = put_money / total_money
+    put_money_ratio = round(put_money / total_money * 100.0, ndigits=2)
     
     call_itm_premiums = sum([ x.money for x in call_positions if x.strike <= close_price and isinstance(x.money, float)])
 
@@ -363,11 +369,11 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
     put_otm_premiums = sum([ x.money for x in put_positions if x.strike < close_price and isinstance(x.money, float)])
     
-    call_itm_premium_ratio = call_itm_premiums / call_money
-    call_otm_premium_ratio = call_otm_premiums / call_money
+    call_itm_premium_ratio = round(call_itm_premiums / call_money * 100.0, ndigits=2)
+    call_otm_premium_ratio = round(call_otm_premiums / call_money * 100.0, ndigits=2)
 
-    put_itm_premium_ratio = put_itm_premiums / put_money
-    put_otm_premium_ratio = put_otm_premiums / put_money
+    put_itm_premium_ratio = round(put_itm_premiums / put_money * 100.0, ndigits=2)
+    put_otm_premium_ratio = round(put_otm_premiums / put_money * 100.0, ndigits=2)
 
 
     print(call_pc)
@@ -413,14 +419,14 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
 
 # Usage example with asyncpg
-async def upsert_av_option(symbol: str):
+async def upsert_av_option(symbol: str) -> Any:  # check Any type later
     """Insert an OptionRatio record into the database"""
 
     conn = await asyncpg.connect()
 
     option = get_option_ratio(symbol)
 
-    await conn.execute('''
+    result = await conn.execute('''
         INSERT INTO stock_option (
             t, td, symbol, cap_str, cap, price,
             call_money, put_money, call_oi, put_oi,
@@ -456,86 +462,38 @@ async def upsert_av_option(symbol: str):
         option.call_pc, option.put_pc
     )
 
+    return result
 
 
 
 
 
-
-async def get_latest_row(symbol: str, table: str ) -> Record | None:
+async def upsert_av_options(stock_list: list[str]) -> None:
     """
-    * INDEPENDENT *
-    IMPORTS: 
-    USED BY: view_vertical()    
-    
-    Note:
-    (1) the table name MUST be available in the database, otherwise there will be exception.
-    (2) The symbol can be non-exist in the table, the result will be just an empty Series for non-exist symbol. So I do not need to test if the symbol's row is present.
-    (3) The targeted table MUST have a t column, so the result will be the latest row.
-
-    When I call this function, I might put table as keyword argument,
-    so I put it on the second place.
-
-    No need to uppercase symbol, it will be changed in later function.
-
-    This function will be a common function for guru, zacks, option, technical, in both terminal and GUI.
-    """    
-    cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
-    
-    conn = await asyncpg.connect()
-    
-    rows: list[Record] = await conn.fetch(cmd)
-    
-    await conn.close()
-    
-    first_row: Record | None = rows[0] if rows else None
-
-    return first_row
-    
-
-
-async def view_vertical(symbol: str, table: str) -> DataFrame:
+    DEPENDS:  upsert_av_option
     """
-    DEPENDS ON: get_latest_row()
-    IMPORTS: batterypy(format_number_with_commas)
+    length: int = len(stock_list)
     
-    
-    This function will be a common function for guru, zacks, option, technical in terminal scripts.
+    for i, symbol in enumerate(stock_list, start=1):
+        result: str = await upsert_av_option(symbol)
 
-    There will a '0' at the top of the returning DataFrame, it just mean there is no DataFrame name.
-    
-    
-    exapmle:
-        view_vertical('amd', 'stock_option')
+        output: str = f'{i} / {length} {symbol} {result}'
+        print(output)
 
-    
-    
+
+
+
+async def print_av_option(symbol: str) -> None:
     """
-    SYMBOL: str = symbol.upper()
-    row: Record | None = await get_latest_row(symbol=SYMBOL, table=table)
-    if row is not None:
-        df_one_row: DataFrame = pd.DataFrame([dict(row)])
-        
-        
-        formatters = {col: '{:,.4f}' if col in df.columns[-2:] else '{:,.2f}' for col in df.columns}
-        
-        df_one_row.style.format(formatters)
-        
-        df = df_one_row.T
-        #pd.options.display.float_format = '{:,.2f}'.format
-        
-        print(df)
-
-    else:
-        print(f'No result for {SYMBOL} in {table}')
+    DEPENDS:  get_latest_row
+    """
+    df = await get_latest_row(symbol, 'stock_option')
+    pd.options.display.float_format = '{:,}'.format
+    print(df)
 
 
 
 
 
-
-# Example usage
 if __name__ == "__main__":
-    #op_obj = get_option_ratio('IBM')
-    #print(op_obj)
-    asyncio.run(view_vertical('IBM', 'stock_option'))
+    print_av_option('IBM')

@@ -9,13 +9,15 @@ USED BY:
 BEWARE:
 - postgres execution functions led to circular imports.
 
+
+
 """
 
 # STANDARD LIB
 import asyncio
 
-
-from typing import Any
+from timeit import timeit
+from typing import Any, List, Set
 
 
 # THIRD PARTY LIB
@@ -25,6 +27,10 @@ from asyncpg import Record
 
 import pandas as pd
 
+# PROGRAM MODULES
+from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
+
+from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_400_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 ####################################
 # COMPUTER GENERATED FILE IMPORTS  #
@@ -343,6 +349,19 @@ table_list_dict: dict[str, Any] = {
     'stock_price': {'primary_key_list': ['symbol', 'td'], 'command': stock_price_create_table_command},
     'stock_technical': {'primary_key_list': ['symbol', 'td'], 'command': stock_technical_create_table_command},
 }
+
+
+# need to comment out all_stocks when I use code to generate 
+all_stocks: list[str] = sp_nasdaq_stocks + ['FNMA', 'FMCC']
+
+stock_list_dict: dict[str, list[str]] = {
+    f'Nasdaq 100 ({len(nasdaq_100_stocks)})': nasdaq_100_stocks,
+    f'S&P 500 ({len(sp_500_stocks)})': sp_500_stocks,
+    f'S&P 400 ({len(sp_400_stocks)})': sp_400_stocks,
+    f'S&P 500, 400 + Nasdaq 100 ({len(sp_nasdaq_stocks)})': sp_nasdaq_stocks,
+    f'All Stocks ({len(all_stocks)})': all_stocks,
+}
+
 
 ##################
 # CLI FUNCTIONS  #
@@ -773,10 +792,12 @@ def generate_stock_list_file() -> None:
 
     30s if get_option_traded() is excluded.
     
-
     When I re-run this file, it will overwrite the original content
+    
+    A "list of stocks" is data, so it belongs to the Model.
+
     """
-    filename = 'computer_generated_stock_lists.py'
+    filename = 'computer_generated_model.py'
     
     print(f'Generating `{filename}` now ...')
     
@@ -817,6 +838,43 @@ def ask_generate_stock_list_file() -> None:
 
 
 
+########################
+### COMMON FUNCTIONS ###
+########################
+
+
+async def get_latest_row(symbol: str, table: str ) -> DataFrame:
+    """
+    * INDEPENDENT *
+    IMPORTS: 
+    USED BY: 
+    
+    Note:
+    (1) the table name MUST be available in the database, otherwise there will be exception.
+    (2) The symbol can be non-exist in the table, conn.fetch() returns an empty list [] if no rows match.
+
+
+    """    
+    cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
+    
+    conn = await asyncpg.connect()
+    
+    rows: list[Record] = await conn.fetch(cmd)
+    
+    await conn.close()
+    
+    first_row_list: list[Record] = rows[:1]  # can be an empty list
+    
+    first_row_df: DataFrame = pd.DataFrame([dict(x) for x in first_row_list])
+                
+    df = first_row_df.T   # df can be an empty DataFrame
+
+    return df       
+    
+
+
+### END OF COMMON FUNCTIONS ###
+
 
 
 if __name__ == '__main__':
@@ -825,3 +883,10 @@ if __name__ == '__main__':
     #asyncio.run(print_databases())
     #asyncio.run(drop_table())
     ask_generate_stock_list_file()
+
+
+
+ 
+
+
+
