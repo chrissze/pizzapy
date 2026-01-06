@@ -6,7 +6,6 @@ DEPENDS ON: core_browser_view.py, qt_model.py
 USED BY: main_dock_controller.py
 """
 # STANDARD LIBS
-import asyncio
 
 from functools import partial
 
@@ -31,17 +30,20 @@ from dimsumpy.qt.functions import closeEvent
 
 
 # PROGRAM MODULES
-from pizzapy.pg_app.pg_model import fetch_df, stock_list_dict
+from pizzapy.pg_app.pg_model import stock_list_dict
+#from pizzapy.pg_app.pg_model import fetch_df
+
+from pizzapy.pg_app.postgres_connection_model import execute_pandas_read
 
 from pizzapy.qt_app.qt_model import MySortFilterProxyModel 
 from pizzapy.qt_app.core_browser_view import CoreBrowserView
 
 
-async def make_dataframe(self) -> None:
+def make_dataframe(self) -> None:
     """
         DEPENDS ON: self.symbols_list (property), self.table_list_combobox
-        IMPORTS: pandas, fetch_df
-        USED BY: load_stock_table(), load_list_table()
+        IMPORTS: pandas, execute_pandas_read()
+        USED BY: load_stock_table(), load_stock_list_table()
         
         The aim of this function is to create self.df variable on the last line.
 
@@ -59,7 +61,7 @@ async def make_dataframe(self) -> None:
     self.table_name = self.table_list_combobox.currentText()
     query_clause: str = f' WHERE symbol IN {self.symbols_tuple_str} '  # prevent empty LineEdit
     cmd: str = f'SELECT * FROM {self.table_name} {query_clause}'
-    self.df = await fetch_df(cmd) if self.symbols_list else DataFrame()
+    self.df = execute_pandas_read(cmd) if self.symbols_list else DataFrame()
 
 
 
@@ -119,7 +121,7 @@ def load_stock_table(self) -> None:
     lineedit_str: str = self.symbols_lineedit.text().upper().strip()
     self.symbols_list: list[str] = re.split(r'[ ,]+', lineedit_str) if lineedit_str else []
     if self.symbols_list:      # prevent empty lineedit string
-        asyncio.run(make_dataframe(self))
+        make_dataframe(self)
         make_tableview(self)
         make_grid(self) 
     else:
@@ -135,7 +137,7 @@ def load_list_table(self) -> None:
     """
     list_name: str = self.stock_list_combobox.currentText()
     self.symbols_list: list[str] = stock_list_dict.get(list_name)
-    asyncio.run(make_dataframe(self))
+    make_dataframe(self)
     make_tableview(self)
     make_grid(self)    
 
