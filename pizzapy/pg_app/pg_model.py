@@ -638,7 +638,7 @@ def get_sp_500() -> dict:
 
 
 
-def get_nasdaq_100() -> Any:
+def get_nasdaq_100() -> list[str]:
     """
     * INDEPENDENT *
     IMPORTS: dimsumpy
@@ -658,9 +658,11 @@ def get_nasdaq_100() -> Any:
     soup_item: ResultSet = soup.find('table', id='constituents')
     dfs: list[DataFrame] = pd.read_html(StringIO(str(soup_item)), header=0)
     df = dfs[0]
-    df.columns = ['Company', 'Ticker', 'Sector', 'Industry']
+    df.columns = ['Ticker', 'Company', 'Industry', 'Sector']
     stocks_dict = df.set_index('Ticker').to_dict(orient='index')
     return stocks_dict
+#    stock_list: list[str] = list(stocks_dict.keys())
+#    return stock_list
 
 
 
@@ -878,11 +880,10 @@ async def get_latest_row(symbol: str, table: str ) -> DataFrame:
 
 
 if __name__ == '__main__':
-    #asyncio.run(print_current_db())
-    ##asyncio.run(print_tables())
-    #asyncio.run(print_databases())
-    #asyncio.run(drop_table())
     ask_generate_stock_list_file()
+    
+    #xs = get_nasdaq_100()
+    #print(xs) 
 
 
 
