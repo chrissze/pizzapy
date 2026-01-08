@@ -871,10 +871,10 @@ async def fetch_df(cmd: str) -> DataFrame:
     
 
 
-async def get_latest_row(symbol: str, table: str ) -> DataFrame:
+async def fetch_latest_row_df(symbol: str, table: str ) -> pd.DataFrame:
     """
-    
-    DEPENDS: fetch_df 
+    * INDEPENDENT *
+ 
     USED BY: 
     
     Note:
@@ -885,15 +885,19 @@ async def get_latest_row(symbol: str, table: str ) -> DataFrame:
     """    
     cmd: str = f"SELECT * FROM {table} WHERE symbol = '{symbol}' ORDER BY t DESC"
     
-    rows: list[Record] = await fetch_df(cmd)
+    conn = await asyncpg.connect()
     
-    first_row_list: list[Record] = rows[:1]  # can be an empty list
+    rows: list[Record] = await conn.fetch(cmd)
     
-    first_row_df: DataFrame = pd.DataFrame([dict(x) for x in first_row_list])
-                
-    df = first_row_df.T   # df can be an empty DataFrame
+    await conn.close()
+    
+    latest_row_df: DataFrame = pd.DataFrame([dict(x) for x in rows[:1]])
+    
+    df = latest_row_df.T   # df can be an empty DataFrame
 
     return df       
+    
+
     
 
 

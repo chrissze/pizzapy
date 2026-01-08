@@ -40,7 +40,7 @@ import requests
 
 #CUSTOM
 
-from pizzapy.pg_app.pg_model import get_latest_row
+from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
 from batterypy.string.read import formatlarge, readf
 
@@ -475,19 +475,23 @@ async def upsert_av_options(stock_list: list[str]) -> None:
     length: int = len(stock_list)
     
     for i, symbol in enumerate(stock_list, start=1):
-        result: str = await upsert_av_option(symbol)
+        try:
+            result: str = await upsert_av_option(symbol)
 
-        output: str = f'{i} / {length} {symbol} {result}'
-        print(output)
+            output: str = f'{i} / {length} {symbol} {result}'
+            print(output)
+
+        except Exception as e:
+            output: str = f'{i} / {length} {symbol} {e}'
+            print(output)
+            
 
 
-
-
-async def print_av_option(symbol: str) -> None:
+async def print_av_option_from_db(symbol: str) -> None:
     """
     DEPENDS:  get_latest_row
     """
-    df = await get_latest_row(symbol, 'stock_option')
+    df = await fetch_latest_row_df(symbol, 'stock_option')
     pd.options.display.float_format = '{:,}'.format
     print(df)
 
@@ -496,4 +500,4 @@ async def print_av_option(symbol: str) -> None:
 
 
 if __name__ == "__main__":
-    print_av_option('IBM')
+    asyncio.run(print_av_option_from_db('IBM'))

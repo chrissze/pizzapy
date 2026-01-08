@@ -1,6 +1,6 @@
 
 """
-DEPENDS: av_model.py
+DEPENDS: guru_model.py
 
 USED BY: 
 
@@ -13,24 +13,25 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.av_app.av_model import print_av_option_from_db, upsert_av_option, upsert_av_options
+from pizzapy.guru_app.guru_model import print_guru_from_db, upsert_guru, upsert_gurus
 
 from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
 
+TABLE: str = 'guru_stock'
 
-async def browse_upsert_option_interactive() -> None:
+
+
+async def browse_upsert_guru_interactive() -> None:
     """
     * INDEPENDENT *
     IMPORTS: all_stocks, view_vertical_terminal()
     USED BY: make_actions_dict()
     """
 
-    table: str = 'stock_option'
-    
     while True:
-        symbol: str = input(f'\n\nWhich SYMBOL do you want to check from {table} (input * before the symbol to update, input 0 to quit)? ')
+        symbol: str = input(f'\n\nWhich SYMBOL do you want to check from {TABLE} (input * before the symbol to update, input 0 to quit)? ')
 
         if symbol == '0':
             break
@@ -39,30 +40,29 @@ async def browse_upsert_option_interactive() -> None:
         
         if SYMBOL[:1] == '*':
             revised_symbol = SYMBOL[1:]
-            result: str = await upsert_av_option(revised_symbol)
+            result: str = await upsert_guru(revised_symbol)
             print(result)
-            await print_av_option_from_db(symbol=revised_symbol)
+            await print_guru_from_db(symbol=revised_symbol)
 
         else:
-            await print_av_option_from_db(symbol=SYMBOL)
+            await print_guru_from_db(symbol=SYMBOL)
 
 
 
 
 
-async def upsert_options_interactive(stock_list: list[str]) -> None:
+async def upsert_gurus_interactive(stock_list: list[str]) -> None:
     """
     DEPENDS ON: upsert_av_options()
     
     """
-    table: str = 'stock_option'
     length: int = len(stock_list)
-    reply: str = input(f'\n\nAre you really want to UPSERT {length} stocks to {table} table (yes/no)? ')
+    reply: str = input(f'\n\nAre you really want to UPSERT {length} stocks to {TABLE} table (yes/no)? ')
     REPLY: str = reply.lower()
     if REPLY == 'yes':
-        await upsert_av_options(stock_list)
+        await upsert_gurus(stock_list)
     else:
-        print(f'{table} - {length} stocks upsert cancelled.')
+        print(f'{TABLE} - {length} stocks upsert cancelled.')
 
 
 
@@ -103,20 +103,19 @@ def make_text_menu(table: str) -> str:
 
 
 action_dict: dict[str, Any] = {
-    '1': lambda: asyncio.run(browse_upsert_option_interactive()),
-    '2': lambda: asyncio.run(upsert_options_interactive(sp_500_stocks)),
-    '3': lambda: asyncio.run(upsert_options_interactive(nasdaq_100_stocks)),
-    '4': lambda: asyncio.run(upsert_options_interactive(sp_nasdaq_stocks)),
+    '1': lambda: asyncio.run(browse_upsert_guru_interactive()),
+    '2': lambda: asyncio.run(upsert_gurus_interactive(sp_500_stocks)),
+    '3': lambda: asyncio.run(upsert_gurus_interactive(nasdaq_100_stocks)),
+    '4': lambda: asyncio.run(upsert_gurus_interactive(sp_nasdaq_stocks)),
     }
 
 
-def av_cli(): 
+def guru_cli(): 
     """
     DEPENDS ON: make_text_menu, action_dict
     """
-    table: str = 'stock_option'
     while True:
-        ans: str = input(make_text_menu(table))
+        ans: str = input(make_text_menu(TABLE))
         if ans in action_dict:
             print()
             action_dict[ans]()
@@ -128,5 +127,5 @@ def av_cli():
 
 
 if __name__ == '__main__':
-    av_cli()
+    guru_cli()
     print('DONE')
