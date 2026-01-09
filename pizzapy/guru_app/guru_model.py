@@ -1148,15 +1148,15 @@ async def upsert_gurus(stock_list: list[str]) -> None:
 
     for i, symbol in enumerate(stock_list, start=1):
         try:
-            result: str = await upsert_guru(symbol)
+            await upsert_guru(symbol)
 
-            output: str = f'{i} / {length} {symbol} {result}'
+            output: str = f'SUCCESS {i} / {length} {symbol}'
 
             print(output)
-        except Exception as e:
-            error_output: str = f'ERROR: {i} / {length} {symbol} {e}'
-            print(error_output)
 
+        except Exception as e:
+            error_output: str = f'ERROR {i} / {length} {symbol} {e}'
+            print(error_output)
 
 
 
