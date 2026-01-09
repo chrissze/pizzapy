@@ -6,10 +6,6 @@ USED BY:
 
 
 
-BEWARE:
-- postgres execution functions led to circular imports.
-
-
 
 """
 

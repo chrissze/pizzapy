@@ -4,7 +4,13 @@ from asyncpg import Record
 
 import pytest
 
-from pizzapy.pg_app.pg_model import get_current_db, get_tables, get_nasdaq_100, get_sp_400, get_sp_500, get_sp_nasdaq, get_option_traded
+from pizzapy.pg_app.pg_model import get_current_db, get_tables, get_nasdaq_100, get_sp_400, get_sp_500, get_sp_nasdaq
+
+
+
+
+
+
 
 @pytest.mark.asyncio
 async def test_get_current_db():
@@ -58,5 +64,7 @@ def test_get_sp_nasdaq():
     assert 800 <= l < 1000
     assert 'AMD' in stocks
     assert 'NVDA' in stocks
+    assert isinstance(stocks, list)
+    assert isinstance(stocks[0], str)
 
 
