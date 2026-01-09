@@ -278,7 +278,7 @@ def get_hist_option_data(symbol:str) -> tuple[list, list]:
 
     USED BY: 
     """
-    url = f'https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol={symbol}&apikey=demo' 
+    url = f'https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol={symbol}&apikey={API_KEY}' 
 
     try:
         r = requests.get(url) 
@@ -309,7 +309,7 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     
     """
     
-    data: dict = get_hist_option_data('IBM') 
+    data: dict = get_hist_option_data(symbol) 
 
     option_list: list[dict[str, str]] = data.get('data')
 
