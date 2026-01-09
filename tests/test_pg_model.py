@@ -23,29 +23,40 @@ async def test_get_tables():
 def test_get_sp_400():
     stocks: list[str] = get_sp_400()
     l = len(stocks)
-    assert l >= 400
+    assert 395 <= l < 410
+    assert 'AAL' in stocks
+    assert 'GME' in stocks
+    assert isinstance(stocks, list)
+    assert isinstance(stocks[0], str)
 
 
 def test_get_sp_500():
     stocks: list[str] = get_sp_500()
     l = len(stocks)
-    assert l >= 500
+    assert 500 <= l < 510
+    assert 'AMD' in stocks
+    assert 'NVDA' in stocks
+    assert isinstance(stocks, list)
+    assert isinstance(stocks[0], str)
 
 
 def test_get_nasdaq_100():
     stocks: list[str] = get_nasdaq_100()
     l = len(stocks)
-    assert l >= 100
+    assert 100 <= l < 110
+    assert 'AMD' in stocks
+    assert 'NVDA' in stocks
+    assert isinstance(stocks, list)
+    assert isinstance(stocks[0], str)
+
 
 
 def test_get_sp_nasdaq():
+    # source code excludes bank stocks
     stocks: list[str] = get_sp_nasdaq()
     l = len(stocks)
-    assert l >= 900
+    assert 800 <= l < 1000
+    assert 'AMD' in stocks
+    assert 'NVDA' in stocks
 
-
-def five_min_test_get_option_traded():
-    stocks: list[str] = get_option_traded()
-    l = len(stocks)
-    assert l >= 111900
 

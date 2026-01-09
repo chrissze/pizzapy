@@ -32,9 +32,8 @@ from dimsumpy.web.crawler import get_html_dataframes, get_html_soup
 
 from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_400_stocks, sp_500_stocks, sp_nasdaq_stocks
 
-####################################
-# COMPUTER GENERATED FILE IMPORTS  #
-####################################
+
+### COMPUTER GENERATED FILE IMPORTS  ###
 
 # STANDARD LIBS
 
@@ -603,25 +602,25 @@ async def drop_table() -> None:
 
 bank_stocks: list[str] = ['ASB', 'BAC', 'BK', 'C', 'CADE', 'CBSH', 'CFG', 'CFR', 'CMA', 'COF', 'COLB', 'DFS', 'EWBC', 'FFIN', 'FHN', 'FITB', 'FNB', 'GBCI', 'GS', 'HOMB', 'HWC', 'IBOC', 'JPM', 'HBAN', 'MS', 'MTB', 'NTRS', 'NYCB', 'KEY', 'ONB', 'OZK', 'PB', 'PNC', 'PNFP', 'RF', 'SCHW', 'SNV', 'SSB', 'STT', 'SYF', 'TCBI', 'TFC', 'UBSI', 'UMBF', 'USB', 'VLY', 'WBS', 'WFC', 'WTFC', 'ZION']
 
-bank_stocks_set: set[str] = set(bank_stocks)
 
-
-
-def get_sp_400() -> dict:
+def get_sp_400() -> list[str]:
     """
     * INDEPENDENT *
     IMPORTS: dimsumpy
     execution time: 1 second
     """
     sp_400_url: str = 'https://en.wikipedia.org/wiki/List_of_S%26P_400_companies'
-    dfs: list[DataFrame] = get_html_dataframes(sp_400_url)
-    df = dfs[0]
-    df.columns = ['Symbol', 'Company', 'Sector', 'Industry', 'Headquarters', 'Filing']
-    stocks_dict = df.set_index('Symbol').to_dict(orient='index')
-    return stocks_dict
+    dfs: list[pd.DataFrame] = get_html_dataframes(sp_400_url)
+    df: pd.DataFrame = dfs[0]
+    df.columns = ['Symbol', 'Company', 'Sector', 'Industry', 'Headquarter', 'Filing']
+    stock_dict: dict = df.set_index('Symbol').to_dict(orient='index')
+    stock_list: list[str] = list(stock_dict.keys())
+    return stock_list
 
 
-def get_sp_500() -> dict:
+
+
+def get_sp_500() -> list[str]:
     """
     * INDEPENDENT *
     IMPORTS: dimsumpy
@@ -633,8 +632,9 @@ def get_sp_500() -> dict:
     dfs: list[DataFrame] = get_html_dataframes(sp_500_url)
     df = dfs[0]
     df.columns = ['Symbol', 'Company', 'Sector', 'Industry', 'Headquarters', 'Added', 'CIK', 'Founded']
-    stocks_dict = df.set_index('Symbol').to_dict(orient='index')
-    return stocks_dict
+    stock_dict = df.set_index('Symbol').to_dict(orient='index')
+    stock_list: list[str] = list(stock_dict.keys())
+    return stock_list
 
 
 
@@ -659,10 +659,9 @@ def get_nasdaq_100() -> list[str]:
     dfs: list[DataFrame] = pd.read_html(StringIO(str(soup_item)), header=0)
     df = dfs[0]
     df.columns = ['Ticker', 'Company', 'Industry', 'Sector']
-    stocks_dict = df.set_index('Ticker').to_dict(orient='index')
-    return stocks_dict
-#    stock_list: list[str] = list(stocks_dict.keys())
-#    return stock_list
+    stock_dict = df.set_index('Ticker').to_dict(orient='index')
+    stock_list: list[str] = list(stock_dict.keys())
+    return stock_list
 
 
 
@@ -673,12 +672,12 @@ def get_sp_nasdaq() -> list[str]:
 
     The result is not including bank stocks.
     """
-    sp_500_stocks: List[str] = list(get_sp_500().keys())
-    sp_400_stocks: List[str] = list(get_sp_400().keys())
-    nasdaq_100_stocks: List[str] = list(get_nasdaq_100().keys())
-    sp_nasdaq_set: Set[str] = set(sp_500_stocks + sp_400_stocks + nasdaq_100_stocks)
-    sp_nasdaq_stocks: List[str] = sorted(list(sp_nasdaq_set - bank_stocks_set))
-    return sp_nasdaq_stocks
+    
+    sp_nasdaq_stocks: list[str] = sorted(list(set(get_sp_500() + get_sp_400() + get_nasdaq_100())))
+    
+    sp_nasdaq_stocks_without_banks: list[str] = [x for x in sp_nasdaq_stocks if x not in set(bank_stocks)]
+    
+    return sp_nasdaq_stocks_without_banks
 
 
 
@@ -719,31 +718,17 @@ def prepare_stock_list_file_content() -> str:
     when I replace string BY re or replace('nan,', 'None,'), it will miss some items with special comma char, so I have to use ': nan'
     """
     current_time: datetime = datetime.now().replace(second=0, microsecond=0)
-    file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_file() FUNCTION IN generate_file_model.py """'
+    file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_file() FUNCTION IN pg_model.py """'
 
-    sp_500_dict: dict =  get_sp_500()
-    sp_500_dict_comment: str = f'# {len(sp_500_dict)}'
-    sp_500_raw_string: str = f'sp_500_dict: dict = {sp_500_dict}'
-    sp_500_dict_variable: str = re.sub(': nan', ': None', sp_500_raw_string)
-
-    sp_400_dict: dict =  get_sp_400()
-    sp_400_dict_comment: str = f'# {len(sp_400_dict)}'
-    sp_400_raw_string: str = f'sp_400_dict: dict = {sp_400_dict}'
-    sp_400_dict_variable: str = re.sub(': nan', ': None', sp_400_raw_string)
-
-    nasdaq_100_dict: dict =  get_nasdaq_100()
-    nasdaq_100_dict_comment: str = f'# {len(nasdaq_100_dict)}'
-    nasdaq_100_dict_variable: str = f'nasdaq_100_dict: dict = {nasdaq_100_dict}'
-
-    sp_500: list[str] =  list(sp_500_dict.keys())
+    sp_500: list[str] =  get_sp_500()
     sp_500_comment: str = f'# {len(sp_500)}'
     sp_500_variable: str = f'sp_500_stocks: list[str] = {sp_500}'
     
-    sp_400: list[str] =  list(sp_400_dict.keys())
+    sp_400: list[str] =  get_sp_400()
     sp_400_comment: str = f'# {len(sp_400)}'
     sp_400_variable: str = f'sp_400_stocks: list[str] = {sp_400}'
 
-    nasdaq_100: list[str] = list(nasdaq_100_dict.keys())
+    nasdaq_100: list[str] = get_nasdaq_100()
     nasdaq_100_comment: str = f'# {len(nasdaq_100)}'
     nasdaq_100_variable: str = f'nasdaq_100_stocks: list[str] = {nasdaq_100}'
 
@@ -757,16 +742,6 @@ def prepare_stock_list_file_content() -> str:
     
     content: str = f'''
 {file_comment}\n\n
-
-
-{sp_500_dict_comment}
-{sp_500_dict_variable}\n\n
-
-{sp_400_dict_comment}
-{sp_400_dict_variable}\n\n
-
-{nasdaq_100_dict_comment}
-{nasdaq_100_dict_variable}\n\n
 
 {sp_500_comment}
 {sp_500_variable}\n\n
@@ -820,7 +795,7 @@ def generate_stock_list_file() -> None:
 
 
 
-def ask_generate_stock_list_file() -> None:
+def ask_generating_file() -> None:
     def run() -> None:
         reply: str = input('Do you want to generate stock list module (yes/no)? ')
         if reply.lower() == 'yes': 
@@ -906,14 +881,7 @@ async def fetch_latest_row_df(symbol: str, table: str ) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    ask_generate_stock_list_file()
     
-    #xs = get_nasdaq_100()
-    #print(xs) 
+    #ask_generating_file()
 
-
-
- 
-
-
-
+    print()
