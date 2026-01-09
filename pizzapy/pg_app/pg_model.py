@@ -684,7 +684,7 @@ def get_sp_nasdaq() -> list[str]:
 
 
 
-def get_option_traded() -> list[str]:
+def get_option_stocks() -> list[str]:
     """
     * INDEPENDENT *
     IMPORTS: urllib, pandas
@@ -721,24 +721,24 @@ def prepare_stock_list_file_content() -> str:
     file_comment: str = f'""" THIS FILE IS GENERATED AT {current_time} BY generate_stock_list_file() FUNCTION IN pg_model.py """'
 
     sp_500: list[str] =  get_sp_500()
-    sp_500_comment: str = f'# {len(sp_500)}'
+    sp_500_comment: str = f'# LENGTH COMMENT {len(sp_500)}'
     sp_500_variable: str = f'sp_500_stocks: list[str] = {sp_500}'
     
     sp_400: list[str] =  get_sp_400()
-    sp_400_comment: str = f'# {len(sp_400)}'
+    sp_400_comment: str = f'# LENGTH COMMENT {len(sp_400)}'
     sp_400_variable: str = f'sp_400_stocks: list[str] = {sp_400}'
 
     nasdaq_100: list[str] = get_nasdaq_100()
-    nasdaq_100_comment: str = f'# {len(nasdaq_100)}'
+    nasdaq_100_comment: str = f'# LENGTH COMMENT {len(nasdaq_100)}'
     nasdaq_100_variable: str = f'nasdaq_100_stocks: list[str] = {nasdaq_100}'
 
     sp_nasdaq: list[str] = get_sp_nasdaq()
-    sp_nasdaq_comment: str = f'# {len(sp_nasdaq)}'
+    sp_nasdaq_comment: str = f'# LENGTH COMMENT {len(sp_nasdaq)}'
     sp_nasdaq_variable: str = f'sp_nasdaq_stocks: list[str] = {sp_nasdaq}'
 
-    #option_traded: list[str] = get_option_traded()
-    #option_traded_comment: str = f'# {len(option_traded)}'
-    #option_traded_variable: str = f'option_traded_stocks: list[str] = {option_traded}'
+    option_stocks: list[str] = get_option_stocks()
+    option_stocks_comment: str = f'# LENGTH COMMENT {len(option_stocks)}'
+    option_stocks_variable: str = f'option_stocks: list[str] = {option_stocks}'
     
     content: str = f'''
 {file_comment}\n\n
@@ -754,6 +754,10 @@ def prepare_stock_list_file_content() -> str:
 
 {sp_nasdaq_comment}
 {sp_nasdaq_variable}\n\n
+
+{option_stocks_comment}
+{option_stocks_variable}\n\n
+
 '''
     return content
 

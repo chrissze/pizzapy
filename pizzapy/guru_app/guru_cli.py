@@ -15,6 +15,8 @@ from typing import Any
 
 from pizzapy.guru_app.guru_model import print_guru_from_db, upsert_guru, upsert_gurus
 
+from pizzapy.pg_app.pg_model import get_nasdaq_100
+
 from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
 
 
@@ -105,7 +107,7 @@ def make_text_menu(table: str) -> str:
 action_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(browse_upsert_guru_interactive()),
     '2': lambda: asyncio.run(upsert_gurus_interactive(sp_500_stocks)),
-    '3': lambda: asyncio.run(upsert_gurus_interactive(nasdaq_100_stocks)),
+    '3': lambda: asyncio.run(upsert_gurus_interactive(get_nasdaq_100()),
     '4': lambda: asyncio.run(upsert_gurus_interactive(sp_nasdaq_stocks)),
     }
 

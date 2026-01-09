@@ -13,7 +13,7 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.pg_app.pg_model import ask_generate_stock_list_file, create_table, drop_table, print_current_db, print_databases, print_tables, print_table_columns
+from pizzapy.pg_app.pg_model import ask_generating_file, create_table, drop_table, print_current_db, print_databases, print_tables, print_table_columns
 
 
 
@@ -36,7 +36,7 @@ postgres_menu_text: str = """\n
         14) create_table('stock_price')
         15) create_table('stock_technical')
         
-        20) ask_generate_stock_list_file()
+        16) ask_generating_file()
 
         0) quit
     Choose your action: """
@@ -58,7 +58,7 @@ actions_dict: dict[str, Any] = {
     '13': lambda: asyncio.run(create_table('stock_option')),
     '14': lambda: asyncio.run(create_table('stock_price')),
     '15': lambda: asyncio.run(create_table('stock_technical')),
-    '20': lambda: ask_generate_stock_list_file(),
+    '16': lambda: ask_generating_file(),
     
     }
 
