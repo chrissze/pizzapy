@@ -13,9 +13,9 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.guru_app.guru_model import print_guru_from_db, upsert_guru, upsert_gurus
+from pizzapy.guru_app.guru_model import upsert_guru, upsert_gurus
 
-from pizzapy.pg_app.pg_model import get_nasdaq_100, get_sp_500, get_sp_nasdaq
+from pizzapy.pg_app.pg_model import get_nasdaq_100, get_sp_500, get_sp_nasdaq, print_latest_row
 
 
 
@@ -42,10 +42,10 @@ async def browse_upsert_guru_interactive() -> None:
             revised_symbol = SYMBOL[1:]
             result: str = await upsert_guru(revised_symbol)
             print(result)
-            await print_guru_from_db(symbol=revised_symbol)
+            await print_latest_row(revised_symbol, TABLE)
 
         else:
-            await print_guru_from_db(symbol=SYMBOL)
+            await print_latest_row(SYMBOL, TABLE)
 
 
 

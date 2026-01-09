@@ -1161,21 +1161,12 @@ async def upsert_gurus(stock_list: list[str]) -> None:
 
 
 
-async def print_guru_from_db(symbol: str) -> None:
-    """
-    DEPENDS:  get_latest_row
-    """
-    df = await fetch_latest_row_df(symbol, 'guru_stock')
-    pd.options.display.float_format = '{:,}'.format
-    print(df)
-
 
 ### END OF 4TH PHASE : UPSERT_GURU ###
 
 
 if __name__ == '__main__':
-    asyncio.run(print_guru_from_db('NVDA'))
-
+    pass
     
     
 

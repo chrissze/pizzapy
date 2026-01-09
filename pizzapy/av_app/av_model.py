@@ -480,17 +480,8 @@ async def upsert_av_options(stock_list: list[str]) -> None:
             
 
 
-async def print_av_option_from_db(symbol: str) -> None:
-    """
-    DEPENDS:  get_latest_row
-    """
-    df = await fetch_latest_row_df(symbol, 'stock_option')
-    pd.options.display.float_format = '{:,}'.format
-    print(df)
-
-
 
 
 
 if __name__ == "__main__":
-    asyncio.run(print_av_option_from_db('IBM'))
+    pass

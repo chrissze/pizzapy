@@ -13,11 +13,13 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.av_app.av_model import print_av_option_from_db, upsert_av_option, upsert_av_options
+from pizzapy.av_app.av_model import upsert_av_option, upsert_av_options
 
-from pizzapy.pg_app.computer_generated_model import nasdaq_100_stocks, sp_500_stocks, sp_nasdaq_stocks
+from pizzapy.pg_app.pg_model import print_latest_row, get_nasdaq_100, get_sp_500, get_sp_nasdaq
 
 
+
+TABLE: str = 'stock_option'
 
 
 async def browse_upsert_option_interactive() -> None:
@@ -27,10 +29,9 @@ async def browse_upsert_option_interactive() -> None:
     USED BY: make_actions_dict()
     """
 
-    table: str = 'stock_option'
     
     while True:
-        symbol: str = input(f'\n\nWhich SYMBOL do you want to check from {table} (input * before the symbol to update, input 0 to quit)? ')
+        symbol: str = input(f'\n\nWhich SYMBOL do you want to check from {TABLE} (input * before the symbol to update, input 0 to quit)? ')
 
         if symbol == '0':
             break
@@ -41,10 +42,10 @@ async def browse_upsert_option_interactive() -> None:
             revised_symbol = SYMBOL[1:]
             result: str = await upsert_av_option(revised_symbol)
             print(result)
-            await print_av_option_from_db(symbol=revised_symbol)
+            await print_latest_row(revised_symbol, TABLE)
 
         else:
-            await print_av_option_from_db(symbol=SYMBOL)
+            await print_latest_row(SYMBOL, TABLE)
 
 
 
@@ -55,14 +56,13 @@ async def upsert_options_interactive(stock_list: list[str]) -> None:
     DEPENDS ON: upsert_av_options()
     
     """
-    table: str = 'stock_option'
     length: int = len(stock_list)
-    reply: str = input(f'\n\nAre you really want to UPSERT {length} stocks to {table} table (yes/no)? ')
+    reply: str = input(f'\n\nAre you really want to UPSERT {length} stocks to {TABLE} TABLE (yes/no)? ')
     REPLY: str = reply.lower()
     if REPLY == 'yes':
         await upsert_av_options(stock_list)
     else:
-        print(f'{table} - {length} stocks upsert cancelled.')
+        print(f'{TABLE} - {length} stocks upsert cancelled.')
 
 
 
@@ -104,9 +104,9 @@ def make_text_menu(table: str) -> str:
 
 action_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(browse_upsert_option_interactive()),
-    '2': lambda: asyncio.run(upsert_options_interactive(sp_500_stocks)),
-    '3': lambda: asyncio.run(upsert_options_interactive(nasdaq_100_stocks)),
-    '4': lambda: asyncio.run(upsert_options_interactive(sp_nasdaq_stocks)),
+    '2': lambda: asyncio.run(upsert_options_interactive(get_sp_500())),
+    '3': lambda: asyncio.run(upsert_options_interactive(get_nasdaq_100())),
+    '4': lambda: asyncio.run(upsert_options_interactive(get_sp_nasdaq())),
     }
 
 
@@ -114,9 +114,8 @@ def av_cli():
     """
     DEPENDS ON: make_text_menu, action_dict
     """
-    table: str = 'stock_option'
     while True:
-        ans: str = input(make_text_menu(table))
+        ans: str = input(make_text_menu(TABLE))
         if ans in action_dict:
             print()
             action_dict[ans]()

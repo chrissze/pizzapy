@@ -850,7 +850,7 @@ async def fetch_latest_row_df(symbol: str, table: str ) -> pd.DataFrame:
     """
     * INDEPENDENT *
  
-    USED BY: 
+    USED BY: print_latest_row
     
     Note:
     (1) the table name MUST be available in the database, otherwise there will be exception.
@@ -873,8 +873,10 @@ async def fetch_latest_row_df(symbol: str, table: str ) -> pd.DataFrame:
     return df       
     
 
-    
-
+async def print_latest_row(symbol: str, table: str ) -> None:
+    df: pd.DataFrame = await fetch_latest_row_df(symbol, table)
+    pd.options.display.float_format = '{:,}'.format
+    print(df)
 
 ### END OF COMMON FUNCTIONS ###
 
@@ -884,4 +886,4 @@ if __name__ == '__main__':
     
     #ask_generating_file()
 
-    print()
+    asyncio.run(print_latest_row('IBM', 'stock_option'))
