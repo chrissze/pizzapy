@@ -323,6 +323,9 @@ stock_option_create_table_command: str = """
     put_itm_premium_ratio   FLOAT8,    
     put_otm_premium_ratio   FLOAT8,    
 
+    half_call_money_point FLOAT8,
+    half_put_money_point FLOAT8,
+    
     call_pc   FLOAT8,    
     put_pc   FLOAT8,    
     PRIMARY KEY (symbol, td) 

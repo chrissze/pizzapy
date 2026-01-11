@@ -91,6 +91,8 @@ class OptionRatio(BaseModel):
     # Put/Call ratios
     call_pc: Optional[float] = Field(None, ge=0, description="Call put/call ratio")
     put_pc: Optional[float] = Field(None, ge=0, description="Put put/call ratio")
+    half_call_money_point: Optional[float] = Field(None, ge=0, description="half call money point")
+    half_put_money_point: Optional[float] = Field(None, ge=0, description="half put money point")
     
     @validator('symbol')
     def normalize_symbol(cls, v):
@@ -301,7 +303,15 @@ def get_hist_option_data(symbol:str) -> tuple[list, list]:
 
 
 
-
+def calc_half_strike(option_positions: list[OptionPosition], half_money) -> float:
+    
+    accumulated_money: float = 0
+    for x in option_positions:
+        accumulated_money += x.money
+        if accumulated_money > half_money:
+            return x.strike
+        
+    return None
 
 
 def get_option_ratio(symbol:str) -> OptionRatio:
@@ -324,13 +334,26 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
     call_money: float = sum(call_money_list)
     
+    half_call_money: float = call_money / 2.0
+    
+    
+
     put_money: float = sum(put_money_list)
+    
+    half_put_money: float = put_money / 2.0
     
     total_money: float = call_money + put_money
 
-    print(call_money)
+    
+    call_positions_by_strike = sorted(call_positions, key=lambda x: x.strike)
+    
+    half_call_money_strike: float | None = calc_half_strike(call_positions_by_strike, half_call_money)
     
 
+    put_positions_by_strike = sorted(put_positions, key=lambda x: x.strike)
+    
+    half_put_money_strike: float | None = calc_half_strike(put_positions_by_strike, half_put_money)
+    
     call_oi: list[float] = sum([ x.open_interest for x in call_positions if isinstance(x.open_interest, float)])
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
@@ -340,7 +363,13 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     close_price: float | None
     td, close_price = get_close_price(symbol)
 
-    sleep(2)    
+    half_call_money_point: float = half_call_money_strike / close_price
+    half_put_money_point: float = half_put_money_strike / close_price
+    
+    print(f'{half_call_money_point=}')
+    print(f'{half_put_money_point=}')
+    
+    
 
     cap: float | None = get_cap(symbol)
 
@@ -404,6 +433,8 @@ def get_option_ratio(symbol:str) -> OptionRatio:
         call_otm_premium_ratio=call_otm_premium_ratio,
         put_itm_premium_ratio=put_itm_premium_ratio,
         put_otm_premium_ratio=put_otm_premium_ratio,
+        half_call_money_point=half_call_money_point,
+        half_put_money_point=half_put_money_point
 
     )
 
@@ -426,8 +457,8 @@ async def upsert_av_option(symbol: str) -> Any:  # check Any type later
             call_money_ratio, put_money_ratio,
             call_itm_premium_ratio, call_otm_premium_ratio,
             put_itm_premium_ratio, put_otm_premium_ratio,
-            call_pc, put_pc
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+            call_pc, put_pc, half_call_money_point, half_put_money_point
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
         ON CONFLICT (symbol, td) DO UPDATE SET
             t = EXCLUDED.t,
             cap_str = EXCLUDED.cap_str,
@@ -444,7 +475,9 @@ async def upsert_av_option(symbol: str) -> Any:  # check Any type later
             put_itm_premium_ratio = EXCLUDED.put_itm_premium_ratio,
             put_otm_premium_ratio = EXCLUDED.put_otm_premium_ratio,
             call_pc = EXCLUDED.call_pc,
-            put_pc = EXCLUDED.put_pc
+            put_pc = EXCLUDED.put_pc,
+            half_call_money_point = EXCLUDED.half_call_money_point,
+            half_put_money_point = EXCLUDED.half_put_money_point
     ''', 
         option.t, option.td, option.symbol,
         option.cap_str, option.cap, option.price,
@@ -452,7 +485,8 @@ async def upsert_av_option(symbol: str) -> Any:  # check Any type later
         option.call_money_ratio, option.put_money_ratio,
         option.call_itm_premium_ratio, option.call_otm_premium_ratio,
         option.put_itm_premium_ratio, option.put_otm_premium_ratio,
-        option.call_pc, option.put_pc
+        option.call_pc, option.put_pc, 
+        option.half_call_money_point, option.half_put_money_point
     )
 
     return result
@@ -484,4 +518,6 @@ async def upsert_av_options(stock_list: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    pass
+    get_option_ratio('AMD')
+    
+
