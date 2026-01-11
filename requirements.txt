@@ -13,6 +13,8 @@ cloudscraper
 
 html5lib   # ~=1.1.0
 
+httpx
+
 ib_async
 
 jinja2   # required by pandas formatter
