@@ -303,7 +303,7 @@ def get_hist_option_data(symbol:str) -> tuple[list, list]:
 
 
 
-def calc_half_strike(option_positions: list[OptionPosition], half_money) -> float:
+def calc_half_strike(option_positions: list[OptionPosition], half_money: float) -> float:
     
     accumulated_money: float = 0
     for x in option_positions:
@@ -312,6 +312,19 @@ def calc_half_strike(option_positions: list[OptionPosition], half_money) -> floa
             return x.strike
         
     return None
+
+
+def calc_half_money_point(option_positions: list[OptionPosition], option_money: float, close_price: float) -> float:
+
+    sorted_positions = sorted(option_positions, key=lambda x: x.strike)
+    
+    half_money: float = option_money / 2.0
+    
+    half_money_strike: float = calc_half_strike(sorted_positions, half_money)
+    
+    half_money_point: float = round(half_money_strike / close_price, ndigits=4)
+
+    return half_money_point
 
 
 def get_option_ratio(symbol:str) -> OptionRatio:
@@ -334,25 +347,17 @@ def get_option_ratio(symbol:str) -> OptionRatio:
 
     call_money: float = sum(call_money_list)
     
-    half_call_money: float = call_money / 2.0
+    
     
     
 
     put_money: float = sum(put_money_list)
     
-    half_put_money: float = put_money / 2.0
+
     
     total_money: float = call_money + put_money
 
     
-    call_positions_by_strike = sorted(call_positions, key=lambda x: x.strike)
-    
-    half_call_money_strike: float | None = calc_half_strike(call_positions_by_strike, half_call_money)
-    
-
-    put_positions_by_strike = sorted(put_positions, key=lambda x: x.strike)
-    
-    half_put_money_strike: float | None = calc_half_strike(put_positions_by_strike, half_put_money)
     
     call_oi: list[float] = sum([ x.open_interest for x in call_positions if isinstance(x.open_interest, float)])
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
@@ -363,8 +368,8 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     close_price: float | None
     td, close_price = get_close_price(symbol)
 
-    half_call_money_point: float = half_call_money_strike / close_price
-    half_put_money_point: float = half_put_money_strike / close_price
+    half_call_money_point: float = calc_half_money_point(call_positions, call_money, close_price)
+    half_put_money_point: float = calc_half_money_point(put_positions, put_money, close_price)
     
     print(f'{half_call_money_point=}')
     print(f'{half_put_money_point=}')
