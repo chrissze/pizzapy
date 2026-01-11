@@ -1,4 +1,5 @@
 # STANDARD LIB
+import os
 
 from time import sleep
 
@@ -11,6 +12,9 @@ import pytest
 from pizzapy.av_app.av_model import get_cap, get_close_price
 
 
+def test_api_key():
+    api_key = os.getenv('AV_API_KEY')
+    assert api_key[:2] == '2L'
 
 @pytest.mark.asyncio
 async def test_get_cap():
