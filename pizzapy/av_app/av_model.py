@@ -42,7 +42,7 @@ import requests
 
 from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
-from batterypy.string.read import formatlarge, readf
+from batterypy.read import formatlarge, readf
 
 from dimsumpy.av import get_cap, get_td_close, get_option_chain
 

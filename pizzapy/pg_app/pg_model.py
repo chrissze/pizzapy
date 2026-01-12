@@ -13,7 +13,7 @@ USED BY:
 import asyncio
 
 from timeit import timeit
-from typing import Any, List, Set
+from typing import Any
 
 
 # THIRD PARTY LIB

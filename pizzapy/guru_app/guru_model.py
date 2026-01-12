@@ -51,15 +51,12 @@ import requests
 
 # CUSTOM LIBRARIES
 
-from batterypy.string.json import extract_nested_values
+from batterypy.read import formatlarge, readf
 
-from batterypy.string.read import formatlarge, readf
-
-from batterypy.time.cal import get_trading_day_utc
+from batterypy.cal import get_trading_day_utc
 
 from dimsumpy.web.crawler import get_html_soup, get_html_text, get_html_dataframes
 
-from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
 
 
@@ -76,9 +73,42 @@ from pizzapy.pg_app.pg_model import fetch_latest_row_df
 ######################################################
 
 
+def extract_nested_values(obj, key):
+    """
+    ** INDEPENDENT **
+    
+    USED BY: get_barchart_price_cap
+     
+    Pull all values of specified key from nested JSON.
+    
+    Source:
+       https://hackersandslackers.com/extract-data-from-complex-json-python/ 
+       
+    """
+
+    arr = []
+
+    def extract(obj, arr, key):
+        """Recursively search for values of key in JSON tree."""
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if isinstance(v, (dict, list)):
+                    extract(v, arr, key)
+                elif k == key:
+                    arr.append(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract(item, arr, key)
+        return arr
+
+    results = extract(obj, arr, key)
+    return results
+
+
+
 def get_barchart_price_cap(symbol: str) -> Tuple[Optional[float], Optional[float]] :
     """
-    * INDEPENDENT *
+    DEPENDS: extract_nested_values
 
     IMPORTS: json, beautifulsoup4, batterypy, dimsumpy
         
