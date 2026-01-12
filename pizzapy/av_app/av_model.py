@@ -44,7 +44,7 @@ from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
 from batterypy.string.read import formatlarge, readf
 
-from dimsumpy.av import get_cap, get_close, get_option_chain
+from dimsumpy.av import get_cap, get_td_close, get_option_chain
 
 
 API_KEY = os.getenv('AV_API_KEY')
@@ -303,13 +303,14 @@ def calc_half_money_point(option_positions: list[OptionPosition], option_money: 
     return half_money_point
 
 
-def calc_option_ratio(symbol:str) -> OptionRatio:
+def calc_option_ratio(symbol:str, isodate=None) -> OptionRatio:
+    """
+    # if isodate=None, this function will just return the latest option chain.
+    
+    # isodate can be 'YYYY-MM-DD' str, date object or datetime object.
     """
     
-    """
-    
-
-    option_list: list[dict[str, str]] = get_option_chain(symbol)
+    option_list: list[dict[str, str]] = get_option_chain(symbol, isodate=isodate)
 
     position_list: list[OptionPosition] = [OptionPosition.from_dict(x) for x in option_list]
 
@@ -329,8 +330,7 @@ def calc_option_ratio(symbol:str) -> OptionRatio:
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
     t = datetime.now()
-    td: str = datetime.now().date()
-    close_price: float | None = get_close(symbol)
+    td, close_price = get_td_close(symbol)  # td is date obj, close_price is a float
 
     half_call_money_point: float = calc_half_money_point(call_positions, call_money, close_price)
     half_put_money_point: float = calc_half_money_point(put_positions, put_money, close_price)
@@ -412,12 +412,12 @@ def calc_option_ratio(symbol:str) -> OptionRatio:
 
 
 # Usage example with asyncpg
-async def upsert_av_option(symbol: str) -> Any:  # check Any type later
+async def upsert_av_option(symbol: str, isodate=None) -> Any:  # check Any type later
     """Insert an OptionRatio record into the database"""
 
     conn = await asyncpg.connect()
 
-    option = calc_option_ratio(symbol)
+    option = calc_option_ratio(symbol, isodate=isodate)
 
     result = await conn.execute('''
         INSERT INTO stock_option (
@@ -464,15 +464,20 @@ async def upsert_av_option(symbol: str) -> Any:  # check Any type later
 
 
 
-async def upsert_av_options(stock_list: list[str]) -> None:
+async def upsert_av_options(stock_list: list[str], isodate=None) -> None:
     """
     DEPENDS:  upsert_av_option
+    
+    UPSERT SINGLE OPTION EXAMPLE:
+        asyncio.run(upsert_av_options(['AMD'], isodate='2025-12-01'))
+    
+    
     """
     length: int = len(stock_list)
     
     for i, symbol in enumerate(stock_list, start=1):
         try:
-            result: str = await upsert_av_option(symbol)
+            result: str = await upsert_av_option(symbol, isodate=isodate)
 
             output: str = f'{i} / {length} {symbol} {result}'
             print(output)
@@ -487,6 +492,6 @@ async def upsert_av_options(stock_list: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    opt = calc_option_ratio('QQQ')
-    print(opt)
+    asyncio.run(upsert_av_options(['AMD'], isodate='2025-12-01'))
+
 
