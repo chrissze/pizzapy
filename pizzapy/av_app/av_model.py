@@ -44,7 +44,7 @@ from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
 from batterypy.string.read import formatlarge, readf
 
-
+from dimsumpy.av import get_cap, get_close, get_option_chain
 
 
 API_KEY = os.getenv('AV_API_KEY')
@@ -242,31 +242,7 @@ class OptionPosition:
 
 
 
-def get_close_price(symbol: str) -> tuple[str, float | None]:
 
-    ts = TimeSeries(key=API_KEY)
-    data_dict, meta = ts.get_daily(symbol=symbol)
-    
-    td: str     # 'YYYY-MM-DD' '2026-01-02'
-    ohlcv_dict: dict[str, str]
-    td, ohlcv_dict = list(data_dict.items())[0]
-
-    close_price = readf(ohlcv_dict.get('4. close'))
-    
-    return td, close_price
-
-
-
-
-def get_cap(symbol: str) -> float | None:
-
-    fd = FundamentalData(key=API_KEY)
-    
-    overview, _ = fd.get_company_overview(symbol=symbol)
-    
-    cap = overview["MarketCapitalization"]
-
-    return readf(cap)
 
 
 
@@ -327,46 +303,34 @@ def calc_half_money_point(option_positions: list[OptionPosition], option_money: 
     return half_money_point
 
 
-def get_option_ratio(symbol:str) -> OptionRatio:
+def calc_option_ratio(symbol:str) -> OptionRatio:
     """
     
     """
     
-    data: dict = get_hist_option_data(symbol) 
 
-    option_list: list[dict[str, str]] = data.get('data')
+    option_list: list[dict[str, str]] = get_option_chain(symbol)
 
     position_list: list[OptionPosition] = [OptionPosition.from_dict(x) for x in option_list]
 
-    
     call_positions: list[OptionPosition] = [x for x in position_list if x.type == 'call']
     put_positions: list[OptionPosition] = [x for x in position_list if x.type == 'put']
     
     call_money_list: list[float] = [ x.money for x in call_positions if isinstance(x.money, float)]
     put_money_list: list[float] = [ x.money for x in put_positions if isinstance(x.money, float)]
 
-    call_money: float = sum(call_money_list)
-    
-    
-    
-    
+    call_money: float = sum(call_money_list)    
 
     put_money: float = sum(put_money_list)
     
-
-    
     total_money: float = call_money + put_money
-
-    
     
     call_oi: list[float] = sum([ x.open_interest for x in call_positions if isinstance(x.open_interest, float)])
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
-    sleep(1)
     t = datetime.now()
-    td: str
-    close_price: float | None
-    td, close_price = get_close_price(symbol)
+    td: str = datetime.now().date()
+    close_price: float | None = get_close(symbol)
 
     half_call_money_point: float = calc_half_money_point(call_positions, call_money, close_price)
     half_put_money_point: float = calc_half_money_point(put_positions, put_money, close_price)
@@ -403,21 +367,21 @@ def get_option_ratio(symbol:str) -> OptionRatio:
     put_otm_premium_ratio = round(put_otm_premiums / put_money * 100.0, ndigits=2)
 
 
-    print(call_pc)
-    print(put_pc)
+    # print(call_pc)
+    # print(put_pc)
     
-    print(call_money_ratio)
-    print(put_money_ratio)
+    # print(call_money_ratio)
+    # print(put_money_ratio)
     
 
-    print(call_itm_premium_ratio)
-    print(call_otm_premium_ratio)
+    # print(call_itm_premium_ratio)
+    # print(call_otm_premium_ratio)
     
-    print(put_itm_premium_ratio)
-    print(put_otm_premium_ratio)
+    # print(put_itm_premium_ratio)
+    # print(put_otm_premium_ratio)
     
-    print(call_oi)
-    print(put_oi)
+    # print(call_oi)
+    # print(put_oi)
 
     option_obj = OptionRatio(
         t=t,
@@ -453,7 +417,7 @@ async def upsert_av_option(symbol: str) -> Any:  # check Any type later
 
     conn = await asyncpg.connect()
 
-    option = get_option_ratio(symbol)
+    option = calc_option_ratio(symbol)
 
     result = await conn.execute('''
         INSERT INTO stock_option (
@@ -523,6 +487,6 @@ async def upsert_av_options(stock_list: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    get_option_ratio('AMD')
-    
+    opt = calc_option_ratio('QQQ')
+    print(opt)
 
