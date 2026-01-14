@@ -186,19 +186,17 @@ zacks_stock_create_table_command: str = """
     """
 
 
-# yahoo
+
 stock_price_create_table_command: str = """
     CREATE TABLE IF NOT EXISTS stock_price (
-    price_id  BIGSERIAL, 
-    t   TIMESTAMP,                    
-    symbol   VARCHAR(10) NOT NULL,         
-    td   DATE NOT NULL,  
-    open   FLOAT8,    
-    high   FLOAT8,
-    low   FLOAT8,    
-    close   FLOAT8 NOT NULL,    
-    adjclose  FLOAT8 NOT NULL,    
-    volume BIGINT,    
+    uuid UUID DEFAULT gen_random_uuid(), 
+    t   TIMESTAMPTZ DEFAULT now(),                    
+    symbol   TEXT CHECK (char_length(symbol) <= 7) NOT NULL,         
+    td       DATE NOT NULL,  
+    cap      DOUBLE PRECISION,    
+    shares   DOUBLE PRECISION,    
+    close    DOUBLE PRECISION,    
+    adjclose DOUBLE PRECISION,      
     PRIMARY KEY (symbol, td) 
     );
     """
