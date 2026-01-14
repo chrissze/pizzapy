@@ -248,37 +248,6 @@ class OptionPosition:
 
 
 
-def get_hist_option_data(symbol:str) -> tuple[list, list]:
-    """
-    {'endpoint': 'Historical Options', 'message': 'success', 'data': [dict with all values are str]}
-
-    DEPENDS: 
-
-    USED BY: 
-    """
-    url = f'https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol={symbol}&apikey={API_KEY}' 
-
-    try:
-        r = requests.get(url) 
-
-        # .json() parses JSON body into Python dict
-        data: dict[str, str | list[dict[str, str]]] = r.json()
-
-    except Exception as e:
-        print(e)
-        return None, None
-
-    # print(data.keys())
-
-    # print(data.get('endpoint'))
-    # print(data.get('message'))
-    # print(data.get('Information'))
-    # print(type(data))
-
-    return data
-
-
-
 def calc_half_strike(option_positions: list[OptionPosition], half_money: float) -> float:
     
     accumulated_money: float = 0
@@ -303,12 +272,14 @@ def calc_half_money_point(option_positions: list[OptionPosition], option_money: 
     return half_money_point
 
 
-def calc_option_ratio(symbol:str, isodate=None) -> OptionRatio:
+def make_option_ratio(symbol:str, isodate=None) -> OptionRatio:
     """
     # if isodate=None, this function will just return the latest option chain.
     
     # isodate can be 'YYYY-MM-DD' str, date object or datetime object.
     """
+    
+    
     
     option_list: list[dict[str, str]] = get_option_chain(symbol, isodate=isodate)
 
@@ -417,7 +388,7 @@ async def upsert_av_option(symbol: str, isodate=None) -> Any:  # check Any type 
 
     conn = await asyncpg.connect()
 
-    option = calc_option_ratio(symbol, isodate=isodate)
+    option = make_option_ratio(symbol, isodate=isodate)
 
     result = await conn.execute('''
         INSERT INTO stock_option (
