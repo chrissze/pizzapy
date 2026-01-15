@@ -44,7 +44,7 @@ from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
 from batterypy.read import formatlarge, readf
 
-from dimsumpy.av import get_cap, get_td_close, get_option_chain
+from dimsumpy.av import get_cap, get_cap_dict, get_td_close, get_option_chain
 
 
 API_KEY = os.getenv('AV_API_KEY')
@@ -459,10 +459,71 @@ async def upsert_av_options(stock_list: list[str], isodate=None) -> None:
             
 
 
+###################
+### STOCK PRICE ###
+###################
+
+
+async def upsert_price(symbol: str):
+    
+    table: str = 'stock_price'
+    
+    # defaults: asyncpg.create_pool(min_size=10, max_size=10)
+    pool = await asyncpg.create_pool() 
+    
+    cap_dict: dict[str, dict[str, str | float | date | None]] = get_cap_dict(symbol)
+    
+    # ['symbol', 'td', 'close', 'adjclose', 'shares', 'cap']
+    column_list: list[str] = list(next(iter(cap_dict.values())).keys())
+    
+    columns: str = ', '.join(column_list)
+    
+    placeholders: str = ', '.join(f'${i+1}' for i in range(len(column_list)))
+    
+    update_cols: list[str] = [c for c in column_list if c not in ('symbol', 'td')]
+    
+    update_clause: str = ', '.join(f'{c} = EXCLUDED.{c}' for c in update_cols)
+    
+    rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items()]
+    
+    async with pool.acquire() as conn:
+        await conn.executemany(f'''
+            INSERT INTO {table} ({columns}) 
+            VALUES ({placeholders})
+            ON CONFLICT (symbol, td) DO UPDATE SET {update_clause};''',
+            rows
+        )
+
+
+async def upsert_prices(stock_list: list[str]) -> None:
+    """
+    DEPENDS:  upsert_price
+    
+    UPSERT SINGLE STOCK:
+        asyncio.run(upsert_prices(['AMD']))
+        
+        
+    """
+    length: int = len(stock_list)
+
+    for i, symbol in enumerate(stock_list, start=1):
+        try:
+            result = await upsert_price(symbol)
+
+            output: str = f'SUCCESS {i} / {length} {symbol} {result}'
+
+            print(output)
+
+        except Exception as e:
+            error_output: str = f'ERROR {i} / {length} {symbol} {e}'
+            print(error_output)
+
+
+### END OF STOCK PRICE ###
 
 
 
 if __name__ == "__main__":
-    asyncio.run(upsert_av_options(['AMD'], isodate='2025-12-01'))
+    asyncio.run(upsert_prices(['AMD']))
 
 
