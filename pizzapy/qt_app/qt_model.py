@@ -20,7 +20,7 @@ from PySide6.QtCore import (QModelIndex, QRegularExpression , QSortFilterProxyMo
 
 
 # CUSTOM LIBS
-from batterypy.string.read import is_floatable
+from batterypy.read import is_floatable
 
 
 

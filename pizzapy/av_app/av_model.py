@@ -15,6 +15,8 @@ from decimal import Decimal
 
 import os
 
+from pprint import pprint
+
 from time import sleep
 
 from typing import Any, Literal, Optional
@@ -45,6 +47,8 @@ from pizzapy.pg_app.pg_model import fetch_latest_row_df
 from batterypy.read import formatlarge, readf
 
 from dimsumpy.av import get_cap, get_cap_dict, get_td_close, get_option_chain
+
+from pizzapy.pg_app.pg_model import fetch_df
 
 
 API_KEY = os.getenv('AV_API_KEY')
@@ -272,16 +276,39 @@ def calc_half_money_point(option_positions: list[OptionPosition], option_money: 
     return half_money_point
 
 
-def make_option_ratio(symbol:str, isodate=None) -> OptionRatio:
+async def get_close_cap_from_db(symbol: str, td: str | date) -> tuple[float, float]:
+    
+    #if isinstance(td, date):
+    #    td: str = td.isoformat()
+    
+    table: str = 'stock_price'
+    
+    cmd = f"SELECT * FROM {table} WHERE symbol = '{symbol}' AND td = '{td}';"
+    df = await fetch_df(cmd)
+    
+    close = df['close'].iloc[0]
+    cap = df['cap'].iloc[0]
+    
+    return close, cap
+    
+    
+        
+
+async def make_option_ratio(symbol:str, td=None) -> OptionRatio:
     """
     # if isodate=None, this function will just return the latest option chain.
     
     # isodate can be 'YYYY-MM-DD' str, date object or datetime object.
     """
     
+    if td is None:
+        td, close_price = get_td_close(symbol)  # td is date obj, close_price is a float
+        cap: float | None = get_cap(symbol)
+    else:
+        close_price, cap = await get_close_cap_from_db(symbol, td)
+
     
-    
-    option_list: list[dict[str, str]] = get_option_chain(symbol, isodate=isodate)
+    option_list: list[dict[str, str]] = get_option_chain(symbol, isodate=td)
 
     position_list: list[OptionPosition] = [OptionPosition.from_dict(x) for x in option_list]
 
@@ -301,17 +328,11 @@ def make_option_ratio(symbol:str, isodate=None) -> OptionRatio:
     put_oi: list[float] = sum([ x.open_interest for x in put_positions if isinstance(x.open_interest, float)])
 
     t = datetime.now()
-    td, close_price = get_td_close(symbol)  # td is date obj, close_price is a float
 
     half_call_money_point: float = calc_half_money_point(call_positions, call_money, close_price)
     half_put_money_point: float = calc_half_money_point(put_positions, put_money, close_price)
     
-    print(f'{half_call_money_point=}')
-    print(f'{half_put_money_point=}')
     
-    
-
-    cap: float | None = get_cap(symbol)
 
     cap_str=formatlarge(cap)
 
@@ -378,17 +399,18 @@ def make_option_ratio(symbol:str, isodate=None) -> OptionRatio:
 
     )
 
+    pprint(option_obj)
     return option_obj
 
 
 
 # Usage example with asyncpg
-async def upsert_av_option(symbol: str, isodate=None) -> Any:  # check Any type later
+async def upsert_av_option(symbol: str, td=None) -> Any:  # check Any type later
     """Insert an OptionRatio record into the database"""
 
     conn = await asyncpg.connect()
 
-    option = make_option_ratio(symbol, isodate=isodate)
+    option = await make_option_ratio(symbol, td=td)
 
     result = await conn.execute('''
         INSERT INTO stock_option (
@@ -435,7 +457,7 @@ async def upsert_av_option(symbol: str, isodate=None) -> Any:  # check Any type 
 
 
 
-async def upsert_av_options(stock_list: list[str], isodate=None) -> None:
+async def upsert_av_options(stock_list: list[str], td=None) -> None:
     """
     DEPENDS:  upsert_av_option
     
@@ -448,7 +470,7 @@ async def upsert_av_options(stock_list: list[str], isodate=None) -> None:
     
     for i, symbol in enumerate(stock_list, start=1):
         try:
-            result: str = await upsert_av_option(symbol, isodate=isodate)
+            result: str = await upsert_av_option(symbol, td=td)
 
             output: str = f'{i} / {length} {symbol} {result}'
             print(output)
@@ -464,7 +486,7 @@ async def upsert_av_options(stock_list: list[str], isodate=None) -> None:
 ###################
 
 
-async def upsert_price(symbol: str):
+async def upsert_price(symbol: str, from_date=None, to_date=None):
     
     table: str = 'stock_price'
     
@@ -484,7 +506,15 @@ async def upsert_price(symbol: str):
     
     update_clause: str = ', '.join(f'{c} = EXCLUDED.{c}' for c in update_cols)
     
-    rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items()]
+    if from_date and to_date:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k >= from_date and k <= to_date]
+    elif from_date:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k >= from_date]
+    elif to_date:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k <= to_date]
+    else:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items()]
+    
     
     async with pool.acquire() as conn:
         await conn.executemany(f'''
@@ -508,7 +538,7 @@ async def upsert_prices(stock_list: list[str]) -> None:
 
     for i, symbol in enumerate(stock_list, start=1):
         try:
-            result = await upsert_price(symbol)
+            result = await upsert_price(symbol, from_date='2024-01-01')
 
             output: str = f'SUCCESS {i} / {length} {symbol} {result}'
 
@@ -524,6 +554,6 @@ async def upsert_prices(stock_list: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(upsert_prices(['AMD']))
-
-
+    
+    asyncio.run(upsert_av_options(['MU'], td='2025-10-03'))
+  
