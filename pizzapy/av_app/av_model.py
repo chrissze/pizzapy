@@ -44,7 +44,7 @@ import requests
 
 from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
-from batterypy.cal import get_trading_day
+from batterypy.cal import get_trading_day, make_td_list
 
 from batterypy.read import formatlarge, readf
 
@@ -391,14 +391,14 @@ async def make_option_ratio(symbol:str, td=None) -> OptionRatio:
 
 
 # Usage example with asyncpg
-async def upsert_av_option(symbol: str, td=None) -> Any:  # check Any type later
+async def upsert_av_option(symbol: str, td=None) -> str:  # check Any type later
     """Insert an OptionRatio record into the database"""
 
     conn = await asyncpg.connect()
 
-    option = await make_option_ratio(symbol, td=td)
+    option: OptionRatio = await make_option_ratio(symbol, td=td)
 
-    result = await conn.execute('''
+    result: str = await conn.execute('''
         INSERT INTO stock_option (
             t, td, symbol, cap_str, cap, price,
             call_money, put_money, call_oi, put_oi,
@@ -466,7 +466,10 @@ async def upsert_av_options(stock_list: list[str], td=None) -> None:
             print(output)
             
 
-async def upsert_av_option_monthly(symbol: str, start=None, end=None) -> Any:  # check Any type later
+
+
+
+async def upsert_interval_option(symbol: str, start=None, end=None, interval='monthly') -> None:  # check Any type later
     # still working
     
     if end is None:
@@ -475,16 +478,38 @@ async def upsert_av_option_monthly(symbol: str, start=None, end=None) -> Any:  #
     if start is None:
         start = end - timedelta(days=365)
 
+    await upsert_price(symbol=symbol, start=start, end=end) 
 
+    td_list: list[date] = make_td_list(start=start, end=end, interval=interval)
 
+    length: int = len(td_list)
+    
+    for i, td in enumerate(td_list, start=1):
+        try:
+            result: str = await upsert_av_option(symbol, td=td)
 
+            output: str = f'{i} / {length} {symbol} {td} {result}'
+            print(output)
+            
 
+        except Exception as e:
+            output: str = f'{i} / {length} {symbol} {td} {e}'
+            print(output)
+    
+    print(td_list)
+            
 ###################
 ### STOCK PRICE ###
 ###################
 
 
-async def upsert_price(symbol: str, from_date=None, to_date=None) -> None:
+async def upsert_price(symbol: str, start: str | date | None = None, end: str | date | None = None) -> None:
+    
+    if isinstance(start, str):
+        start: date = date.fromisoformat(start)
+    
+    if isinstance(end, str):
+        end: date = date.fromisoformat(end)
     
     table: str = 'stock_price'
     
@@ -504,14 +529,14 @@ async def upsert_price(symbol: str, from_date=None, to_date=None) -> None:
     
     update_clause: str = ', '.join(f'{c} = EXCLUDED.{c}' for c in update_cols)
     
-    if from_date and to_date:
-        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k >= from_date and k <= to_date]
-    elif from_date:
-        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k >= from_date]
-    elif to_date:
-        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if k <= to_date]
+    if start and end:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if date.fromisoformat(k) >= start and date.fromisoformat(k) <= end]
+    elif start:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if date.fromisoformat(k) >= start]
+    elif end:
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items() if date.fromisoformat(k) <= end]
     else:
-        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for k, v in cap_dict.items()]
+        rows: tuple[str, date, float, float, float, float] = [tuple(v.values()) for _, v in cap_dict.items()]
     
     
     async with pool.acquire() as conn:
@@ -523,7 +548,7 @@ async def upsert_price(symbol: str, from_date=None, to_date=None) -> None:
         )
 
 
-async def upsert_prices(stock_list: list[str]) -> None:
+async def upsert_prices(stock_list: list[str], start=None, end=None) -> None:
     """
     DEPENDS:  upsert_price
     
@@ -536,7 +561,7 @@ async def upsert_prices(stock_list: list[str]) -> None:
 
     for i, symbol in enumerate(stock_list, start=1):
         try:
-            result = await upsert_price(symbol, from_date='2024-01-01')
+            result = await upsert_price(symbol, start=start, end=end)
 
             output: str = f'SUCCESS {i} / {length} {symbol} {result}'
 
@@ -553,7 +578,7 @@ async def upsert_prices(stock_list: list[str]) -> None:
 
 async def main() -> None:
 
-    await upsert_price('META', from_date='2026-01-01')
+    await upsert_price('META', start='2026-01-01')
 
 
 
@@ -562,7 +587,5 @@ async def main() -> None:
     
 if __name__ == "__main__":
     
-    #asyncio.run(main())
-
-    d = get_cap_dict('META')
-    print(d)
+    #asyncio.run(upsert_interval_option('TSM', interval='fortnite'))
+    asyncio.run(upsert_av_option('QBTS', td='2025-04-18'))

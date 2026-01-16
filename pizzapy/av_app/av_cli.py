@@ -13,7 +13,7 @@ from typing import Any
 
 # PROGRAM MODULES
 
-from pizzapy.av_app.av_model import upsert_av_option, upsert_av_options,  upsert_prices
+from pizzapy.av_app.av_model import upsert_av_option, upsert_av_options, upsert_interval_option, upsert_prices
 
 from pizzapy.pg_app.pg_model import print_latest_row, get_nasdaq_100, get_sp_500, get_sp_nasdaq
 
@@ -46,6 +46,40 @@ async def browse_upsert_option_interactive() -> None:
         if SYMBOL[:1] == '*':
             revised_symbol = SYMBOL[1:]
             result: str = await upsert_av_option(revised_symbol)
+            print(result)
+            await print_latest_row(revised_symbol, TABLE)
+
+        else:
+            await print_latest_row(SYMBOL, TABLE)
+
+
+async def browse_upsert_interval_option_interactive() -> None:
+    """
+    * INDEPENDENT *
+    IMPORTS: all_stocks, view_vertical_terminal()
+    USED BY: make_actions_dict()
+    """
+
+    table: str = 'stock_option'
+    
+    while True:
+        symbol: str = input(f'\n\nWhich SYMBOL do you want to check from {table} (input * before the symbol to update, input 0 to quit)? ')
+
+        if symbol == '0':
+            break
+
+                
+        SYMBOL: str = symbol.upper()
+        
+        if SYMBOL[:1] == '*':
+            revised_symbol = SYMBOL[1:]
+            
+            interval: str = input(f"\n\nWhich interval? 'monthly' (default), 'fortnite', 'weekly', 'daily'")
+        
+            if interval not in ['fortnite', 'weekly', 'daily']:
+                interval = 'monthly'
+            
+            result: str = await upsert_interval_option(revised_symbol, interval=interval)
             print(result)
             await print_latest_row(revised_symbol, TABLE)
 
@@ -127,8 +161,9 @@ def make_text_menu(table: str) -> str:
         Which action do you want to do? 
                     
         Single stock operations:        
-        1)  Browse or upsert {table} (loop)
-        2)  Browse or upsert stock_price (loop)
+        1)  Browse or upsert stock_option (loop)
+        2)  Browse or upsert interval option (loop)
+        4)  Browse or upsert stock_price (loop)
         
         List operations:        
         12) Upsert {table} for S&P 500 
@@ -143,7 +178,8 @@ def make_text_menu(table: str) -> str:
 action_dict: dict[str, Any] = {
     '1': lambda: asyncio.run(browse_upsert_option_interactive()),
 
-    '2': lambda: asyncio.run(browse_upsert_price_interactive()),
+    '2': lambda: asyncio.run(browse_upsert_interval_option_interactive()),
+    '4': lambda: asyncio.run(browse_upsert_price_interactive()),
 
     '12': lambda: asyncio.run(upsert_options_interactive(get_sp_500())),
     '13': lambda: asyncio.run(upsert_options_interactive(get_nasdaq_100())),
