@@ -9,7 +9,7 @@ import asyncio
 
 from dataclasses import dataclass
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from decimal import Decimal
 
@@ -44,7 +44,10 @@ import requests
 
 from pizzapy.pg_app.pg_model import fetch_latest_row_df
 
+from batterypy.cal import get_trading_day
+
 from batterypy.read import formatlarge, readf
+
 
 from dimsumpy.av import get_cap, get_cap_dict, get_td_close, get_option_chain
 
@@ -358,23 +361,6 @@ async def make_option_ratio(symbol:str, td=None) -> OptionRatio:
     put_itm_premium_ratio = round(put_itm_premiums / put_money * 100.0, ndigits=2)
     put_otm_premium_ratio = round(put_otm_premiums / put_money * 100.0, ndigits=2)
 
-
-    # print(call_pc)
-    # print(put_pc)
-    
-    # print(call_money_ratio)
-    # print(put_money_ratio)
-    
-
-    # print(call_itm_premium_ratio)
-    # print(call_otm_premium_ratio)
-    
-    # print(put_itm_premium_ratio)
-    # print(put_otm_premium_ratio)
-    
-    # print(call_oi)
-    # print(put_oi)
-
     option_obj = OptionRatio(
         t=t,
         td=td,
@@ -479,6 +465,18 @@ async def upsert_av_options(stock_list: list[str], td=None) -> None:
             output: str = f'{i} / {length} {symbol} {e}'
             print(output)
             
+
+async def upsert_av_option_monthly(symbol: str, start=None, end=None) -> Any:  # check Any type later
+    # still working
+    
+    if end is None:
+        end = get_trading_day()
+        
+    if start is None:
+        start = end - timedelta(days=365)
+
+
+
 
 
 ###################
