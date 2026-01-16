@@ -486,7 +486,7 @@ async def upsert_av_options(stock_list: list[str], td=None) -> None:
 ###################
 
 
-async def upsert_price(symbol: str, from_date=None, to_date=None):
+async def upsert_price(symbol: str, from_date=None, to_date=None) -> None:
     
     table: str = 'stock_price'
     
@@ -553,7 +553,18 @@ async def upsert_prices(stock_list: list[str]) -> None:
 
 
 
+async def main() -> None:
+
+    await upsert_price('META', from_date='2026-01-01')
+
+
+
+
+
+    
 if __name__ == "__main__":
     
-    asyncio.run(upsert_av_options(['MU'], td='2025-10-03'))
-  
+    #asyncio.run(main())
+
+    d = get_cap_dict('META')
+    print(d)
