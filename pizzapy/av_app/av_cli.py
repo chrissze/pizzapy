@@ -74,12 +74,23 @@ async def browse_upsert_interval_option_interactive() -> None:
         if SYMBOL[:1] == '*':
             revised_symbol = SYMBOL[1:]
             
-            interval: str = input(f"\n\nWhich interval? 'monthly' (default), 'fortnite', 'weekly', 'daily'")
+            interval: str = input(f"\n\nWhich interval, default:'monthly(m)', 'fortnite(f)', 'weekly(w)', 'daily(d)'? ")
         
-            if interval not in ['fortnite', 'weekly', 'daily']:
+            if interval.lower() in ['fortnite', 'f']:
+                interval = 'fortnite'
+            elif interval.lower() in ['weekly', 'w']:
+                interval = 'weekly'
+            elif interval.lower() in ['daily', 'd']:
+                interval = 'daily'
+            else:
                 interval = 'monthly'
             
-            result: str = await upsert_interval_option(revised_symbol, interval=interval)
+            
+            start: str = input(f"\n\nWhich start date?, default:'2024-01-01'? ")
+            if len(start.strip()) != 10:
+                start = '2024-01-01'
+            
+            result: str = await upsert_interval_option(revised_symbol, start=start, interval=interval)
             print(result)
             await print_latest_row(revised_symbol, TABLE)
 
